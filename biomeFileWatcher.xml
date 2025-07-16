@@ -1,0 +1,10 @@
+<project version="4">
+    <component name="FileWatchers">
+        <fileWatchedRoots>
+            <root url="file://$PROJECT_DIR$" recursive="true" />
+        </fileWatchedRoots>
+        <watchers>
+            <fileWatcher name="Biome Format" enabled="true" program="pnpm" arguments="dlx @biomejs/biome format $FilePath$ --write" workingDir="$ProjectFileDir$" immediateSync="true" triggerOnExternalChange="true" showConsoleOnStdOut="false" showConsoleOnStdErr="true" />
+        </watchers>
+    </component>
+</project>
