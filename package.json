@@ -1,0 +1,36 @@
+{
+  "name": "nyangplendor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "npx @biomejs/biome lint app/ && npx @biomejs/biome format app/ --write",
+    "start": "ts-node app/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/g4dalcom/nyangplendor.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/g4dalcom/nyangplendor/issues"
+  },
+  "homepage": "https://github.com/g4dalcom/nyangplendor#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.1",
+    "@types/cors": "^2.8.19",
+    "@types/react-dom": "^19.1.6",
+    "esbuild": "^0.25.6",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  }
+}
