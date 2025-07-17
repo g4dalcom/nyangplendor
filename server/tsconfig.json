@@ -11,7 +11,11 @@
     "removeComments": true, // 컴파일 결과물에서 주석 제거
     "sourceMap": true, // 디버깅용 소스맵 생성
     "forceConsistentCasingInFileNames": true, // 파일 이름 대소문자 일관성 강제
-    "resolveJsonModule": true // import 시 JSON 파일도 모듈로 인식 가능
+    "resolveJsonModule": true, // import 시 JSON 파일도 모듈로 인식 가능
+    "baseUrl": ".",               // 상대경로 설정
+    "paths": {
+      "@prisma/*": ["src/generated/prisma/*"]
+    }
   },
   "include": ["src/**/*"]
 }
