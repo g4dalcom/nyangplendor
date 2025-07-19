@@ -1,4 +1,4 @@
-import Game from "@/pages/Game.tsx";
+import Game from "@/pages/Game.tsx"
 
 function App() {
   return (
