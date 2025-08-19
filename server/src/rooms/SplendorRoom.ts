@@ -1,25 +1,26 @@
 import { Room, Client } from "colyseus"
-import {developmentCards} from "@shared/models/colyseus/DevelopmentCard";
+import {GameState} from "@shared/states/GameState";
 
 export class SplendorRoom extends Room {
   onCreate(options: any) {
-    console.log("✅ SplendorRoom 생성됨")
+    console.log("SplendorRoom")
 
     this.onMessage("start_game", (client, message) => {
-      console.log(`start_game 요청 받음 from ${client.sessionId}`);
-      client.send("start_game", developmentCards);
-    });
+      console.log(`requested start_game from ${client.sessionId}`)
+      let gameState = new GameState(client.sessionId);
+      client.send("start_game", gameState)
+    })
   }
 
   onJoin(client: Client, options: any) {
-    console.log(`👤 클라이언트 ${client.sessionId}가 입장했습니다.`)
+    console.log(`join: ${client.sessionId}`)
   }
 
   onLeave(client: Client, consented: boolean) {
-    console.log(`👋 ${client.sessionId}가 방을 떠났습니다.`)
+    console.log(`leave room: ${client.sessionId}`)
   }
 
   onDispose() {
-    console.log("🧹 SplendorRoom 삭제됨")
+    console.log("remove room")
   }
 }
