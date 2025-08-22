@@ -14,10 +14,10 @@ export class DevelopmentCard extends Schema {
   //
   @type("string") id: string
   @type("string") name: string
-  @type("number") level: CardLevel
+  @type("uint8") level: CardLevel
   @type("string") token: Token
-  @type("number") prestigePoint: number
-  @type({ map: "number" }) cost = new MapSchema<number>()
+  @type("uint8") prestigePoint: number
+  @type({ map: "uint8" }) cost = new MapSchema<number>()
   @type("boolean") visible: boolean
   @type("string") location: CardLocation
 

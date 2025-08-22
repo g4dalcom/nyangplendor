@@ -1,77 +1,77 @@
-import { Client, type Room } from "colyseus.js"
-import { useEffect, useState } from "react"
-import type {GameState} from "@shared/states/GameState";
-import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
+import {useEffect, useState} from "react"
+import {Transfer} from "@shared/types";
+import {useGameRoom, usePlayer} from "@/contexts";
+import type {Player} from "@shared/models/colyseus/Player";
 
-export default function Game() {
-  const [connected, setConnected] = useState(false)
-  const [room, setRoom] = useState<Room | null>(null)
-  const [roomName, setRoomName] = useState<string>("")
-  const [, setGameState] = useState<GameState | null>(null)
-  const [currentCardIndex, setCurrentCardIndex] = useState<number>(0)
-  const [showModal, setShowModal] = useState(false)
-  const [level1Cards, setLevel1Cards] = useState<DevelopmentCard[]>([])
+export const Game = () => {
+  //
+  const { player } = usePlayer();
+  const { gameRoom } = useGameRoom();
+  const [players, setPlayers] = useState<Player[]>([])
 
-  // 방 입장
   useEffect(() => {
-    if (!roomName) return
+    if (!gameRoom || !player) return;
 
-    const client = new Client("ws://localhost:2567")
-    client.joinOrCreate(roomName).then((joinedRoom) => {
-      setRoom(joinedRoom)
-      setConnected(true)
-
-      joinedRoom.onLeave(() => setConnected(false))
-
-      // 서버에서 cards 정보 수신
-      joinedRoom.onMessage("start_game", (gameState: GameState) => {
-        setGameState(gameState)
-        setLevel1Cards(gameState.level1Cards)
-      })
+    gameRoom.send(Transfer.ADD_PLAYER, player);
+    gameRoom.onMessage(Transfer.ADD_PLAYER, (players: Player[]) => {
+      setPlayers(players)
     })
 
     return () => {
-      room?.leave()
+      gameRoom?.leave();
     }
-  }, [roomName])
+  }, []);
 
-  const startGame = () => {
-    room?.send("start_game") // 서버에 게임 시작 요청
-  }
+  const handleStartGame = () => {
+    alert("게임 시작!");
+    gameRoom?.send(Transfer.START_GAME)
+  };
 
-  const openNextCard = () => {
-    setShowModal(true)
-  }
-
-  const closeModal = () => {
-    setShowModal(false)
-    setCurrentCardIndex((i) => (i + 1 < level1Cards.length ? i + 1 : 0))
+  if (!gameRoom) {
+    return <div>게임 방에 연결하는 중입니다...</div>;
   }
 
   return (
-    <div>
-      <p>연결 상태: {connected ? "connected" : "disconnected"}</p>
+    <div className="game-container">
+      <div className="player-list">
+        <h3>Players</h3>
+        <ul>
+          {players.map((p) => (
+            <li key={p.id}>{p.name}</li>
+          ))}
+        </ul>
+      </div>
 
-      {!connected && <button onClick={() => setRoomName("nyangplendor")}>방 입장</button>}
-
-      {connected && (
-        <>
-          <button onClick={startGame}>게임 시작</button>
-          {level1Cards.length > 0 && <button onClick={openNextCard}>카드 열기</button>}
-        </>
-      )}
-
-      {/* 카드 모달 */}
-      {showModal && level1Cards.length > 0 && (
-        <div style={{ border: "1px solid black", padding: "1rem" }}>
-          <h2>카드 정보</h2>
-          <p>이름: {level1Cards[currentCardIndex].name}</p>
-          <p>레벨: {level1Cards[currentCardIndex].level}</p>
-          <p>Prestige: {level1Cards[currentCardIndex].prestigePoint}</p>
-          <p>보너스: {level1Cards[currentCardIndex].token}</p>
-          <button onClick={closeModal}>닫기</button>
+      <div className="board">
+        <div className="token-area">
+          <h4>Tokens</h4>
+          <div className="token-grid">
+            <div className="token token-diamond">♦</div>
+            <div className="token token-sapphire">💎</div>
+            <div className="token token-emerald">💚</div>
+            <div className="token token-ruby">❤️</div>
+            <div className="token token-onyx">⚫</div>
+          </div>
         </div>
-      )}
+
+        <div className="cards-area">
+          <div className="card-level level1">Level 1 Cards</div>
+          <div className="card-level level2">Level 2 Cards</div>
+          <div className="card-level level3">Level 3 Cards</div>
+        </div>
+
+        <div className="nobles-area">Noble Cards</div>
+      </div>
+
+      <div className="game-controls">
+        <button
+          disabled={players.length < 2}
+          onClick={handleStartGame}
+          className={players.length >= 2 ? "btn-start" : "btn-disabled"}
+        >
+          Game Start
+        </button>
+      </div>
     </div>
-  )
+  );
 }

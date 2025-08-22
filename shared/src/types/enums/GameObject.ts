@@ -3,6 +3,7 @@ export enum CardLevel {
   LEVEL2 = 2,
   LEVEL3 = 3
 }
+
 export enum CardLocation {
   BOARD = "Board",
   PLAYER = "Player",

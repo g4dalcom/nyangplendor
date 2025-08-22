@@ -1,4 +1,4 @@
-import {ArraySchema, MapSchema, Schema, type} from "@colyseus/schema";
+import {MapSchema, Schema, type} from "@colyseus/schema";
 import {genCostMap, Token} from "@shared/types";
 
 export class NobleTile extends Schema {
@@ -6,7 +6,7 @@ export class NobleTile extends Schema {
   @type("string") id: string
   @type("string") name: string
   @type({ map: "uint8" }) cost: MapSchema<number>
-  @type("number") point: number
+  @type("uint8") point: number
 
   constructor() {
     super();

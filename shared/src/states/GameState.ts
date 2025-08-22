@@ -1,8 +1,9 @@
 import {ArraySchema, MapSchema, Schema, type} from "@colyseus/schema"
-import {DevelopmentCard, DevelopmentCardClasses, makeNobleTiles, NobleTile, Player} from "@shared/models";
-import {GamePhase, Role} from "@shared/types/enums/States";
-import {CardLevel, Token} from "@shared/types";
+import {CardLevel, GamePhase, Role, Token} from "@shared/types";
 import {shuffleArray} from "@shared/utils";
+import {Player} from "@shared/models/colyseus/Player";
+import {DevelopmentCard, DevelopmentCardClasses} from "@shared/models/colyseus/DevelopmentCard";
+import {makeNobleTiles, NobleTile} from "@shared/models/colyseus/NobleTile";
 
 export class GameState extends Schema {
   @type("string") gameId: string
@@ -20,14 +21,9 @@ export class GameState extends Schema {
     this.gameId = gameId
     this.phase = GamePhase.WAITING_FOR_PLAYERS
     this.currentPlayerIndex = 0
-    this.initializePlayer(gameId)
     this.initializeTokens()
     this.initializeCards()
     this.initializeNobleTiles()
-  }
-
-  private initializePlayer = (clientId: string) => {
-    this.players.push(new Player(clientId, clientId, Role.PLAYER))
   }
 
   private initializeTokens = ()=> {
@@ -52,5 +48,11 @@ export class GameState extends Schema {
     const allNobleTiles: NobleTile[] = makeNobleTiles;
     shuffleArray(allNobleTiles)
     this.nobleTiles.push(...allNobleTiles.slice(0, 3))
+  }
+
+  public addPlayer = (id: string, nickname: string) => {
+    if (this.players.length < 4) {
+      this.players.push(new Player(id, nickname, Role.PLAYER))
+    }
   }
 }

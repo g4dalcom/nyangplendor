@@ -1,15 +1,10 @@
-import express from "express"
-import http from "http"
-import { Server } from "colyseus"
-import { SplendorRoom } from "./rooms/SplendorRoom"
+import {listen} from "@colyseus/tools";
+import app from "./app.config";
 
-const app = express()
-const server = http.createServer(app)
-const gameServer = new Server({
-  server
-})
+const main = async () => {
+  const port = 2567;
+  console.log(`Monitor → http://localhost:${port}/colyseus-monitor`);
+  await listen(app, port);
+}
 
-gameServer.define("nyangplendor", SplendorRoom)
-gameServer.listen(2567)
-
-console.log("Colyseus server running on ws://localhost:2567")
+main()

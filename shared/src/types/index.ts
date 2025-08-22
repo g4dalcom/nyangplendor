@@ -1,2 +1,4 @@
 export * from "./enums"
-export * from "./Game"
+export * from "./GameTypes"
+export * from './PlayerType'
+export * from './types';

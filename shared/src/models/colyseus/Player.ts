@@ -1,7 +1,7 @@
 import {ArraySchema, MapSchema, Schema, type} from "@colyseus/schema"
-import {TokenCountMap} from "@shared/types";
-import {Role} from "@shared/types/enums/States";
-import {DevelopmentCard, NobleTile} from "@shared/models";
+import {Role, TokenCountMap} from "@shared/types";
+import {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
+import {NobleTile} from "@shared/models/colyseus/NobleTile";
 
 export class Player extends Schema {
   //
