@@ -1,8 +1,3 @@
-export enum Role {
-  ADMIN = "ADMIN",
-  PLAYER = "PLAYER",
-}
-
 export enum GamePhase {
   WAITING_FOR_PLAYERS = "WAITING_FOR_PLAYERS",
   GAME_START = "GAME_START",

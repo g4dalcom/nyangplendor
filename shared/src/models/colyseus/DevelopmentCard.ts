@@ -20,6 +20,7 @@ export class DevelopmentCard extends Schema {
   @type({ map: "uint8" }) cost = new MapSchema<number>()
   @type("boolean") visible: boolean
   @type("string") location: CardLocation
+  @type("string") ownerId?: string
 
   constructor(
     name: string,
@@ -155,7 +156,7 @@ const level3Cards: CardType[] = [
   { name: "OD3", level: CardLevel.LEVEL3, token: Token.ONYX, prestigePoint: 5, cost: genCostMap([[Token.RUBY, 7], [Token.ONYX, 3]]) },
 ]
 
-export const DevelopmentCardClasses: Record<CardLevel, DevelopmentCard[]> = {
+export const developmentCardClasses: Record<CardLevel, DevelopmentCard[]> = {
   [CardLevel.LEVEL1]: classify(level1Cards),
   [CardLevel.LEVEL2]: classify(level2Cards),
   [CardLevel.LEVEL3]: classify(level3Cards),

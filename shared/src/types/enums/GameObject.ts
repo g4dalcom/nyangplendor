@@ -8,7 +8,7 @@ export enum CardLocation {
   BOARD = "Board",
   PLAYER = "Player",
   DECK = "Deck",
-  RESERVE = "Reserve"
+  RESERVED = "Reserved"
 }
 
 export enum Token {
@@ -18,4 +18,10 @@ export enum Token {
   DIAMOND = "Diamond",
   ONYX = "Onyx",
   GOLD = "Gold"
+}
+
+export enum NobleTileLocation {
+  BOARD = "Board",
+  PLAYER = "Player",
+  DECK = "Deck"
 }

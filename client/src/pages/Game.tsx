@@ -8,23 +8,28 @@ export const Game = () => {
   const { player } = usePlayer();
   const { gameRoom } = useGameRoom();
   const [players, setPlayers] = useState<Player[]>([])
+  const [isMaker, setIsMaker] = useState<boolean>(false);
 
   useEffect(() => {
     if (!gameRoom || !player) return;
 
-    gameRoom.send(Transfer.ADD_PLAYER, player);
+    gameRoom.onMessage(Transfer.METADATA, (metadata: any) => {
+      if (metadata.playerId === player.id) {
+        setIsMaker(true);
+      }
+    })
     gameRoom.onMessage(Transfer.ADD_PLAYER, (players: Player[]) => {
       setPlayers(players)
     })
 
-    return () => {
-      gameRoom?.leave();
-    }
+    gameRoom.send(Transfer.METADATA)
+    gameRoom.send(Transfer.ADD_PLAYER, player);
   }, []);
 
   const handleStartGame = () => {
     alert("게임 시작!");
     gameRoom?.send(Transfer.START_GAME)
+    console.log("start state = ", gameRoom?.state)
   };
 
   if (!gameRoom) {
@@ -65,7 +70,7 @@ export const Game = () => {
 
       <div className="game-controls">
         <button
-          disabled={players.length < 2}
+          disabled={!isMaker || players.length < 2}
           onClick={handleStartGame}
           className={players.length >= 2 ? "btn-start" : "btn-disabled"}
         >

@@ -15,17 +15,26 @@ export class GameRoom extends Room<GameState> {
     })
 
     this.state = new GameState(this.roomId);
+
+    this.onMessage(Transfer.METADATA, (client) => {
+      client.send(Transfer.METADATA, this.metadata);
+    });
+
+    this.onMessage(Transfer.ADD_PLAYER, (client, message) => {
+      console.log("===== Add Player ===== ", message)
+      this.state.addPlayer(message.id, message.nickname)
+      this.broadcast(Transfer.ADD_PLAYER, this.state.players)
+    })
+
+    this.onMessage(Transfer.START_GAME, () => {
+      console.log("===== Start Game ===== ")
+      this.state.setupGameByPlayers();
+    })
   }
 
   /* 방 입장시 GameState에 플레이어 추가 */
   onJoin(client: Client, options: any) {
     console.log(`join: ${client.sessionId}`)
-
-    this.onMessage(Transfer.ADD_PLAYER, (client, message) => {
-      console.log("===== Add Player ===== ", message)
-      this.state.addPlayer(message.id, message.nickname)
-      client.send(Transfer.ADD_PLAYER, this.state.players)
-    })
   }
 
   onLeave(client: Client, consented: boolean) {
