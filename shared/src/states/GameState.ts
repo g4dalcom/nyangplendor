@@ -1,5 +1,5 @@
 import {ArraySchema, MapSchema, Schema, type} from "@colyseus/schema"
-import {CardLevel, CardLocation, GamePhase, Token, TokenAction} from "@shared/types";
+import {CardLevel, CardLocation, GamePhase, NobleTileLocation, Token, TokenAction} from "@shared/types";
 import {shuffleArray} from "@shared/utils";
 import {Player} from "@shared/models/colyseus/Player";
 import {DevelopmentCard, developmentCardClasses} from "@shared/models/colyseus/DevelopmentCard";
@@ -78,7 +78,9 @@ export class GameState extends Schema {
   private initializeNobleTiles = (tileCount: number) => {
     const allNobleTiles: NobleTile[] = nobleTileClasses;
     shuffleArray(allNobleTiles)
-    this.nobleTiles.push(...allNobleTiles.slice(0, tileCount))
+    const inGameNobleTiles = allNobleTiles.slice(0, tileCount);
+    inGameNobleTiles.forEach(nobleTile => nobleTile.location = NobleTileLocation.BOARD);
+    this.nobleTiles.push(...inGameNobleTiles)
   }
 
   /* Player Turn Actions */

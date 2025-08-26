@@ -20,7 +20,7 @@ export class DevelopmentCard extends Schema {
   @type({ map: "uint8" }) cost = new MapSchema<number>()
   @type("boolean") visible: boolean
   @type("string") location: CardLocation
-  @type("string") ownerId?: string
+  @type("string") ownerId: string | null
 
   constructor(
     name: string,
@@ -38,6 +38,7 @@ export class DevelopmentCard extends Schema {
     this.cost = cost
     this.visible = false
     this.location = CardLocation.DECK
+    this.ownerId = null
   }
 }
 

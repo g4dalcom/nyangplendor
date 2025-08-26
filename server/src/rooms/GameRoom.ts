@@ -29,6 +29,7 @@ export class GameRoom extends Room<GameState> {
     this.onMessage(Transfer.START_GAME, () => {
       console.log("===== Start Game ===== ")
       this.state.setupGameByPlayers();
+      this.broadcast(Transfer.START_GAME, { message: "게임이 시작되었습니다!" });
     })
   }
 
