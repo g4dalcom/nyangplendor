@@ -1,6 +1,6 @@
 import {MapSchema, Schema, type} from "@colyseus/schema"
 import {nanoid} from "nanoid"
-import {CardLevel, CardLocation, genCostMap, Token} from "@shared/types"
+import {CardLevel, genCostMap, Token} from "@shared/types"
 
 type CardType = {
   name: string
@@ -19,8 +19,6 @@ export class DevelopmentCard extends Schema {
   @type("uint8") prestigePoint: number
   @type({ map: "uint8" }) cost = new MapSchema<number>()
   @type("boolean") visible: boolean
-  @type("string") location: CardLocation
-  @type("string") ownerId: string | null
 
   constructor(
     name: string,
@@ -37,8 +35,6 @@ export class DevelopmentCard extends Schema {
     this.prestigePoint = prestigePoint
     this.cost = cost
     this.visible = false
-    this.location = CardLocation.DECK
-    this.ownerId = null
   }
 }
 

@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react"
-import {CardLevel, CardLocation, GamePhase, Transfer} from "@shared/types";
+import {CardLevel, GamePhase, Transfer} from "@shared/types";
 import {useGameRoom, usePlayer} from "@/contexts";
 import type {Player} from "@shared/models/colyseus/Player";
 import "./Game.css";
@@ -54,7 +54,7 @@ export const Game = () => {
     if (!gameRoom?.state) return;
 
     const inBoardCards = gameRoom.state.developmentCards
-      .filter(card => card.location === CardLocation.BOARD)
+      .filter(card => card.visible)
       .filter(card => card.level === cardLevel)
 
     const emptySlotsCount = 4 - inBoardCards.length;
@@ -149,7 +149,7 @@ export const Game = () => {
           </div>
 
           <div className="cards-area">
-            {[CardLevel.LEVEL1, CardLevel.LEVEL2, CardLevel.LEVEL3].map(level => (
+            {[CardLevel.LEVEL3, CardLevel.LEVEL2, CardLevel.LEVEL1].map(level => (
               <div key={level} className={`card-level level${level}`}>
                 <div className="card-stack-back"></div>
                 <div className="card-row">

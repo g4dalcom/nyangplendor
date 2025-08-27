@@ -1,5 +1,5 @@
 import {MapSchema, Schema, type} from "@colyseus/schema";
-import {genCostMap, NobleTileLocation, Token} from "@shared/types";
+import {genCostMap, Token} from "@shared/types";
 import {nanoid} from "nanoid";
 
 type NobleTileType = {
@@ -13,7 +13,6 @@ export class NobleTile extends Schema {
   @type("string") name: string
   @type({ map: "uint8" }) cost: MapSchema<number>
   @type("uint8") point: number
-  @type("string") location: NobleTileLocation
 
   constructor(name: string, cost: MapSchema<number>) {
     super();
@@ -21,7 +20,6 @@ export class NobleTile extends Schema {
     this.name = name
     this.cost = cost
     this.point = 3
-    this.location = NobleTileLocation.DECK
   }
 }
 

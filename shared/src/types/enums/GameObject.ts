@@ -4,13 +4,6 @@ export enum CardLevel {
   LEVEL3 = 3
 }
 
-export enum CardLocation {
-  BOARD = "Board",
-  PLAYER = "Player",
-  DECK = "Deck",
-  RESERVED = "Reserved"
-}
-
 export enum Token {
   RUBY = "Ruby",
   SAPPHIRE = "Sapphire",
@@ -18,10 +11,4 @@ export enum Token {
   DIAMOND = "Diamond",
   ONYX = "Onyx",
   GOLD = "Gold"
-}
-
-export enum NobleTileLocation {
-  BOARD = "Board",
-  PLAYER = "Player",
-  DECK = "Deck"
 }
