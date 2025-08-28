@@ -5,6 +5,7 @@ import {NobleTile} from "@shared/models/colyseus/NobleTile";
 
 export class Player extends Schema {
   //
+  @type("string") sessionId: string
   @type("string") id: string
   @type("string") name: string
   @type("uint8") score: number
@@ -13,22 +14,23 @@ export class Player extends Schema {
   @type([DevelopmentCard]) reservedCards = new ArraySchema<DevelopmentCard>()
   @type([NobleTile]) nobleTiles = new ArraySchema<NobleTile>()
   @type("boolean") warning: boolean
-  @type("boolean") host: boolean
   @type("boolean") ready: boolean
   @type("boolean") turn: boolean
   @type("boolean") endGame: boolean
 
   constructor(
+    sessionId: string,
     id: string,
     name: string,
+    host: boolean,
   ) {
     super();
+    this.sessionId = sessionId;
     this.id = id;
     this.name = name;
     this.score = 0;
     this.warning = false;
-    this.host = false;
-    this.ready = false;
+    this.ready = host;
     this.turn = false;
     this.endGame = false;
   }

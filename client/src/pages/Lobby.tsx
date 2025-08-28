@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useGameRoom, usePlayer} from "@/contexts";
+import "./Lobby.css";
 
 export const Lobby = () => {
   //

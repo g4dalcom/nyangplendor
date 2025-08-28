@@ -118,13 +118,8 @@ export const Game = () => {
   return (
     <div className="game-container">
       <div className="player-area left-area">
-        <div className="top-ui-container button-container">
-          <button onClick={handleStartGame} className="start-game-btn" disabled={disableStartButton}>
-            게임 시작
-          </button>
-          <button onClick={handleEndTurn} className="end-turn-btn">
-            턴 종료
-          </button>
+        <div className="top-ui-container logo-container">
+          <h1 className="game-logo">Nyangplendor</h1>
         </div>
         <div className="player-slots">
           {renderPlayerInfo(players[0], 'Player 1')}
@@ -134,36 +129,45 @@ export const Game = () => {
 
       <div className="board-area">
         <div className="board">
-          <div className="token-area">
-            <div className="token-row">
-              {["diamond", "sapphire", "emerald", "ruby", "onyx"].map(token => (
-                <div key={token} className={`token token-${token}`}></div>
+          <div className="token-side">
+            <div className="token-area">
+              <div className="token-column">
+                {["diamond", "sapphire", "emerald", "ruby", "onyx"].map(token => (
+                  <div key={token} className={`token token-${token}`}></div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="card-side">
+            <div className="nobles-area">
+              <div className="noble-row">
+                {nobleTileRenderer()}
+              </div>
+            </div>
+
+            <div className="cards-area">
+              {[CardLevel.LEVEL3, CardLevel.LEVEL2, CardLevel.LEVEL1].map(level => (
+                <div key={level} className={`card-level level${level}`}>
+                  <div className="card-stack-back"></div>
+                  <div className="card-row">
+                    {cardRenderer(level)}
+                  </div>
+                </div>
               ))}
             </div>
-          </div>
-
-          <div className="nobles-area">
-            <div className="noble-row">
-              {nobleTileRenderer()}
-            </div>
-          </div>
-
-          <div className="cards-area">
-            {[CardLevel.LEVEL3, CardLevel.LEVEL2, CardLevel.LEVEL1].map(level => (
-              <div key={level} className={`card-level level${level}`}>
-                <div className="card-stack-back"></div>
-                <div className="card-row">
-                  {cardRenderer(level)}
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>
 
       <div className="player-area right-area">
-        <div className="top-ui-container logo-container">
-          <h1 className="game-logo">Nyangplendor</h1>
+        <div className="top-ui-container button-container">
+          <button onClick={handleStartGame} className="start-game-btn" disabled={disableStartButton}>
+            게임 시작
+          </button>
+          <button onClick={handleEndTurn} className="end-turn-btn">
+            턴 종료
+          </button>
         </div>
         <div className="player-slots">
           {renderPlayerInfo(players[1], 'Player 2')}

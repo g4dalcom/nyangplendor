@@ -4,4 +4,5 @@ export enum Transfer {
   INIT_GAME = "initializeRoom",
   START_GAME = "startGame",
   END_TURN = "endTurn",
+  RETURN_TOKEN = "returnToken",
 }

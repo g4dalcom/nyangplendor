@@ -83,30 +83,55 @@
     flex: 0 0 calc(100% / 6 * 4 - 20px);
     display: flex;
     justify-content: center;
-    align-items: center;
 }
 
 .board {
     width: 100%;
-    height: 100%;
+    height: 80%;
     display: flex;
-    flex-direction: column;
-    gap: 20px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
     background-color: #fff;
     border-radius: 12px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     padding: 20px;
 }
 
-.token-area, .nobles-area, .cards-area {
+.token-side {
+    flex: 0 0 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.token-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.card-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+
+.nobles-area, .cards-area {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    gap: 15px;
 }
 
-.token-row, .noble-row, .card-row {
+.noble-row, .card-row {
     display: flex;
     gap: 10px;
     justify-content: center;
@@ -189,8 +214,8 @@
 
 .start-game-btn, .end-turn-btn {
     flex: 1;
-    padding: 10px 15px;
-    font-size: 16px;
+    padding: 10px 10px;
+    font-size: 14px;
     font-weight: bold;
     color: #fff;
     background-color: #4caf50;
