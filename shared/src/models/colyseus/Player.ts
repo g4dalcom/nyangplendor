@@ -14,6 +14,7 @@ export class Player extends Schema {
   @type([DevelopmentCard]) reservedCards = new ArraySchema<DevelopmentCard>()
   @type([NobleTile]) nobleTiles = new ArraySchema<NobleTile>()
   @type("boolean") warning: boolean
+  @type("boolean") host: boolean
   @type("boolean") ready: boolean
   @type("boolean") turn: boolean
   @type("boolean") endGame: boolean
@@ -30,6 +31,7 @@ export class Player extends Schema {
     this.name = name;
     this.score = 0;
     this.warning = false;
+    this.host = host;
     this.ready = host;
     this.turn = false;
     this.endGame = false;

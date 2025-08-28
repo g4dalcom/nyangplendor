@@ -23,34 +23,35 @@ export class GameRoom extends Room<GameState> {
     console.log("onCreate ::: options ::: ", options)
 
     await this.setMetadata(<GameMetaDataType>{
-      playerId: options?.playerId,
+      playerId: options?.id,
       nickname: options?.nickname,
       roomCode: options?.roomCode,
     })
 
-    this.state = new GameState(this.roomId, options?.playerId);
+    this.state = new GameState(this.roomId, options?.id);
 
     this.onMessage(Transfer.METADATA, (client) => {
       client.send(Transfer.METADATA, this.metadata);
     });
-
-    this.onMessage(Transfer.ADD_PLAYER, (client, message) => {
-      console.log("===== Add Player ===== ", message)
-      const isHost = message.id === this.metadata.playerId;
-      this.addPlayer(client.sessionId, message.id, message.nickname, isHost)
-      this.broadcast(Transfer.ADD_PLAYER, this.state.players)
-    })
 
     this.onMessage(Transfer.START_GAME, () => {
       console.log("===== Start Game ===== ")
       this.setupGameByPlayers();
       this.broadcast(Transfer.START_GAME, { message: "게임이 시작되었습니다!" });
     })
+
+    this.onMessage(Transfer.BRING_TOKEN, (client, message) => {
+      console.log("===== Bring Token ===== ")
+      console.log("client: ", client)
+      console.log("message: ", message)
+      this.takeTokens(message.playerId, message.tokenMap);
+    })
   }
 
   /* 방 입장시 GameState에 플레이어 추가 */
   onJoin(client: Client, options: any) {
     console.log(`join: ${client.sessionId}`)
+    this.addPlayer(client.sessionId, options.id, options.nickname)
   }
 
   onLeave(client: Client, consented: boolean) {
@@ -62,9 +63,10 @@ export class GameRoom extends Room<GameState> {
   }
 
   /* ::: Prepare Game Phase ::: */
-  public addPlayer = (sessionId: string, id: string, nickname: string, isHost: boolean) => {
+  public addPlayer = (sessionId: string, id: string, nickname: string) => {
     if (this.state.players.length < 4) {
       if (!this.state.players.find(p => p.id === id)) {
+        const isHost = id === this.metadata.playerId;
         this.state.players.push(new Player(sessionId, id, nickname, isHost))
       }
     }

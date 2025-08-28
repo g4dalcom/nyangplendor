@@ -1,44 +1,23 @@
-import {useEffect, useState} from "react"
-import {CardLevel, GamePhase, Transfer} from "@shared/types";
-import {useGameRoom, usePlayer} from "@/contexts";
+import {useEffect, useRef, useState} from "react"
+import {CardLevel, GamePhase, Token, Transfer, TurnAction} from "@shared/types";
+import {useGameRoom} from "@/contexts";
 import type {Player} from "@shared/models/colyseus/Player";
 import "./Game.css";
 
 export const Game = () => {
   //
-  const { player } = usePlayer();
-  const { gameRoom } = useGameRoom();
-  const [players, setPlayers] = useState<Player[]>([])
-  const [isStart, setIsStart] = useState<boolean>(false);
-  const [isMaker, setIsMaker] = useState<boolean>(false);
-
-  const disableStartButton = !isMaker || players.length < 2 || gameRoom?.state?.phase !== GamePhase.WAITING_FOR_PLAYERS;
+  const { gameRoom, gameState, player } = useGameRoom();
+  const [tokenMap, setTokenMap] = useState<Map<Token, number>>(new Map());
+  const turnAction = useRef<TurnAction>(TurnAction.NO_ACTION);
+  const disableStartButton = !player?.host || gameState!.players.length < 2 || gameState?.phase !== GamePhase.WAITING_FOR_PLAYERS;
 
   useEffect(() => {
-    if (!gameRoom || !player) return;
-
-    gameRoom.onMessage(Transfer.METADATA, (metadata: any) => {
-      if (metadata.playerId === player.id) {
-        setIsMaker(true);
-      }
-    })
-    gameRoom.onMessage(Transfer.ADD_PLAYER, (players: Player[]) => {
-      setPlayers(players)
-    })
+    if (!gameRoom || !gameState || !player) return;
 
     gameRoom.onMessage(Transfer.START_GAME, (payload: any) => {
       alert(payload.message);
     });
-
-    gameRoom.onStateChange((state) => {
-      if (state.phase === GamePhase.GAME_START) {
-        setIsStart(true);
-      }
-    })
-
-    gameRoom.send(Transfer.METADATA)
-    gameRoom.send(Transfer.ADD_PLAYER, player);
-  }, []);
+  }, [gameRoom, player]);
 
   const handleStartGame = () => {
     gameRoom?.send(Transfer.START_GAME)
@@ -46,8 +25,24 @@ export const Game = () => {
   };
 
   const handleEndTurn = () => {
-    gameRoom?.send(Transfer.END_TURN)
-    console.log("end turn state = ", gameRoom?.state)
+    let messageType = Transfer.NO_ACTION;
+
+    console.log("turnAction = ", turnAction.current)
+    switch (turnAction.current) {
+      case TurnAction.BRING_TOKEN:
+        messageType = Transfer.BRING_TOKEN;
+        break;
+    }
+    gameRoom?.send(messageType, { playerId: player?.id, tokenMap: tokenMap })
+    console.log("End Turn State = ", gameRoom?.state)
+  }
+
+  const handleBringToken = (event: any) => {
+    turnAction.current = TurnAction.BRING_TOKEN;
+    const value = event.target.value;
+    const map = tokenMap;
+    map.set(value, (tokenMap.get(value) || 0) + 1);
+    setTokenMap(map);
   }
 
   const cardRenderer = (cardLevel: CardLevel) => {
@@ -111,7 +106,7 @@ export const Game = () => {
     );
   };
 
-  if (!gameRoom) {
+  if (!gameRoom || !gameState) {
     return <div>게임 방에 연결하는 중입니다...</div>;
   }
 
@@ -122,8 +117,8 @@ export const Game = () => {
           <h1 className="game-logo">Nyangplendor</h1>
         </div>
         <div className="player-slots">
-          {renderPlayerInfo(players[0], 'Player 1')}
-          {renderPlayerInfo(players[2], 'Player 3')}
+          {renderPlayerInfo(gameState.players[0], 'Player 1')}
+          {renderPlayerInfo(gameState.players[2], 'Player 3')}
         </div>
       </div>
 
@@ -132,8 +127,13 @@ export const Game = () => {
           <div className="token-side">
             <div className="token-area">
               <div className="token-column">
-                {["diamond", "sapphire", "emerald", "ruby", "onyx"].map(token => (
-                  <div key={token} className={`token token-${token}`}></div>
+                {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
+                  <button
+                    key={token}
+                    value={token}
+                    className={`token token-${token}`}
+                    onClick={handleBringToken}
+                  ></button>
                 ))}
               </div>
             </div>
@@ -170,8 +170,8 @@ export const Game = () => {
           </button>
         </div>
         <div className="player-slots">
-          {renderPlayerInfo(players[1], 'Player 2')}
-          {renderPlayerInfo(players[3], 'Player 4')}
+          {renderPlayerInfo(gameState.players[1], 'Player 2')}
+          {renderPlayerInfo(gameState.players[3], 'Player 4')}
         </div>
       </div>
     </div>
