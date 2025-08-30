@@ -8,6 +8,7 @@ export const Game = () => {
   //
   const { gameRoom, gameState, player } = useGameRoom();
   const [tokenMap, setTokenMap] = useState<Map<Token, number>>(new Map());
+  const [returnTokenMap, setReturnTokenMap] = useState<Map<Token, number>>(new Map());
   const turnAction = useRef<TurnAction>(TurnAction.NO_ACTION);
   const disableStartButton = !player?.host || gameState!.players.length < 2 || gameState?.phase !== GamePhase.WAITING_FOR_PLAYERS;
 
@@ -21,20 +22,19 @@ export const Game = () => {
 
   const handleStartGame = () => {
     gameRoom?.send(Transfer.START_GAME)
-    console.log("start state = ", gameRoom?.state)
+    console.log("Game Start = ", gameRoom?.state)
   };
 
   const handleEndTurn = () => {
     let messageType = Transfer.NO_ACTION;
 
-    console.log("turnAction = ", turnAction.current)
     switch (turnAction.current) {
       case TurnAction.BRING_TOKEN:
         messageType = Transfer.BRING_TOKEN;
         break;
     }
-    gameRoom?.send(messageType, { playerId: player?.id, tokenMap: tokenMap })
-    console.log("End Turn State = ", gameRoom?.state)
+    gameRoom?.send(messageType, { tokenMap, returnTokenMap })
+    console.log("End Turn = ", gameRoom?.state)
   }
 
   const handleBringToken = (event: any) => {

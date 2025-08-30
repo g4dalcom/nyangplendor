@@ -36,4 +36,19 @@ export class Player extends Schema {
     this.turn = false;
     this.endGame = false;
   }
+
+  get totalTokenCount(): number {
+    return Array.from(this.tokens.values()).reduce(
+      (sum, count) => sum + count,
+      0
+    );
+  }
+
+  get totalPurchasedCardCount(): number {
+    return this.developmentCards.length;
+  }
+
+  get totalNobleTileCount(): number {
+    return this.nobleTiles.length;
+  }
 }

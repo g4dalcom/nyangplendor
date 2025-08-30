@@ -3,10 +3,9 @@ import {
   CardAction,
   CardLevel,
   GameMetaDataType,
-  GamePhase,
+  GamePhase, getTotalTokenCount,
   Token,
-  TokenAction,
-  TokenCountMap,
+  TokenCount,
   Transfer
 } from "@shared/types";
 import {GameState} from "@shared/states/GameState";
@@ -14,7 +13,6 @@ import {DevelopmentCard, developmentCardClasses} from "@shared/models/colyseus/D
 import {shuffleArray} from "@shared/utils/random";
 import {NobleTile, nobleTileClasses} from "@shared/models/colyseus/NobleTile";
 import {Player} from "@shared/models/colyseus/Player";
-import {MapSchema} from "@colyseus/schema";
 
 export class GameRoom extends Room<GameState> {
 
@@ -42,9 +40,8 @@ export class GameRoom extends Room<GameState> {
 
     this.onMessage(Transfer.BRING_TOKEN, (client, message) => {
       console.log("===== Bring Token ===== ")
-      console.log("client: ", client)
       console.log("message: ", message)
-      this.takeTokens(message.playerId, message.tokenMap);
+      this.takeTokens(client.sessionId, message.tokenMap);
     })
   }
 
@@ -65,7 +62,7 @@ export class GameRoom extends Room<GameState> {
   /* ::: Prepare Game Phase ::: */
   public addPlayer = (sessionId: string, id: string, nickname: string) => {
     if (this.state.players.length < 4) {
-      if (!this.state.players.find(p => p.id === id)) {
+      if (!this.state.players.find(player => player.sessionId === sessionId)) {
         const isHost = id === this.metadata.playerId;
         this.state.players.push(new Player(sessionId, id, nickname, isHost))
       }
@@ -124,113 +121,71 @@ export class GameRoom extends Room<GameState> {
   }
 
   /* Player Turn Actions */
-  public takeTokens = (playerId: string, tokenMap: TokenCountMap) => {
-    if (!this.validateTakeTokens(tokenMap)) return;
-    this.syncToken(playerId, tokenMap, TokenAction.BRING)
+  public takeTokens = (sessionId: string, tokens: TokenCount) => {
+    const player = this.state.findPlayerBySessionId(sessionId);
+    if (!this.validatePlayerTokenCount(player, tokens)) return;
 
-    if (!this.validatePlayerTokenCount(playerId)) {
-      const player = this.state.players.find(player => player.id === playerId) as Player;
-      const client = this.clients.find(client => client.sessionId === player.sessionId) as Client;
-      client.send(Transfer.RETURN_TOKEN);
-    }
-
+    this.syncToken(player, tokens);
     this.endTurn();
   }
 
-  private validateTakeTokens = (tokenMap: TokenCountMap) => {
-    const tokenMapSize = tokenMap.size;
-    switch (tokenMapSize) {
-      case 1:
-        const firstEntry = tokenMap.entries().next().value;
-        if (!firstEntry) return false;
-
-        const [token, count] = firstEntry;
-        if (count !== 2) return false;
-        const targetTokens = this.state.tokens.get(token) || 0;
-        return targetTokens < 4;
-      case 3:
-        for (const count of tokenMap.values()) {
-          if (count !== 1) {
-            return false;
-          }
-        }
-        return true;
-      default:
-        return false;
-    }
+  private validatePlayerTokenCount = (player: Player, tokens: TokenCount) => {
+    const playerTokens = player.totalTokenCount;
+    const bringOrReturnTokens = getTotalTokenCount(tokens);
+    return playerTokens + bringOrReturnTokens <= 10;
   }
 
-  private validatePlayerTokenCount = (playerId: string) => {
-    const player = this.state.players.find(player => player.id === playerId) as Player;
-    return Array.from(player.tokens.values()).reduce((prev, current) => prev + current, 0) <= 10;
-  }
-
-  private returnTokens = (playerId: string, tokenMap: TokenCountMap) => {
-    this.syncToken(playerId, tokenMap, TokenAction.RETURN)
-    this.endTurn();
-  }
-
-  private syncToken = (playerId: string, tokenMap: TokenCountMap, action: TokenAction) => {
-    const player = this.state.players.find(p => p.id === playerId) as Player;
-    for (const [token, count] of tokenMap.entries()) {
+  private syncToken = (player: Player, tokens: TokenCount) => {
+    for (const [token, count] of Object.entries(tokens)) {
       const targetTokens = this.state.tokens.get(token) || 0;
       const playerTokens = player.tokens.get(token) || 0;
-
-      switch (action) {
-        case TokenAction.BRING:
-          this.state.tokens.set(token, targetTokens - count)
-          player.tokens.set(token, playerTokens + count)
-          break;
-        case TokenAction.RETURN:
-          this.state.tokens.set(token, targetTokens + count)
-          player.tokens.set(token, playerTokens - count)
-          break;
-      }
+      this.state.tokens.set(token, targetTokens - count);
+      player.tokens.set(token, playerTokens + count);
     }
   }
 
-  public reservedCard = (playerId: string, cardId: string) => {
-    const player = this.state.players.find(p => p.id === playerId) as Player;
+  public reservedCard = (sessionId: string, cardId: string) => {
+    const player = this.state.findPlayerBySessionId(sessionId)
     const reservedCards = player.reservedCards || [];
 
     if (reservedCards.length === 3) return;
 
-    const reservedCard = this.state.developmentCards.find(c => c.id === cardId) as DevelopmentCard;
+    const reservedCard = this.state.findDevelopmentCardById(cardId);
     this.syncCard(player, reservedCard, CardAction.RESERVE);
 
     const goldToken = this.state.tokens.get(Token.GOLD) || 0;
     if (goldToken > 0) {
-      const tokenMap: TokenCountMap = new MapSchema();
-      tokenMap.set(Token.GOLD, 1);
-      this.syncToken(playerId, tokenMap, TokenAction.BRING)
+      const tokens: TokenCount = {};
+      tokens[Token.GOLD] = 1;
+      this.syncToken(player, tokens)
     }
 
     this.endTurn();
   }
 
-  public purchaseCard = (playerId: string, cardId: string, tokenMap: TokenCountMap) => {
-    const player = this.state.players.find(p => p.id === playerId) as Player;
-    const purchasedCard = this.state.developmentCards.find(c => c.id === cardId) as DevelopmentCard;
-    if (this.validatePurchase(player, purchasedCard, tokenMap)) {
+  public purchaseCard = (sessionId: string, cardId: string, tokens: TokenCount) => {
+    const player = this.state.findPlayerBySessionId(sessionId);
+    const purchasedCard = this.state.developmentCards.find(card => card.id === cardId) as DevelopmentCard;
+    if (this.validatePurchase(player, purchasedCard, tokens)) {
       this.syncCard(player, purchasedCard, CardAction.PURCHASE);
-      this.returnTokens(playerId, tokenMap);
+      this.syncToken(player, tokens);
     }
 
     this.endTurn();
   }
 
   /* '카드 보너스 + 보유 토큰'으로 구매 가능한지 */
-  private validatePurchase = (player: Player, card: DevelopmentCard, tokenMap: TokenCountMap) => {
-    const playerOwnedCardMap = new MapSchema<number>();
+  private validatePurchase = (player: Player, card: DevelopmentCard, tokens: TokenCount) => {
+    const playerOwnedCardMap: TokenCount = {};
     player.developmentCards.forEach(ownedCard => {
       const token = ownedCard.token;
-      playerOwnedCardMap.set(token, (playerOwnedCardMap.get(token) || 0) + 1);
+      playerOwnedCardMap[token] = (playerOwnedCardMap[token] || 0) + 1;
     });
 
     const requiredTokens = card.cost;
 
     for (const [token, count] of requiredTokens.entries()) {
-      const payment = (tokenMap.get(token) || 0) + (playerOwnedCardMap.get(token) || 0);
+      const payment = (tokens[token as Token] || 0) + (playerOwnedCardMap[token as Token] || 0);
       if (payment < count) return false;
     }
     return true;
@@ -256,7 +211,7 @@ export class GameRoom extends Room<GameState> {
   private endTurn = () => {
     const playerIndex = this.state.turn % this.state.players.length;
     const activePlayer = this.state.players[playerIndex];
-
+    console.log("playerIndex = ", playerIndex)
     this.visitNoble(activePlayer);
 
     if (this.findEndGamePlayer()) {

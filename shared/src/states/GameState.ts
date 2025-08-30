@@ -23,4 +23,20 @@ export class GameState extends Schema {
     this.turn = 0
     this.winnerPlayerId = null;
   }
+
+  public findPlayerBySessionId = (sessionId: string) => {
+    const player = this.players.find(p => p.sessionId === sessionId);
+    if (!player) {
+      throw new Error(`Player with sessionId '${sessionId}' not found.`);
+    }
+    return player;
+  }
+
+  public findDevelopmentCardById = (id: string) => {
+    const card = this.developmentCards.find(card => card.id === id);
+    if (!card) {
+      throw new Error(`DevelopmentCard '${card}' not found.`);
+    }
+    return card
+  }
 }
