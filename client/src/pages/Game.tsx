@@ -13,12 +13,9 @@ export const Game = () => {
   const disableTurnEndButton = !player?.turn;
 
   useEffect(() => {
-    if (!gameRoom || !gameState || !player) return;
-
-    gameRoom.onMessage(Transfer.START_GAME, (payload: any) => {
-      alert(payload.message);
-    });
-  }, [gameRoom, player]);
+    setTokenMap(new Map());
+    turnAction.current = TurnAction.NO_ACTION;
+  }, [gameState?.turn]);
 
   const handleStartGame = () => {
     gameRoom?.send(Transfer.START_GAME)
@@ -47,9 +44,9 @@ export const Game = () => {
   }
 
   const cardRenderer = (cardLevel: CardLevel) => {
-    if (!gameRoom?.state) return;
+    if (!gameState) return;
 
-    const inBoardCards = gameRoom.state.developmentCards
+    const inBoardCards = gameState.developmentCards
       .filter(card => card.visible)
       .filter(card => card.level === cardLevel)
 
@@ -72,9 +69,9 @@ export const Game = () => {
 
 
   const nobleTileRenderer = () => {
-    if (!gameRoom?.state) return;
+    if (!gameState) return;
 
-    const nobleTiles = gameRoom.state.nobleTiles;
+    const nobleTiles = gameState.nobleTiles;
     const emptySlotsCount = 5 - nobleTiles.length;
     const emptySlots = Array.from({ length: emptySlotsCount }, (_, i) => (
       <div key={`noble-empty-${i}`} className="empty-noble-card"></div>
@@ -97,7 +94,19 @@ export const Game = () => {
     return (
       <div className="player-info">
         {player ? (
-          <h3>{player.name}</h3>
+          <>
+            <h3>{player.name}</h3>
+            <div className="player-card-area">
+              {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
+                <span key={token} className={`card-token token-${token}`}>{(player.tokens as any)[token] ?? 0}</span>
+              ))}
+            </div>
+            <div className="player-token-area">
+              {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
+                <span key={token} className={`token token-${token}`}>{(player.tokens as any)[token] ?? 0}</span>
+              ))}
+            </div>
+          </>
         ) : (
           <div className="empty-slot">
             <span className="empty-text">{slotName}</span>
@@ -134,7 +143,7 @@ export const Game = () => {
                     value={token}
                     className={`token token-${token}`}
                     onClick={handleBringToken}
-                  >{(gameState.tokens.get(token as Token) ?? 0) - (tokenMap.get(token) ?? 0)}</button>
+                  >{(gameState.tokens[token as Token] ?? 0) - (tokenMap.get(token) ?? 0)}</button>
                 ))}
               </div>
             </div>

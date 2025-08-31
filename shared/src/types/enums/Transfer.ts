@@ -10,4 +10,5 @@ export enum Transfer {
   NO_ACTION = "noAction",
 
   ERROR = "error",
+  SUCCESS = "success",
 }

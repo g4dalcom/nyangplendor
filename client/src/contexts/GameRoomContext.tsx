@@ -1,12 +1,12 @@
-import {createContext, type ReactNode, useContext, useState} from "react";
+import {createContext, type ReactNode, useContext, useMemo, useState} from "react";
 import {Client, type Room} from "colyseus.js";
-import {type PlayerInfo} from "@shared/types";
+import {type PlayerInfo, Transfer} from "@shared/types";
 import type {GameState} from "@shared/states/GameState";
 import type {Player} from "@shared/models/colyseus/Player";
 
 type GameRoomContextType = {
-  gameRoom?: Room<GameState> | null;
-  gameState?: GameState | null;
+  gameRoom?: Room<GameState>;
+  gameState?: ReturnType<GameState['toJSON']>;
   player?: Player | null;
   createRoom: (player: PlayerInfo) => Promise<{ room: Room<GameState>; code: string }>;
   joinRoom: (code: string, player: PlayerInfo) => Promise<Room<GameState>>;
@@ -16,10 +16,8 @@ const GameRoomContext = createContext<GameRoomContextType>({} as GameRoomContext
 
 export const GameRoomProvider = ({ children }: { children: ReactNode }) => {
   const client = new Client("ws://localhost:2567");
-  const [gameRoom, setGameRoom] = useState<Room<GameState> | null>(null);
-  const [gameState, setGameState] = useState<GameState | null>(null);
-  const [, setTick] = useState<number>(0);
-  const [player, setPlayer] = useState<Player | null>(null);
+  const [gameRoom, setGameRoom] = useState<Room<GameState>>();
+  const [gameState, setGameState] = useState<ReturnType<GameState['toJSON']>>();
 
   /* 랜덤 6자리 방 입장 코드 */
   const generateCode = (length = 6) => {
@@ -31,16 +29,15 @@ export const GameRoomProvider = ({ children }: { children: ReactNode }) => {
     setGameRoom(room);
 
     room.onStateChange((state) => {
-      setGameState(state);
-      setTick(prev => prev + 1);
-      const me = state.players.find(player => player.sessionId === room.sessionId) as Player;
-      setPlayer(me);
+      setGameState(state.toJSON());
     })
+    room.onMessage(Transfer.START_GAME, (payload: any) => {
+      alert(payload.message);
+    });
 
     room.onLeave(() => {
-      setGameRoom(null);
-      setGameState(null);
-      setPlayer(null);
+      setGameRoom(undefined);
+      setGameState(undefined);
     });
   };
 
@@ -61,6 +58,11 @@ export const GameRoomProvider = ({ children }: { children: ReactNode }) => {
     bindRoom(room);
     return room;
   };
+
+  const player = useMemo(() => {
+    if (!gameRoom || !gameState) return null;
+    return gameState.players.find((p) => p.sessionId === gameRoom.sessionId) ?? null;
+  }, [gameState, gameRoom]);
 
   return (
     <GameRoomContext.Provider value={{ gameRoom, gameState, player, createRoom, joinRoom }}>

@@ -145,6 +145,13 @@
     background-color: #eee;
     border: 2px solid #ccc;
 }
+.card-token {
+    width: 50px;
+    height: 50px;
+    border-radius: 10%;
+    background-color: #eee;
+    border: 2px solid #ccc;
+}
 .token-Diamond { background-color: #e0f2f7; border-color: #a7d9eb; }
 .token-Sapphire { background-color: #bbdefb; border-color: #64b5f6; }
 .token-Emerald { background-color: #c8e6c9; border-color: #81c784; }
