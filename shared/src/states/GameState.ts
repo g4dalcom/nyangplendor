@@ -24,6 +24,10 @@ export class GameState extends Schema {
     this.winnerPlayerId = null;
   }
 
+  public existPlayerBySessionId = (sessionId: string) => {
+    return this.players.some(p => p.sessionId === sessionId);
+  }
+
   public findPlayerBySessionId = (sessionId: string) => {
     const player = this.players.find(p => p.sessionId === sessionId);
     if (!player) {

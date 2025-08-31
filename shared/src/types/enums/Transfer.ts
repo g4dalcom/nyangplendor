@@ -8,4 +8,6 @@ export enum Transfer {
   PURCHASE_DEVELOPMENT_CARD = "purchaseDevelopmentCard",
   RESERVE_DEVELOPMENT_CARD = "reserveDevelopmentCard",
   NO_ACTION = "noAction",
+
+  ERROR = "error",
 }

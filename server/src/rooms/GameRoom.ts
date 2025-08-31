@@ -62,7 +62,8 @@ export class GameRoom extends Room<GameState> {
   /* ::: Prepare Game Phase ::: */
   public addPlayer = (sessionId: string, id: string, nickname: string) => {
     if (this.state.players.length < 4) {
-      if (!this.state.players.find(player => player.sessionId === sessionId)) {
+      const existPlayer = this.state.existPlayerBySessionId(sessionId);
+      if (!existPlayer) {
         const isHost = id === this.metadata.playerId;
         this.state.players.push(new Player(sessionId, id, nickname, isHost))
       }
@@ -91,6 +92,7 @@ export class GameRoom extends Room<GameState> {
   }
 
   private initializeTokens = (tokenCount: number)=> {
+    this.state.tokens.set(Token.RUBY, tokenCount)
     this.state.tokens.set(Token.EMERALD, tokenCount)
     this.state.tokens.set(Token.SAPPHIRE, tokenCount)
     this.state.tokens.set(Token.DIAMOND, tokenCount)
@@ -137,8 +139,11 @@ export class GameRoom extends Room<GameState> {
 
   private syncToken = (player: Player, tokens: TokenCount) => {
     for (const [token, count] of Object.entries(tokens)) {
+      console.log("token = ", token)
       const targetTokens = this.state.tokens.get(token) || 0;
+      console.log("targetTokens = ", targetTokens)
       const playerTokens = player.tokens.get(token) || 0;
+      console.log("playerTokens = ", playerTokens)
       this.state.tokens.set(token, targetTokens - count);
       player.tokens.set(token, playerTokens + count);
     }
@@ -165,7 +170,7 @@ export class GameRoom extends Room<GameState> {
 
   public purchaseCard = (sessionId: string, cardId: string, tokens: TokenCount) => {
     const player = this.state.findPlayerBySessionId(sessionId);
-    const purchasedCard = this.state.developmentCards.find(card => card.id === cardId) as DevelopmentCard;
+    const purchasedCard = this.state.findDevelopmentCardById(cardId);
     if (this.validatePurchase(player, purchasedCard, tokens)) {
       this.syncCard(player, purchasedCard, CardAction.PURCHASE);
       this.syncToken(player, tokens);
@@ -219,6 +224,7 @@ export class GameRoom extends Room<GameState> {
 
       if (this.allPlayersEndGame()) {
         this.determineWinner();
+        this.state.phase = GamePhase.GAME_END;
         return;
       }
     } else if (activePlayer.score >= 15) {
@@ -243,7 +249,7 @@ export class GameRoom extends Room<GameState> {
       const cost = nobleTile.cost;
       for (const [token, count] of cost) {
         const bonusCount = cardBonusMap.get(token);
-        if (bonusCount && bonusCount < count) {
+        if (!bonusCount || bonusCount < count) {
           visitable = false;
           break;
         }
