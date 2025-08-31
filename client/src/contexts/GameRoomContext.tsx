@@ -5,9 +5,9 @@ import type {GameState} from "@shared/states/GameState";
 import type {Player} from "@shared/models/colyseus/Player";
 
 type GameRoomContextType = {
-  gameRoom?: Room<GameState>;
-  gameState?: GameState;
-  player?: Player;
+  gameRoom?: Room<GameState> | null;
+  gameState?: GameState | null;
+  player?: Player | null;
   createRoom: (player: PlayerInfo) => Promise<{ room: Room<GameState>; code: string }>;
   joinRoom: (code: string, player: PlayerInfo) => Promise<Room<GameState>>;
 }
@@ -16,9 +16,10 @@ const GameRoomContext = createContext<GameRoomContextType>({} as GameRoomContext
 
 export const GameRoomProvider = ({ children }: { children: ReactNode }) => {
   const client = new Client("ws://localhost:2567");
-  const [gameRoom, setGameRoom] = useState<Room<GameState>>();
-  const [gameState, setGameState] = useState<GameState | any>();
-  const [player, setPlayer] = useState<Player>();
+  const [gameRoom, setGameRoom] = useState<Room<GameState> | null>(null);
+  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [, setTick] = useState<number>(0);
+  const [player, setPlayer] = useState<Player | null>(null);
 
   /* 랜덤 6자리 방 입장 코드 */
   const generateCode = (length = 6) => {
@@ -30,15 +31,16 @@ export const GameRoomProvider = ({ children }: { children: ReactNode }) => {
     setGameRoom(room);
 
     room.onStateChange((state) => {
-      setGameState(state.toJSON());
+      setGameState(state);
+      setTick(prev => prev + 1);
       const me = state.players.find(player => player.sessionId === room.sessionId) as Player;
       setPlayer(me);
     })
 
     room.onLeave(() => {
-      setGameRoom(undefined);
-      setGameState(undefined);
-      setPlayer(undefined);
+      setGameRoom(null);
+      setGameState(null);
+      setPlayer(null);
     });
   };
 

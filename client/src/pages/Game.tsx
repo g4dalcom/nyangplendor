@@ -8,9 +8,9 @@ export const Game = () => {
   //
   const { gameRoom, gameState, player } = useGameRoom();
   const [tokenMap, setTokenMap] = useState<Map<Token, number>>(new Map());
-  const [returnTokenMap, setReturnTokenMap] = useState<Map<Token, number>>(new Map());
   const turnAction = useRef<TurnAction>(TurnAction.NO_ACTION);
   const disableStartButton = !player?.host || gameState!.players.length < 2 || gameState?.phase !== GamePhase.WAITING_FOR_PLAYERS;
+  const disableTurnEndButton = !player?.turn;
 
   useEffect(() => {
     if (!gameRoom || !gameState || !player) return;
@@ -33,14 +33,15 @@ export const Game = () => {
         messageType = Transfer.BRING_TOKEN;
         break;
     }
-    gameRoom?.send(messageType, { tokenMap, returnTokenMap })
+    gameRoom?.send(messageType, { tokenMap })
     console.log("End Turn = ", gameRoom?.state)
   }
 
   const handleBringToken = (event: any) => {
     turnAction.current = TurnAction.BRING_TOKEN;
     const value = event.target.value;
-    const map = tokenMap;
+    const map = new Map(tokenMap);
+    console.log("Bring Token = ", value)
     map.set(value, (tokenMap.get(value) || 0) + 1);
     setTokenMap(map);
   }
@@ -133,7 +134,7 @@ export const Game = () => {
                     value={token}
                     className={`token token-${token}`}
                     onClick={handleBringToken}
-                  ></button>
+                  >{(gameState.tokens.get(token as Token) ?? 0) - (tokenMap.get(token) ?? 0)}</button>
                 ))}
               </div>
             </div>
@@ -165,7 +166,7 @@ export const Game = () => {
           <button onClick={handleStartGame} className="start-game-btn" disabled={disableStartButton}>
             게임 시작
           </button>
-          <button onClick={handleEndTurn} className="end-turn-btn">
+          <button onClick={handleEndTurn} className="end-turn-btn" disabled={disableTurnEndButton}>
             턴 종료
           </button>
         </div>

@@ -89,6 +89,7 @@ export class GameRoom extends Room<GameState> {
     }
     this.initializeCards()
     this.state.phase = GamePhase.GAME_START
+    this.state.players[0].turn = true;
   }
 
   private initializeTokens = (tokenCount: number)=> {
@@ -139,11 +140,8 @@ export class GameRoom extends Room<GameState> {
 
   private syncToken = (player: Player, tokens: TokenCount) => {
     for (const [token, count] of Object.entries(tokens)) {
-      console.log("token = ", token)
       const targetTokens = this.state.tokens.get(token) || 0;
-      console.log("targetTokens = ", targetTokens)
       const playerTokens = player.tokens.get(token) || 0;
-      console.log("playerTokens = ", playerTokens)
       this.state.tokens.set(token, targetTokens - count);
       player.tokens.set(token, playerTokens + count);
     }
