@@ -1,0 +1,21 @@
+<svg width="48" height="48" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(50, 50) scale(0.6) rotate(-15)">
+        <rect x="-40" y="-15" width="80" height="30" rx="5" ry="5" fill="#EF5350" stroke="#000" stroke-width="1"/>
+
+        <rect x="-40" y="-15" width="80" height="7" fill="#64B5F6"/>
+        <rect x="-40" y="8" width="80" height="7" fill="#64B5F6"/>
+
+        <text x="-20" y="2" font-family="Arial, sans-serif" font-size="12" fill="#FFEB3B" font-weight="bold">CIAO</text>
+        <text x="-5" y="0" font-family="Arial, sans-serif" font-size="8" fill="#FFFFFF">ちゅ~る</text>
+
+        <path d="M-35,-10 C-32,-13,-28,-13,-25,-10 C-28,-7,-32,-7,-35,-10 Z" fill="#FFEB3B" stroke="#000" stroke-width="0.5"/>
+        <path d="M25,-10 C28,-13,32,-13,35,-10 C32,-7,28,-7,25,-10 Z" fill="#FFEB3B" stroke="#000" stroke-width="0.5"/>
+
+        <path d="M-30,12 C-27,15,-23,15,-20,12 C-23,9,-27,9,-30,12 Z" fill="#FFEB3B" stroke="#000" stroke-width="0.5"/>
+        <path d="M30,12 C33,15,37,15,40,12 C37,9,33,9,30,12 Z" fill="#FFEB3B" stroke="#000" stroke-width="0.5"/>
+
+        <circle cx="15" cy="12" r="7" fill="#FFEB3B" stroke="#000" stroke-width="0.5"/>
+        <text x="10" y="15" font-family="Arial, sans-serif" font-size="6" fill="#000">かつお</text>
+
+    </g>
+</svg>

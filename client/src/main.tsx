@@ -3,6 +3,7 @@ import {createRoot} from "react-dom/client"
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {GameRoomProvider, PlayerProvider} from "@/contexts";
 import {Game, Lobby} from "@/pages";
+import "@/style/index.css";
 
 createRoot(document.getElementById("root")!).render(
   <PlayerProvider>

@@ -3,6 +3,21 @@ import {CardLevel, GamePhase, Token, Transfer, TurnAction} from "@shared/types";
 import {useGameRoom} from "@/contexts";
 import type {Player} from "@shared/models/colyseus/Player";
 import "./Game.css";
+import rubyToken from "@/assets/icons/churu.svg";
+import sapphireToken from "@/assets/icons/tuna.svg";
+import emeraldToken from "@/assets/icons/fishing-toy.svg";
+import diamondToken from "@/assets/icons/yarn-ball.svg";
+import onyxToken from "@/assets/icons/fish.svg";
+import goldToken from "@/assets/icons/gold.svg";
+
+const tokenImages = {
+  [Token.RUBY]: rubyToken,
+  [Token.SAPPHIRE]: sapphireToken,
+  [Token.EMERALD]: emeraldToken,
+  [Token.DIAMOND]: diamondToken,
+  [Token.ONYX]: onyxToken,
+  [Token.GOLD]: goldToken,
+}
 
 export const Game = () => {
   //
@@ -36,7 +51,7 @@ export const Game = () => {
 
   const handleBringToken = (event: any) => {
     turnAction.current = TurnAction.BRING_TOKEN;
-    const value = event.target.value;
+    const value = event.currentTarget.value;
     const map = new Map(tokenMap);
     console.log("Bring Token = ", value)
     map.set(value, (tokenMap.get(value) || 0) + 1);
@@ -57,6 +72,7 @@ export const Game = () => {
 
     return (
       <>
+        <div key={`deck-${cardLevel}`} className="deck-card"></div>
         {inBoardCards.map((card) => (
           <div key={card.id} className="card">
             <span className="card-content">{card.name}</span>
@@ -91,20 +107,26 @@ export const Game = () => {
 
 
   const renderPlayerInfo = (player: Player, slotName: string) => {
+    const cardBonusMap = calculateCardBonus(player);
     return (
       <div className="player-info">
         {player ? (
           <>
-            <h3>{player.name}</h3>
-            <div className="player-card-area">
-              {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
-                <span key={token} className={`card-token token-${token}`}>{(player.tokens as any)[token] ?? 0}</span>
-              ))}
-            </div>
-            <div className="player-token-area">
-              {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
-                <span key={token} className={`token token-${token}`}>{(player.tokens as any)[token] ?? 0}</span>
-              ))}
+            <div className="player-name">{player.name}</div>
+            <div className="player-object-container">
+              <div className="player-card-area">
+                {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
+                  <span key={token} className={`card-token token-${token}`}>{cardBonusMap.get(token) ?? 0}</span>
+                ))}
+              </div>
+              <div className="player-token-area">
+                {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
+                  <span key={token} className={`token token-${token}`}>{(player.tokens as any)[token] ?? 0}</span>
+                ))}
+              </div>
+              <div className="player-reserved-area">
+                {renderReservedCards(player)}
+              </div>
             </div>
           </>
         ) : (
@@ -116,74 +138,172 @@ export const Game = () => {
     );
   };
 
+  const renderReservedCards = (player: Player) => {
+    const reservedCards = player.reservedCards;
+    const emptySlotsCount = 3 - reservedCards.length;
+    const emptySlots = Array.from({ length: emptySlotsCount }, (_, i) => (
+      <div key={`reserved-empty-${i}`} className="empty-reserved-card"></div>
+    ));
+
+    return (
+      <>
+        {reservedCards.map(card => (
+          <div className="reserved-card" key={card.id}>
+            <span className="card-content"> {card.name}</span>
+          </div>
+        ))}
+        {emptySlots}
+      </>
+    )
+  }
+
+  const renderMyInventory = () => {
+    if (!player) return;
+    const cardBonusMap = calculateCardBonus(player);
+    return (
+      <div className="my-info">
+        <div className="my-object-container">
+          <div className="my-card-area">
+            {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
+              <span key={token} className={`card-token token-${token}`}>{cardBonusMap.get(token) ?? 0}</span>
+            ))}
+          </div>
+          <div className="my-token-area">
+            {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
+              <span key={token} className={`token token-${token}`}>{(player.tokens as any)[token] ?? 0}</span>
+            ))}
+          </div>
+        </div>
+        <div className="my-reserved-area">
+          {renderMyReservedCards()}
+        </div>
+      </div>
+    )
+  }
+
+  const renderMyReservedCards = () => {
+    if (!player) return;
+    const reservedCards = player.reservedCards;
+    const emptySlotsCount = 3 - reservedCards.length;
+    const emptySlots = Array.from({ length: emptySlotsCount }, (_, i) => (
+      <div key={`my-reserved-empty-${i}`} className="my-empty-reserved-card"></div>
+    ));
+
+    return (
+      <>
+        {reservedCards.map(card => (
+          <div className="my-reserved-card" key={card.id}>
+            <span className="card-content"> {card.name}</span>
+          </div>
+        ))}
+        {emptySlots}
+      </>
+    )
+  }
+
+  const calculateCardBonus = (player: Player) => {
+    const map = new Map<Token, number>();
+    player?.developmentCards?.forEach(card => {
+      const bonus = card.token;
+      map.set(bonus, (map.get(bonus) ?? 0) + 1);
+    })
+    return map;
+  }
+
+  const calculatePlayerTokenCount = () => {
+    if (!player) return 0;
+    return Object.entries(player?.tokens).reduce((acc, [, count]) => acc + count, 0) ?? 0;
+  }
+
   if (!gameRoom || !gameState) {
     return <div>게임 방에 연결하는 중입니다...</div>;
   }
 
   return (
     <div className="game-container">
-      <div className="player-area left-area">
-        <div className="top-ui-container logo-container">
-          <h1 className="game-logo">Nyangplendor</h1>
+      <div className="game-top">
+        <div className="player-area left-area">
+          <div className="top-ui-container logo-container">
+            <h1 className="game-logo">Nyangplendor</h1>
+          </div>
+          <div className="player-slots">
+            {renderPlayerInfo(gameState.players[0], 'Player 1')}
+            {renderPlayerInfo(gameState.players[2], 'Player 3')}
+          </div>
         </div>
-        <div className="player-slots">
-          {renderPlayerInfo(gameState.players[0], 'Player 1')}
-          {renderPlayerInfo(gameState.players[2], 'Player 3')}
-        </div>
-      </div>
-
-      <div className="board-area">
-        <div className="board">
-          <div className="token-side">
-            <div className="token-area">
-              <div className="token-column">
-                {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
+        <div className="board-area">
+          <div className="board">
+            <div className="token-column-side">
+              {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
+                <div className="token-row" key={token}>
                   <button
-                    key={token}
                     value={token}
                     className={`token token-${token}`}
                     onClick={handleBringToken}
-                  >{(gameState.tokens[token as Token] ?? 0) - (tokenMap.get(token) ?? 0)}</button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="card-side">
-            <div className="nobles-area">
-              <div className="noble-row">
-                {nobleTileRenderer()}
-              </div>
-            </div>
-
-            <div className="cards-area">
-              {[CardLevel.LEVEL3, CardLevel.LEVEL2, CardLevel.LEVEL1].map(level => (
-                <div key={level} className={`card-level level${level}`}>
-                  <div className="card-stack-back"></div>
-                  <div className="card-row">
-                    {cardRenderer(level)}
-                  </div>
+                  >
+                    <img src={tokenImages[token]} alt={`${token} 토큰`} className="token-image" />
+                  </button>
+                  <span className="token-count">{(gameState.tokens[token] ?? 0) - (tokenMap.get(token) ?? 0)}</span>
                 </div>
               ))}
             </div>
+
+            <div className="development-column-side">
+              {[CardLevel.LEVEL3, CardLevel.LEVEL2, CardLevel.LEVEL1].map(level => (
+                <div key={level} className="card-level">
+                  <div className="card-row">{cardRenderer(level)}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="noble-column-side">
+              {nobleTileRenderer()}
+            </div>
+          </div>
+        </div>
+
+        <div className="player-area right-area">
+          <div className="top-ui-container button-container">
+            { gameState?.phase === GamePhase.WAITING_FOR_PLAYERS ?
+              <button onClick={handleStartGame} className="start-game-btn" disabled={disableStartButton}>
+                게임 시작
+              </button>
+              :
+              <button onClick={handleEndTurn} className="end-turn-btn" disabled={disableTurnEndButton}>
+                턴 종료
+              </button>
+            }
+          </div>
+          <div className="player-slots">
+            {renderPlayerInfo(gameState.players[1], 'Player 2')}
+            {renderPlayerInfo(gameState.players[3], 'Player 4')}
           </div>
         </div>
       </div>
 
-      <div className="player-area right-area">
-        <div className="top-ui-container button-container">
-          <button onClick={handleStartGame} className="start-game-btn" disabled={disableStartButton}>
-            게임 시작
-          </button>
-          <button onClick={handleEndTurn} className="end-turn-btn" disabled={disableTurnEndButton}>
-            턴 종료
-          </button>
+      <div className="game-bottom">
+        <div className="temp-inventory">
+          {[...tokenMap.entries()].map(([token, count]) =>
+            [...Array(count)].map((_, i) => (
+              <div key={`${token}-${i}`} className={`temp-token token-${token}`}>
+                <img src={tokenImages[token]} alt={`${token} 토큰`} className="token-image" />
+              </div>
+            ))
+          )}
         </div>
-        <div className="player-slots">
-          {renderPlayerInfo(gameState.players[1], 'Player 2')}
-          {renderPlayerInfo(gameState.players[3], 'Player 4')}
+
+        <div className="bottom-center">
+          <span className="owned-token-count">{calculatePlayerTokenCount()} / 10</span>
+          <div className="owned-objects">
+            {renderMyInventory()}
+          </div>
+        </div>
+
+        <div className="turn-time">
+          남은 시간: 30
         </div>
       </div>
     </div>
   );
+
 }
