@@ -1,0 +1,110 @@
+.player-info {
+    padding: 20px;
+    background-color: var(--color-bg-primary);
+    border: 4px solid black;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    width: 170px;
+    height: 250px;
+    text-align: center;
+    box-shadow: inset -6px -6px 0px 0px #c7b265, #2d334b 2px 2px 0px;
+    gap: 12px;
+}
+
+.player-name {
+    font-size: 0.9em;
+    font-weight: bold;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 12px;
+}
+
+.player-object-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transform: translateX(-2px)
+}
+
+/* 플레이어 소유 카드 */
+.player-card-area {
+    display: flex;
+    gap: 4px;
+}
+
+.card-info {
+    width: 20px;
+    height: 30px;
+    border-radius: 20%;
+    background-color: #eee;
+    border: 2px solid #ccc;
+}
+
+/* 플레이어 소유 토큰 */
+.player-token-area {
+    display: flex;
+    gap: 4px;
+}
+
+.token-info {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    background-color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 플레이어가 예약한 카드 */
+.player-reserved-area {
+    display: flex;
+    gap: 4px;
+    margin-top: 10px;
+}
+
+.reserved-card {
+    width: 40px;
+    height: 50px;
+    background-color: var(--color-object-primary);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+}
+
+.empty-reserved-card {
+    flex: 1;
+    aspect-ratio: 4 / 5;
+    max-width: 40px;
+    background-color: var(--color-bg-primary);
+    border-radius: 8px;
+    border: 1px dashed #999;
+    box-shadow: none;
+    flex-shrink: 0;
+}
+
+/* 플레이어 업는 경우 */
+.empty-slot {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    font-style: italic;
+    color: var(--color-text-primary);
+}
+
+.empty-player-image {
+    width: 120px;
+    height: auto;
+}

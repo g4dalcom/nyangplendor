@@ -56,35 +56,6 @@
     gap: 10px;
 }
 
-.player-info {
-    padding: 20px;
-    background-color: var(--color-bg-primary);
-    border: 4px solid black;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    width: 170px;
-    height: 250px;
-    text-align: center;
-    box-shadow: inset -6px -6px 0px 0px #c7b265, #2d334b 2px 2px 0px;
-}
-
-.empty-slot {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    font-style: italic;
-    color: var(--color-text-primary);
-}
-
-.empty-text {
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
 .board-area {
     flex: 1;
     display: flex;
@@ -202,29 +173,6 @@
     font-style: italic;
     box-shadow: none;
     border: 1px dashed #999;
-}
-
-.reserved-card {
-    width: 40px;
-    height: 50px;
-    background-color: var(--color-object-primary);
-    border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    flex-shrink: 0;
-}
-
-.empty-reserved-card {
-    width: 40px;
-    height: 50px;
-    background-color: var(--color-bg-primary);
-    border-radius: 8px;
-    border: 1px dashed #999;
-    box-shadow: none;
-    flex-shrink: 0;
 }
 
 .card-level .card-row {
@@ -379,58 +327,6 @@
     height: 100%;
 }
 
-.player-name {
-    font-size: 0.9em;
-    font-weight: bold;
-    max-width: 150px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 12px;
-}
-
-.player-object-container {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.player-card-area {
-    display: flex;
-    gap: 4px;
-}
-
-.card-token {
-    width: 20px;
-    height: 30px;
-    border-radius: 20%;
-    background-color: #eee;
-    border: 2px solid #ccc;
-}
-
-.player-token-area {
-    display: flex;
-    gap: 4px;
-
-    .token {
-        width: 20px;
-        height: 20px;
-    }
-}
-
-.player-reserved-area {
-    display: flex;
-    gap: 4px;
-    margin-top: 30px;
-}
-
-.token-Diamond { background-color: #d9cce8; border-color: #9063da; }
-.token-Sapphire { background-color: #bbdefb; border-color: #64b5f6; }
-.token-Emerald { background-color: #c8e6c9; border-color: #81c784; }
-.token-Ruby { background-color: #ffcdd2; border-color: #e57373; }
-.token-Onyx { background-color: #e0e0e0; border-color: #9e9e9e; }
-.token-GOLD { background-color: #ffd166; border-color: #f0c419; }
-
 .my-info, .my-token-area, .my-card-area, .owned-objects {
     display: flex;
     gap: 10px;
@@ -451,14 +347,6 @@
 .my-card-area {
     display: flex;
     gap: 4px;
-}
-
-.card-token {
-    width: 20px;
-    height: 30px;
-    border-radius: 20%;
-    background-color: #eee;
-    border: 2px solid #ccc;
 }
 
 .my-token-area {

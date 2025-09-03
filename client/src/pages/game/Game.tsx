@@ -1,8 +1,10 @@
 import {useEffect, useRef, useState} from "react"
-import {CardLevel, GamePhase, Token, Transfer, TurnAction} from "@shared/types";
+import {CardLevel, GamePhase, Token, Transfer, TurnAction} from "@shared/types/index";
 import {useGameRoom} from "@/contexts";
 import type {Player} from "@shared/models/colyseus/Player";
 import "./Game.css";
+import {PlayerInfo} from "@/pages/game/components/PlayerInfo.tsx";
+
 import rubyToken from "@/assets/icons/churu.svg";
 import sapphireToken from "@/assets/icons/tuna.svg";
 import emeraldToken from "@/assets/icons/fishing-toy.svg";
@@ -129,58 +131,6 @@ export const Game = () => {
     )
   }
 
-
-  const renderPlayerInfo = (player: Player, slotName: string) => {
-    const cardBonusMap = calculateCardBonus(player);
-    return (
-      <div className="player-info">
-        {player ? (
-          <>
-            <div className="player-name">{player.name}</div>
-            <div className="player-object-container">
-              <div className="player-card-area">
-                {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
-                  <span key={token} className={`card-token token-${token}`}>{cardBonusMap.get(token) ?? 0}</span>
-                ))}
-              </div>
-              <div className="player-token-area">
-                {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
-                  <span key={token} className={`token token-${token}`}>{(player.tokens as any)[token] ?? 0}</span>
-                ))}
-              </div>
-              <div className="player-reserved-area">
-                {renderReservedCards(player)}
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="empty-slot">
-            <span className="empty-text">{slotName}</span>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const renderReservedCards = (player: Player) => {
-    const reservedCards = player.reservedCards;
-    const emptySlotsCount = 3 - reservedCards.length;
-    const emptySlots = Array.from({ length: emptySlotsCount }, (_, i) => (
-      <div key={`reserved-empty-${i}`} className="empty-reserved-card"></div>
-    ));
-
-    return (
-      <>
-        {reservedCards.map(card => (
-          <div className="reserved-card" key={card.id}>
-            <span className="card-content"> {card.name}</span>
-          </div>
-        ))}
-        {emptySlots}
-      </>
-    )
-  }
-
   const renderMyInventory = () => {
     if (!player) return;
     const cardBonusMap = calculateCardBonus(player);
@@ -251,8 +201,8 @@ export const Game = () => {
             <h1 className="game-logo">Nyangplendor</h1>
           </div>
           <div className="player-slots">
-            {renderPlayerInfo(gameState.players[0], 'Player 1')}
-            {renderPlayerInfo(gameState.players[2], 'Player 3')}
+            <PlayerInfo player={gameState.players[0]} />
+            <PlayerInfo player={gameState.players[2]} />
           </div>
         </div>
         <div className="board-area">
@@ -299,8 +249,8 @@ export const Game = () => {
             }
           </div>
           <div className="player-slots">
-            {renderPlayerInfo(gameState.players[1], 'Player 2')}
-            {renderPlayerInfo(gameState.players[3], 'Player 4')}
+            <PlayerInfo player={gameState.players[1]} />
+            <PlayerInfo player={gameState.players[3]} />
           </div>
         </div>
       </div>
