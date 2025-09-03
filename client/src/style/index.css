@@ -1,5 +1,8 @@
 @import "./variables.css";
 @import "./fonts.css";
+@import "./buttons.css";
+@import "./animation.css";
+@import "inputs.css";
 
 * {
     cursor: var(--cursor-primary)
@@ -16,9 +19,10 @@ body {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    background-color: var(--color-bg-primary);
-    background-size: 240px 240px;
-    background-position: 0 0, 120px 120px;
+    background-color: var(--color-bg-base);
+    background-image: url("@/assets/icons/cat-paw.svg");
+    background-repeat: repeat;
+    background-size: 120px 120px;
 }
 
 a {

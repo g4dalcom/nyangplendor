@@ -6,5 +6,9 @@
   --color-text-primary: #8D5A2A;
   --color-object-primary: #FFC2A0;
 
+  --border-thin: 2px solid black;
+  --border-thick: 4px solid black;
+
   --cursor-primary: url("@/assets/icons/cursor.png") 14 0, pointer;
+  --shadow-clickable: #2d334b 2px 2px 0px;
 }

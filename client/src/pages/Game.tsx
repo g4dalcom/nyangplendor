@@ -52,9 +52,33 @@ export const Game = () => {
   const handleBringToken = (event: any) => {
     turnAction.current = TurnAction.BRING_TOKEN;
     const value = event.currentTarget.value;
+    if (!validateBringToken(value as Token)) {
+      return;
+    }
     const map = new Map(tokenMap);
-    console.log("Bring Token = ", value)
     map.set(value, (tokenMap.get(value) || 0) + 1);
+    setTokenMap(map);
+  }
+
+  const validateBringToken = (token: Token) => {
+    const tokenCount = Array.from(tokenMap.values()).reduce((acc, count) => acc + count, 0);
+    if (tokenCount >= 3) {
+      return false;
+    }
+    const existSameToken = Array.from(tokenMap.values()).some(count => count > 1);
+    if (existSameToken){
+      return false;
+    }
+    if (tokenCount === 2 && !!tokenMap.get(token)) {
+      return false;
+    }
+    return true;
+  }
+
+  const handleReturnToken = (event: any) => {
+    const value = event.currentTarget.value;
+    const map = new Map(tokenMap);
+    map.set(value, (tokenMap.get(value) || 0) - 1);
     setTokenMap(map);
   }
 
@@ -238,7 +262,7 @@ export const Game = () => {
                 <div className="token-row" key={token}>
                   <button
                     value={token}
-                    className={`token token-${token}`}
+                    className={`token-stack token-${token}`}
                     onClick={handleBringToken}
                   >
                     <img src={tokenImages[token]} alt={`${token} 토큰`} className="token-image" />
@@ -265,11 +289,11 @@ export const Game = () => {
         <div className="player-area right-area">
           <div className="top-ui-container button-container">
             { gameState?.phase === GamePhase.WAITING_FOR_PLAYERS ?
-              <button onClick={handleStartGame} className="start-game-btn" disabled={disableStartButton}>
+              <button onClick={handleStartGame} className="bubbly" disabled={disableStartButton}>
                 게임 시작
               </button>
               :
-              <button onClick={handleEndTurn} className="end-turn-btn" disabled={disableTurnEndButton}>
+              <button onClick={handleEndTurn} className="bubbly" disabled={disableTurnEndButton}>
                 턴 종료
               </button>
             }
@@ -285,9 +309,14 @@ export const Game = () => {
         <div className="temp-inventory">
           {[...tokenMap.entries()].map(([token, count]) =>
             [...Array(count)].map((_, i) => (
-              <div key={`${token}-${i}`} className={`temp-token token-${token}`}>
-                <img src={tokenImages[token]} alt={`${token} 토큰`} className="token-image" />
-              </div>
+                <button
+                  key={`${token}-${i}`}
+                  value={token}
+                  className={`temp-token token-${token}`}
+                  onClick={handleReturnToken}
+                >
+                  <img src={tokenImages[token]} alt={`${token} 토큰`} className="token-image" />
+                </button>
             ))
           )}
         </div>

@@ -1,0 +1,14 @@
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 1em;
+}
+
+input[type="text"],
+input[type="search"] {
+  border-radius: 12px;
+  border: var(--border-thin);
+  min-height: 2em;
+  padding-left: 1em;
+}
