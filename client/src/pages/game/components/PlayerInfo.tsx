@@ -32,14 +32,14 @@ export const PlayerInfo = ({ player }: Props) => {
     const reservedCards = player.reservedCards;
     const emptySlotsCount = 3 - reservedCards.length;
     const emptySlots = Array.from({ length: emptySlotsCount }, (_, i) => (
-      <div key={`reserved-empty-${i}`} className="empty-reserved-card"></div>
+      <div key={`player-reserved-empty-${i}`} className="player-empty-reserved-card"></div>
     ));
 
     return (
       <>
         {reservedCards.map(card => (
-          <div className="reserved-card" key={card.id}>
-            <span className="card-content"> {card.name}</span>
+          <div className="player-reserved-card" key={card.id}>
+            <span className="card-content">{card.name}</span>
           </div>
         ))}
         {emptySlots}
@@ -55,13 +55,13 @@ export const PlayerInfo = ({ player }: Props) => {
           <div className="player-object-container">
             <div className="player-card-area">
               {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX].map(token => (
-                <span key={token} className={`card-info token-${token}`}>{cardBonusMap.get(token) ?? 0}</span>
+                <span key={token} className={`player-card-info token-${token}`}>{cardBonusMap.get(token) ?? 0}</span>
               ))}
             </div>
 
             <div className="player-token-area">
               {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
-                <span key={token} className={`token-info token-${token}`}>{(player.tokens as any)[token] ?? 0}</span>
+                <span key={token} className={`player-token-info token-${token}`}>{(player.tokens as any)[token] ?? 0}</span>
               ))}
             </div>
 
@@ -71,7 +71,7 @@ export const PlayerInfo = ({ player }: Props) => {
           </div>
         </>
       ) : (
-        <div className="empty-slot">
+        <div className="player-empty-slot">
           <img src={emptyPlayer} alt={"empty player"} className="empty-player-image" />
         </div>
       )}

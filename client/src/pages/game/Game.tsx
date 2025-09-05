@@ -1,7 +1,6 @@
 import {useEffect, useRef, useState} from "react"
 import {CardLevel, GamePhase, Token, Transfer, TurnAction} from "@shared/types/index";
 import {useGameRoom} from "@/contexts";
-import type {Player} from "@shared/models/colyseus/Player";
 import "./Game.css";
 import {PlayerInfo} from "@/pages/game/components/PlayerInfo.tsx";
 
@@ -11,8 +10,9 @@ import emeraldToken from "@/assets/icons/fishing-toy.svg";
 import diamondToken from "@/assets/icons/yarn-ball.svg";
 import onyxToken from "@/assets/icons/fish.svg";
 import goldToken from "@/assets/icons/gold.svg";
+import {Inventory} from "@/pages/game/components/Inventory.tsx";
 
-const tokenImages = {
+export const tokenImages = {
   [Token.RUBY]: rubyToken,
   [Token.SAPPHIRE]: sapphireToken,
   [Token.EMERALD]: emeraldToken,
@@ -131,64 +131,6 @@ export const Game = () => {
     )
   }
 
-  const renderMyInventory = () => {
-    if (!player) return;
-    const cardBonusMap = calculateCardBonus(player);
-    return (
-      <div className="my-info">
-        <div className="my-object-container">
-          <div className="my-card-area">
-            {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
-              <span key={token} className={`card-token token-${token}`}>{cardBonusMap.get(token) ?? 0}</span>
-            ))}
-          </div>
-          <div className="my-token-area">
-            {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
-              <span key={token} className={`token token-${token}`}>{(player.tokens as any)[token] ?? 0}</span>
-            ))}
-          </div>
-        </div>
-        <div className="my-reserved-area">
-          {renderMyReservedCards()}
-        </div>
-      </div>
-    )
-  }
-
-  const renderMyReservedCards = () => {
-    if (!player) return;
-    const reservedCards = player.reservedCards;
-    const emptySlotsCount = 3 - reservedCards.length;
-    const emptySlots = Array.from({ length: emptySlotsCount }, (_, i) => (
-      <div key={`my-reserved-empty-${i}`} className="my-empty-reserved-card"></div>
-    ));
-
-    return (
-      <>
-        {reservedCards.map(card => (
-          <div className="my-reserved-card" key={card.id}>
-            <span className="card-content"> {card.name}</span>
-          </div>
-        ))}
-        {emptySlots}
-      </>
-    )
-  }
-
-  const calculateCardBonus = (player: Player) => {
-    const map = new Map<Token, number>();
-    player?.developmentCards?.forEach(card => {
-      const bonus = card.token;
-      map.set(bonus, (map.get(bonus) ?? 0) + 1);
-    })
-    return map;
-  }
-
-  const calculatePlayerTokenCount = () => {
-    if (!player) return 0;
-    return Object.entries(player?.tokens).reduce((acc, [, count]) => acc + count, 0) ?? 0;
-  }
-
   if (!gameRoom || !gameState) {
     return <div>게임 방에 연결하는 중입니다...</div>;
   }
@@ -255,33 +197,12 @@ export const Game = () => {
         </div>
       </div>
 
-      <div className="game-bottom">
-        <div className="temp-inventory">
-          {[...tokenMap.entries()].map(([token, count]) =>
-            [...Array(count)].map((_, i) => (
-                <button
-                  key={`${token}-${i}`}
-                  value={token}
-                  className={`temp-token token-${token}`}
-                  onClick={handleReturnToken}
-                >
-                  <img src={tokenImages[token]} alt={`${token} 토큰`} className="token-image" />
-                </button>
-            ))
-          )}
-        </div>
-
-        <div className="bottom-center">
-          <span className="owned-token-count">{calculatePlayerTokenCount()} / 10</span>
-          <div className="owned-objects">
-            {renderMyInventory()}
-          </div>
-        </div>
-
-        <div className="turn-time">
-          남은 시간: 30
-        </div>
-      </div>
+      {/* Bottom UI */}
+      <Inventory
+        player={player}
+        tokenMap={tokenMap}
+        handleReturnToken={handleReturnToken}
+      />
     </div>
   );
 
