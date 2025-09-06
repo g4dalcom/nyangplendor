@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react"
-import {CardLevel, GamePhase, Token, Transfer, TurnAction} from "@shared/types/index";
+import {GamePhase, Token, Transfer, TurnAction} from "@shared/types/index";
 import {useGameRoom} from "@/contexts";
 import "./Game.css";
 import {PlayerInfo} from "@/pages/game/components/PlayerInfo.tsx";
@@ -11,6 +11,8 @@ import diamondToken from "@/assets/icons/yarn-ball.svg";
 import onyxToken from "@/assets/icons/fish.svg";
 import goldToken from "@/assets/icons/gold.svg";
 import {Inventory} from "@/pages/game/components/Inventory.tsx";
+import {GameBoard} from "@/pages/game/components/GameBoard.tsx";
+import {useTurnGuard} from "@/hooks";
 
 export const tokenImages = {
   [Token.RUBY]: rubyToken,
@@ -24,6 +26,7 @@ export const tokenImages = {
 export const Game = () => {
   //
   const { gameRoom, gameState, player } = useGameRoom();
+  const turnGuard = useTurnGuard(player?.turn ?? false);
   const [tokenMap, setTokenMap] = useState<Map<Token, number>>(new Map());
   const turnAction = useRef<TurnAction>(TurnAction.NO_ACTION);
   const disableStartButton = !player?.host || gameState!.players.length < 2 || gameState?.phase !== GamePhase.WAITING_FOR_PLAYERS;
@@ -39,7 +42,7 @@ export const Game = () => {
     console.log("Game Start = ", gameRoom?.state)
   };
 
-  const handleEndTurn = () => {
+  const handleEndTurn = turnGuard(() => {
     let messageType = Transfer.NO_ACTION;
 
     switch (turnAction.current) {
@@ -49,9 +52,9 @@ export const Game = () => {
     }
     gameRoom?.send(messageType, { tokenMap })
     console.log("End Turn = ", gameRoom?.state)
-  }
+  })
 
-  const handleBringToken = (event: any) => {
+  const handleBringToken = turnGuard((event: any) => {
     turnAction.current = TurnAction.BRING_TOKEN;
     const value = event.currentTarget.value;
     if (!validateBringToken(value as Token)) {
@@ -60,7 +63,7 @@ export const Game = () => {
     const map = new Map(tokenMap);
     map.set(value, (tokenMap.get(value) || 0) + 1);
     setTokenMap(map);
-  }
+  })
 
   const validateBringToken = (token: Token) => {
     const tokenCount = Array.from(tokenMap.values()).reduce((acc, count) => acc + count, 0);
@@ -77,59 +80,12 @@ export const Game = () => {
     return true;
   }
 
-  const handleReturnToken = (event: any) => {
+  const handleReturnToken = turnGuard((event: any) => {
     const value = event.currentTarget.value;
     const map = new Map(tokenMap);
     map.set(value, (tokenMap.get(value) || 0) - 1);
     setTokenMap(map);
-  }
-
-  const cardRenderer = (cardLevel: CardLevel) => {
-    if (!gameState) return;
-
-    const inBoardCards = gameState.developmentCards
-      .filter(card => card.visible)
-      .filter(card => card.level === cardLevel)
-
-    const emptySlotsCount = 4 - inBoardCards.length;
-    const emptySlots = Array.from({ length: emptySlotsCount }, (_, i) => (
-      <div key={`empty-${cardLevel}-${i}`} className="empty-card"></div>
-    ));
-
-    return (
-      <>
-        <div key={`deck-${cardLevel}`} className="deck-card"></div>
-        {inBoardCards.map((card) => (
-          <div key={card.id} className="card">
-            <span className="card-content">{card.name}</span>
-          </div>
-        ))}
-        {emptySlots}
-      </>
-    );
-  };
-
-
-  const nobleTileRenderer = () => {
-    if (!gameState) return;
-
-    const nobleTiles = gameState.nobleTiles;
-    const emptySlotsCount = 5 - nobleTiles.length;
-    const emptySlots = Array.from({ length: emptySlotsCount }, (_, i) => (
-      <div key={`noble-empty-${i}`} className="empty-noble-card"></div>
-    ));
-
-    return (
-      <>
-        {nobleTiles.map(noble => (
-          <div className="noble-card" key={noble.id}>
-            <span className="card-content"> {noble.name}</span>
-          </div>
-        ))}
-        {emptySlots}
-      </>
-    )
-  }
+  })
 
   if (!gameRoom || !gameState) {
     return <div>게임 방에 연결하는 중입니다...</div>;
@@ -147,36 +103,12 @@ export const Game = () => {
             <PlayerInfo player={gameState.players[2]} />
           </div>
         </div>
-        <div className="board-area">
-          <div className="board">
-            <div className="token-column-side">
-              {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
-                <div className="token-row" key={token}>
-                  <button
-                    value={token}
-                    className={`token-stack token-${token}`}
-                    onClick={handleBringToken}
-                  >
-                    <img src={tokenImages[token]} alt={`${token} 토큰`} className="token-image" />
-                  </button>
-                  <span className="token-count">{(gameState.tokens[token] ?? 0) - (tokenMap.get(token) ?? 0)}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="development-column-side">
-              {[CardLevel.LEVEL3, CardLevel.LEVEL2, CardLevel.LEVEL1].map(level => (
-                <div key={level} className="card-level">
-                  <div className="card-row">{cardRenderer(level)}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="noble-column-side">
-              {nobleTileRenderer()}
-            </div>
-          </div>
-        </div>
+        {/* Game Board */}
+        <GameBoard
+          gameState={gameState}
+          tokenMap={tokenMap}
+          handleBringToken={handleBringToken}
+        />
 
         <div className="player-area right-area">
           <div className="top-ui-container button-container">
