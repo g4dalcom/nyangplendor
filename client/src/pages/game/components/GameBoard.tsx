@@ -3,6 +3,7 @@ import {CardLevel, Token} from "@shared/types/enums/GameObject";
 import {tokenImages} from "@/pages";
 import type {MouseEvent} from "react";
 import type {GameState} from "@shared/states/GameState";
+import {DevelopmentCardView} from "@/pages/game/components/DevelopmentCardView.tsx";
 
 interface Props {
   gameState: ReturnType<GameState['toJSON']>;
@@ -39,7 +40,8 @@ export const GameBoard = ({ gameState, tokenMap, handleBringToken }: Props) => {
             <div key={`deck-${cardLevel}`} className="deck-card"></div>
             { inBoardCards.map((card) => (
               <div key={card.id} className="board-card">
-                <span className="card-content">{card.name}</span>
+                <DevelopmentCardView cardInfo={card} />
+                {/*<span className="card-content">{card.name}</span>*/}
               </div>
             )) }
             { Array.from({ length: 4 - inBoardCards.length }, (_, i) => (

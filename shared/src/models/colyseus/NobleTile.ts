@@ -5,6 +5,7 @@ import {nanoid} from "nanoid";
 type NobleTileType = {
   name: string
   cost: MapSchema<number>
+  imageUrl?: string
 }
 
 export class NobleTile extends Schema {
@@ -13,13 +14,19 @@ export class NobleTile extends Schema {
   @type("string") name: string
   @type({ map: "uint8" }) cost: MapSchema<number>
   @type("uint8") point: number
+  @type("string") imageUrl: string
 
-  constructor(name: string, cost: MapSchema<number>) {
+  constructor(
+    name: string,
+    cost: MapSchema<number>,
+    imageUrl: string = '@/assets/images/developmentCards/sample-card.png',
+  ) {
     super();
     this.id = nanoid()
     this.name = name
     this.cost = cost
     this.point = 3
+    this.imageUrl = imageUrl
   }
 }
 

@@ -8,6 +8,7 @@ type CardType = {
   token: Token
   prestigePoint: number
   cost: MapSchema<number>
+  imageUrl?: string
 }
 
 export class DevelopmentCard extends Schema {
@@ -19,13 +20,15 @@ export class DevelopmentCard extends Schema {
   @type("uint8") prestigePoint: number
   @type({ map: "uint8" }) cost = new MapSchema<number>()
   @type("boolean") visible: boolean
+  @type("string") imageUrl: string
 
   constructor(
     name: string,
     level: CardLevel,
     token: Token,
     prestigePoint: number,
-    cost: MapSchema<number>
+    cost: MapSchema<number>,
+    imageUrl: string = '/developmentCards/sample-card.png',
   ) {
     super()
     this.id = nanoid()
@@ -35,6 +38,7 @@ export class DevelopmentCard extends Schema {
     this.prestigePoint = prestigePoint
     this.cost = cost
     this.visible = false
+    this.imageUrl = imageUrl
   }
 }
 
