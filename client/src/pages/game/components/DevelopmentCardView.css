@@ -1,4 +1,5 @@
 .card-container {
+    position: relative;
     width: 100%;
     height: 100%;
     background-color: #f5eeda;
@@ -10,8 +11,13 @@
     overflow: hidden;
 }
 
+.card-header,
+.card-footer {
+    position: relative;
+    z-index: 1;
+}
+
 .card-header {
-    color: white;
     padding: 2px 4px;
     display: flex;
     justify-content: space-between;
@@ -19,15 +25,15 @@
 }
 
 .header-color-1 {
-    background-color: #2c5d3d;
+    background-color: rgba(44, 93, 61, 0.8);
 }
 
 .header-color-2 {
-    background-color: #833f93;
+    background-color: rgba(131, 63, 147, 0.8);
 }
 
 .header-color-3 {
-    background-color: #3856a1;
+    background-color: rgba(56, 86, 161, 0.8);
 }
 
 .card-point {
@@ -36,9 +42,8 @@
 }
 
 .card-center {
-    flex-grow: 1;
-    width: 100%;
-    overflow: hidden;
+    position: absolute;
+    inset: 0;
 }
 
 .card-image {
@@ -48,7 +53,12 @@
 }
 
 .card-footer {
-    background-color: #dccdb4;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+    background-color: rgba(253, 251, 248, 0.5);
     padding: 4px;
     display: flex;
     justify-content: center;

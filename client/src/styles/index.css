@@ -61,3 +61,10 @@ ul {
     margin-top: 0;
     margin-bottom: 1rem;
 }
+
+.token-Diamond { background-color: #d9cce8; border-color: #9063da; }
+.token-Sapphire { background-color: #bbdefb; border-color: #64b5f6; }
+.token-Emerald { background-color: #c8e6c9; border-color: #81c784; }
+.token-Ruby { background-color: #ffcdd2; border-color: #e57373; }
+.token-Onyx { background-color: #e0e0e0; border-color: #9e9e9e; }
+.token-Gold { background-color: #fff0be; border-color: #f0c419; pointer-events: none; }

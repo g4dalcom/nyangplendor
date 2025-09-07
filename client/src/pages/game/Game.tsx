@@ -29,7 +29,7 @@ export const Game = () => {
   const turnGuard = useTurnGuard(player?.turn ?? false);
   const [tokenMap, setTokenMap] = useState<Map<Token, number>>(new Map());
   const turnAction = useRef<TurnAction>(TurnAction.NO_ACTION);
-  const disableStartButton = !player?.host || gameState!.players.length < 2 || gameState?.phase !== GamePhase.WAITING_FOR_PLAYERS;
+  const disableStartButton = !player?.host || gameState!.players.length < 2;
   const disableTurnEndButton = !player?.turn;
 
   useEffect(() => {

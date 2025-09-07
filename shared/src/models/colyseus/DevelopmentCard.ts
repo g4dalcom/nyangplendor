@@ -1,6 +1,6 @@
 import {MapSchema, Schema, type} from "@colyseus/schema"
 import {nanoid} from "nanoid"
-import {CardLevel, genCostMap, Token} from "@shared/types"
+import {CardLevel, DevelopmentCardImageUrl, genCostMap, Token} from "@shared/types"
 
 type CardType = {
   name: string
@@ -28,7 +28,7 @@ export class DevelopmentCard extends Schema {
     token: Token,
     prestigePoint: number,
     cost: MapSchema<number>,
-    imageUrl: string = '/developmentCards/sample-card.png',
+    imageUrl: string = '/developmentCards/DA1.png',
   ) {
     super()
     this.id = nanoid()
@@ -43,16 +43,25 @@ export class DevelopmentCard extends Schema {
 }
 
 const classify = (cards: CardType[]): DevelopmentCard[] => {
-  return cards.map(card => new DevelopmentCard(card.name, card.level, card.token, card.prestigePoint, card.cost))
+  return cards.map(card => new DevelopmentCard(
+    card.name,
+    card.level,
+    card.token,
+    card.prestigePoint,
+    new MapSchema<number>(Object.fromEntries(card.cost.entries())),
+    card.imageUrl
+  ))
 }
 
 const level1Cards: CardType[] = [
-  { name: "DA1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 0, cost: genCostMap([[Token.RUBY, 2], [Token.ONYX, 1]]) },
-  { name: "DB1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 0, cost: genCostMap([[Token.SAPPHIRE, 3]]) },
-  { name: "DC1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 0, cost: genCostMap([[Token.RUBY, 1], [Token.SAPPHIRE, 1], [Token.DIAMOND, 1], [Token.ONYX, 1]]) },
-  { name: "DD1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 0, cost: genCostMap([[Token.SAPPHIRE, 2], [Token.ONYX, 2]]) },
-  { name: "DE1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 0, cost: genCostMap([[Token.EMERALD, 2], [Token.RUBY, 1], [Token.SAPPHIRE, 2], [Token.ONYX, 1]]) },
-  { name: "DF1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 0, cost: genCostMap([[Token.SAPPHIRE, 2], [Token.EMERALD, 2], [Token.ONYX, 1]]) },
+  { name: "DA1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 0, cost: genCostMap([[Token.RUBY, 2], [Token.ONYX, 1]]), imageUrl: DevelopmentCardImageUrl.DA1 },
+  { name: "DB1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 0, cost: genCostMap([[Token.SAPPHIRE, 3]]), imageUrl: DevelopmentCardImageUrl.DB1 },
+  { name: "DC1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 0, cost: genCostMap([[Token.RUBY, 1], [Token.SAPPHIRE, 1], [Token.DIAMOND, 1], [Token.ONYX, 1]]), imageUrl: DevelopmentCardImageUrl.DC1 },
+  { name: "DD1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 0, cost: genCostMap([[Token.SAPPHIRE, 2], [Token.ONYX, 2]]), imageUrl: DevelopmentCardImageUrl.DD1 },
+  { name: "DE1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 0, cost: genCostMap([[Token.EMERALD, 2], [Token.RUBY, 1], [Token.SAPPHIRE, 2], [Token.ONYX, 1]]), imageUrl: DevelopmentCardImageUrl.DE1 },
+  { name: "DF1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 0, cost: genCostMap([[Token.SAPPHIRE, 2], [Token.EMERALD, 2], [Token.ONYX, 1]]), imageUrl: DevelopmentCardImageUrl.DF1 },
+  { name: "DG1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 0, cost: genCostMap([[Token.RUBY, 3], [Token.EMERALD, 1], [Token.DIAMOND, 1]]), imageUrl: DevelopmentCardImageUrl.DG1 },
+  { name: "DH1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 1, cost: genCostMap([[Token.EMERALD, 4]]) },
   { name: "DG1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 0, cost: genCostMap([[Token.DIAMOND, 3], [Token.SAPPHIRE, 1], [Token.ONYX, 1]]) },
   { name: "DH1", level: CardLevel.LEVEL1, token: Token.DIAMOND, prestigePoint: 1, cost: genCostMap([[Token.EMERALD, 4]]) },
 
@@ -157,8 +166,8 @@ const level3Cards: CardType[] = [
   { name: "OD3", level: CardLevel.LEVEL3, token: Token.ONYX, prestigePoint: 5, cost: genCostMap([[Token.RUBY, 7], [Token.ONYX, 3]]) },
 ]
 
-export const developmentCardClasses: Record<CardLevel, DevelopmentCard[]> = {
+export const developmentCardClasses = (): Record<CardLevel, DevelopmentCard[]> => ({
   [CardLevel.LEVEL1]: classify(level1Cards),
   [CardLevel.LEVEL2]: classify(level2Cards),
   [CardLevel.LEVEL3]: classify(level3Cards),
-}
+})

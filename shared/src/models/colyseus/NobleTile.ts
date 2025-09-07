@@ -19,7 +19,7 @@ export class NobleTile extends Schema {
   constructor(
     name: string,
     cost: MapSchema<number>,
-    imageUrl: string = '@/assets/images/developmentCards/sample-card.png',
+    imageUrl: string = '@/assets/images/nobleTiles/A.png',
   ) {
     super();
     this.id = nanoid()
@@ -31,7 +31,11 @@ export class NobleTile extends Schema {
 }
 
 const classify = (nobleTiles: NobleTileType[]): NobleTile[] => {
-  return nobleTiles.map(nobleTile => new NobleTile(nobleTile.name, nobleTile.cost))
+  return nobleTiles.map(nobleTile => new NobleTile(
+    nobleTile.name,
+    new MapSchema<number>(Object.fromEntries(nobleTile.cost.entries())),
+    nobleTile.imageUrl
+  ))
 }
 
 const nobleTiles: NobleTileType[] = [
@@ -47,4 +51,4 @@ const nobleTiles: NobleTileType[] = [
   { name: "J", cost: genCostMap([[Token.RUBY, 3], [Token.EMERALD, 3], [Token.ONYX, 3]]) },
 ]
 
-export const nobleTileClasses: NobleTile[] = classify(nobleTiles);
+export const nobleTileClasses = (): NobleTile[] => classify(nobleTiles);

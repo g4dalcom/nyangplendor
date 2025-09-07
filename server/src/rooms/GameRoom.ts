@@ -102,7 +102,7 @@ export class GameRoom extends Room<GameState> {
   }
 
   private initializeCards = () => {
-    const cardClasses = developmentCardClasses;
+    const cardClasses = developmentCardClasses();
     shuffleArray(cardClasses[CardLevel.LEVEL1])
     shuffleArray(cardClasses[CardLevel.LEVEL2])
     shuffleArray(cardClasses[CardLevel.LEVEL3])
@@ -117,7 +117,7 @@ export class GameRoom extends Room<GameState> {
   }
 
   private initializeNobleTiles = (tileCount: number) => {
-    const allNobleTiles: NobleTile[] = nobleTileClasses;
+    const allNobleTiles: NobleTile[] = nobleTileClasses();
     shuffleArray(allNobleTiles)
     const inGameNobleTiles = allNobleTiles.slice(0, tileCount);
     this.state.nobleTiles.push(...inGameNobleTiles)
