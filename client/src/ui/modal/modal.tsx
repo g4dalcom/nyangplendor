@@ -5,49 +5,61 @@ import "./modal.css";
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  title?: string;
-  children?: React.ReactNode;
-  buttons?: React.ReactNode;
+  size?: 'sm' | 'md' | 'lg' | 'card' | 'tile';
+  variant?: 'default' | 'card' | 'tile';
+  className?: string;
+  children: React.ReactNode;
+  header?: React.ReactNode;
+  footer?: React.ReactNode;
 }
 
-export function Modal({ isOpen, onClose, title, children, buttons }: ModalProps) {
-  const dialogRef = useRef<HTMLDialogElement | null>(null);
+export function Modal({ isOpen, onClose, size = 'md', variant = 'default', className = '', children, header, footer }: ModalProps) {
+  const ref = useRef<HTMLDialogElement | null>(null);
+  const modalClassName = `modal-container size-${size} variant-${variant} ${className}`.trim();
+
+  const close = () => {
+    ref.current?.close()
+    onClose()
+  }
 
   useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-
     if (isOpen) {
-      dialog.showModal();
+      ref.current?.showModal()
     } else {
-      dialog.close();
+      close()
     }
-  }, [isOpen]);
+  }, [isOpen])
 
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-
-    dialog.addEventListener("close", onClose);
-    return () => {
-      dialog.removeEventListener("close", onClose);
-    };
-  }, [onClose]);
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDialogElement>) => {
+    if (event.key === "Escape") {
+      close()
+    }
+  }
 
   const handleBackdropClick = (event: React.MouseEvent<HTMLDialogElement>) => {
-    if (dialogRef.current === event.target) {
+    if (ref.current === event.target) {
       onClose();
     }
   };
 
   return ReactDOM.createPortal(
-    <dialog ref={dialogRef} onClick={handleBackdropClick} className="modal">
-      <div className="modal-content">
-        {title && <h2 className="modal-title">{title}</h2>}
-        <div className="modal-body">{children}</div>
-        {buttons && <div className="modal-footer">{buttons}</div>}
-      </div>
-    </dialog>,
-    document.getElementById("modal-root")!
-  );
+      <dialog
+        ref={ref}
+        onCancel={onClose}
+        onKeyDown={handleKeyDown}
+        onClick={handleBackdropClick}
+        className={modalClassName}
+      >
+        <div className="modal-content">
+          {header && (
+            <header className="modal-header">
+              {header}
+            </header>
+          )}
+          <main className="modal-body">{children}</main>
+          {footer && <footer className="modal-footer">{footer}</footer>}
+        </div>
+      </dialog>,
+      document.getElementById('modal-root')!
+    );
 }

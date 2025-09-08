@@ -27,15 +27,15 @@ export const DialogContainer = () => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-container">
-        <div className="modal-content">
-          <h2 className="modal-header">
+    <div className="dialog-overlay">
+      <div className="dialog-container">
+        <div className="dialog-content">
+          <h2 className="dialog-header">
             {dialog.type === 'confirm' ? '확인' : '알림'}
           </h2>
-          <p className="modal-body">{dialog.message}</p>
+          <p className="dialog-body">{dialog.message}</p>
         </div>
-        <div className="modal-footer horizontal">
+        <div className="dialog-footer horizontal">
           {dialog.type === 'confirm' && (
             <button className="bubbly pink" onClick={handleCancel}>취소</button>
           )}

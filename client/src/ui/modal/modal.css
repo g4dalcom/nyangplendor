@@ -1,84 +1,113 @@
-.modal {
-  padding: 0;
-  border: none;
-  background: transparent;
-  max-width: 500px;
+#modal-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-container {
+  position: relative;
   width: 90vw;
-  border-radius: 20px;
-  box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  padding: 0;
+  background-color: transparent;
+  pointer-events: all;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 
-.modal[open] {
-  animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.modal-container[open] {
+  opacity: 1;
+  transform: scale(1);
 }
 
-.modal::backdrop {
-  background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(3px);
+.modal-container.size-sm { max-width: 400px; }
+.modal-container.size-md { max-width: 600px; }
+.modal-container.size-lg { max-width: 800px; }
+.modal-container.size-card {
+  max-width: 320px;
+  aspect-ratio: 3 / 4.5
+}
+.modal-container.size-tile {
+  width: auto;
+  max-width: 90vw;
+}
+.modal-container.variant-card {
+  box-shadow: none;
+}
+
+/* --- 모달 스타일(Variant) 변형 --- */
+
+/* 1. 기본 스타일 (Default Variant) */
+.variant-default .modal-content {
+  background-color: #ffffff;
+  color: #333;
+}
+.variant-default .modal-header {
+  border-bottom: 1px solid #eee;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* 2. 게임 UI 스타일 (Game Variant) */
+.variant-card .modal-content {
+  background-color: transparent;
+  color: #f0f0f0;
+  border: none;
+}
+.variant-card .modal-header {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid #5a5a6a;
+  font-size: 1.3rem;
+}
+.variant-card .modal-footer {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid #5a5a6a;
 }
 
 .modal-content {
-  background-color: #fefdeee7;
-  border-radius: 20px;
-  border: 5px solid #000;
-  padding: 24px;
-  text-align: center;
-  font-family: 'Gaegu', cursive;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.modal-title {
-  margin-top: 0;
-  margin-bottom: 16px;
-  font-size: 1.8rem;
-  color: #333;
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  flex-shrink: 0;
 }
 
 .modal-body {
-  margin-bottom: 24px;
-  font-size: 1.2rem;
-  color: #555;
-  line-height: 1.6;
+  padding: 1.5rem;
+  flex-grow: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.size-card .modal-body {
+  padding: 0;
 }
 
 .modal-footer {
   display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-
-.modal-button {
-  padding: 10px 24px;
-  border-radius: 12px;
-  border: 3px solid #000;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 4px 4px 0px #000;
-}
-
-.modal-button:active {
-  transform: translateY(2px) translateX(2px);
-  box-shadow: 2px 2px 0px #000;
-}
-
-.modal-button.confirm {
-  background-color: #a6e3a1;
-  color: #1e1e2e;
-}
-
-.modal-button.cancel {
-  background-color: #f38ba8;
-  color: #1e1e2e;
-}
-
-@keyframes pop-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  flex-shrink: 0;
 }

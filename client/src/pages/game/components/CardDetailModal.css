@@ -1,0 +1,123 @@
+.card-detail-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    /*background-color: transparent;*/
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.card-detail-container {
+    position: relative;
+    width: 100%;
+    flex-grow: 1;
+    flex-shrink: 0;
+    background-color: #f5eeda;
+    border: 2px solid #4a4a4a;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.card-detail-header,
+.card-detail-footer {
+    position: relative;
+    z-index: 1;
+}
+
+.card-detail-header {
+    padding: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-color-1 {
+    background-color: rgba(44, 93, 61, 0.8);
+}
+
+.header-color-2 {
+    background-color: rgba(131, 63, 147, 0.8);
+}
+
+.header-color-3 {
+    background-color: rgba(56, 86, 161, 0.8);
+}
+
+/* Card's Prestige Point */
+.card-detail-point {
+    color: #ffffff;
+    font-size: 1.8em;
+    font-weight: 700;
+    margin-left: 8px;
+}
+
+/* Card's Bonus Token */
+.card-detail-token {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    background-color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #000000;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.card-detail-token-image {
+    width: 120%;
+    height: 120%;
+    border-radius: 50%;
+    object-fit: cover;
+    pointer-events: none;
+    position: relative;
+    z-index: 1;
+    transform: translateZ(1px);
+}
+
+
+.card-detail-center {
+    position: absolute;
+    inset: 0;
+}
+
+/* Card's Image */
+.card-detail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-detail-footer {
+    position: relative;
+    bottom: unset;
+    left: unset;
+    width: 100%;
+    z-index: 1;
+    background-color: rgba(253, 251, 248, 0.4);
+    padding: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
+}
+
+/* Card's cost */
+.token-list {
+    display: flex;
+    gap: 4px;
+}
+
+.card-actions-container {
+    position: relative;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
+}

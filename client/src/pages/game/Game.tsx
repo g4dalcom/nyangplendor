@@ -13,6 +13,8 @@ import goldToken from "@/assets/icons/gold.svg";
 import {Inventory} from "@/pages/game/components/Inventory.tsx";
 import {GameBoard} from "@/pages/game/components/GameBoard.tsx";
 import {useTurnGuard} from "@/hooks";
+import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
+import {CardDetailModal} from "@/pages/game/components/CardDetailModal.tsx";
 
 export const tokenImages = {
   [Token.RUBY]: rubyToken,
@@ -27,8 +29,12 @@ export const Game = () => {
   //
   const { gameRoom, gameState, player } = useGameRoom();
   const turnGuard = useTurnGuard(player?.turn ?? false);
+
   const [tokenMap, setTokenMap] = useState<Map<Token, number>>(new Map());
+  const [selectedCard, setSelectedCard] = useState<DevelopmentCard | null>(null);
+  const [cardDetailModalOpen, setCardDetailModalOpen] = useState<boolean>(false);
   const turnAction = useRef<TurnAction>(TurnAction.NO_ACTION);
+
   const disableStartButton = !player?.host || gameState!.players.length < 2;
   const disableTurnEndButton = !player?.turn;
 
@@ -36,6 +42,14 @@ export const Game = () => {
     setTokenMap(new Map());
     turnAction.current = TurnAction.NO_ACTION;
   }, [gameState?.turn]);
+
+  useEffect(() => {
+    if (selectedCard) {
+      setCardDetailModalOpen(true);
+    } else {
+      setCardDetailModalOpen(false);
+    }
+  }, [selectedCard]);
 
   const handleStartGame = () => {
     gameRoom?.send(Transfer.START_GAME)
@@ -108,6 +122,7 @@ export const Game = () => {
           gameState={gameState}
           tokenMap={tokenMap}
           handleBringToken={handleBringToken}
+          setSelectedCard={setSelectedCard}
         />
 
         <div className="player-area right-area">
@@ -135,7 +150,18 @@ export const Game = () => {
         tokenMap={tokenMap}
         handleReturnToken={handleReturnToken}
       />
+
+      {/* Modals */}
+      { selectedCard && cardDetailModalOpen &&
+        <CardDetailModal
+          selectedCard={selectedCard}
+          cardDetailModalOpen={cardDetailModalOpen}
+          closeModal={() => {
+            setCardDetailModalOpen(false)
+            setSelectedCard(null)
+          }}
+        />
+      }
     </div>
   );
-
 }

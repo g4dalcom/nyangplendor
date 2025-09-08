@@ -1,17 +1,23 @@
 import "./GameBoard.css";
 import {CardLevel, Token} from "@shared/types/enums/GameObject";
 import {tokenImages} from "@/pages";
-import type {MouseEvent} from "react";
+import type {Dispatch, MouseEvent, SetStateAction} from "react";
 import type {GameState} from "@shared/states/GameState";
 import {DevelopmentCardView} from "@/pages/game/components/DevelopmentCardView.tsx";
+import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 
 interface Props {
   gameState: ReturnType<GameState['toJSON']>;
   tokenMap: Map<Token, number>;
   handleBringToken: (event: MouseEvent<HTMLButtonElement>) => void;
+  setSelectedCard: Dispatch<SetStateAction<DevelopmentCard | null>>;
 }
 
-export const GameBoard = ({ gameState, tokenMap, handleBringToken }: Props) => {
+export const GameBoard = ({
+                            gameState,
+                            tokenMap,
+                            handleBringToken,
+                            setSelectedCard }: Props) => {
   //
   const tokenRenderer = () => {
     //
@@ -39,9 +45,8 @@ export const GameBoard = ({ gameState, tokenMap, handleBringToken }: Props) => {
           <div className="board-card-row">
             <div key={`deck-${cardLevel}`} className="deck-card"></div>
             { inBoardCards.map((card) => (
-              <div key={card.id} className="board-card">
+              <div key={card.id} className="board-card" onClick={() => setSelectedCard(card)}>
                 <DevelopmentCardView cardInfo={card} />
-                {/*<span className="card-content">{card.name}</span>*/}
               </div>
             )) }
             { Array.from({ length: 4 - inBoardCards.length }, (_, i) => (

@@ -1,4 +1,4 @@
-.modal-overlay {
+.dialog-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -11,7 +11,7 @@
     z-index: 1000;
 }
 
-.modal-container {
+.dialog-container {
     background-color: var(--color-bg-base);
     padding: 30px;
     border-radius: 20px;
@@ -23,28 +23,28 @@
     animation: fadeIn 0.3s ease-out;
 }
 
-.modal-content {
+.dialog-content {
     margin-bottom: 25px;
 }
 
-.modal-header {
+.dialog-header {
     font-size: 1.5rem;
     color: #333;
     margin-bottom: 10px;
 }
 
-.modal-body {
+.dialog-body {
     font-size: 1rem;
     color: #666;
     line-height: 1.5;
 }
 
-.modal-footer {
+.dialog-footer {
     display: flex;
     justify-content: center;
 }
 
-.modal-footer.horizontal {
+.dialog-footer.horizontal {
     justify-content: center;
     gap: 15px;
 }
