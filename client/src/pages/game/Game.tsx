@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from "react"
 import {useNavigate} from "react-router-dom";
 import {useGameRoom} from "@/contexts";
 import {useTurnGuard} from "@/hooks";
-import {CardDetailModal, GameBoard, Inventory, PlayerInfo} from "@/pages";
+import {CardDetailModal, GameBoard, Inventory, NobleTileDetailModal, PlayerInfo} from "@/pages";
 import {GamePhase, Token, Transfer, TurnAction} from "@shared/types/index";
 import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 
@@ -13,6 +13,7 @@ import emeraldToken from "@/assets/icons/fishing-toy.svg";
 import diamondToken from "@/assets/icons/yarn-ball.svg";
 import onyxToken from "@/assets/icons/fish.svg";
 import goldToken from "@/assets/icons/gold.svg";
+import type {NobleTile} from "@shared/models/colyseus/NobleTile";
 
 export const tokenImages = {
   [Token.RUBY]: rubyToken,
@@ -31,15 +32,26 @@ export const Game = () => {
 
   const [selectedTokens, setSelectedTokens] = useState<Map<Token, number>>(new Map());
   const [selectedCard, setSelectedCard] = useState<DevelopmentCard | null>(null);
+  const [selectedNobleTile, setSelectedNobleTile] = useState<NobleTile | null>(null);
   const [cardDetailModalOpen, setCardDetailModalOpen] = useState<boolean>(false);
+  const [nobleTileDetailModalOpen, setNobleTileDetailModalOpen] = useState<boolean>(false);
   const turnAction = useRef<TurnAction>(TurnAction.NO_ACTION);
 
-  const disableStartButton = !player?.host || gameState!.players.length < 2;
+  // TODO: TEST 후 롤백
+  // const disableStartButton = !player?.host || gameState!.players.length < 2;
+  const disableStartButton = false;
   const disableTurnEndButton = !player?.turn;
+
+  useEffect(() => {
+    if (!gameRoom || !gameState) {
+      navigate("/");
+    }
+  }, [gameRoom, gameState, navigate]);
 
   useEffect(() => {
     setSelectedTokens(new Map());
     setSelectedCard(null);
+    setSelectedNobleTile(null);
     turnAction.current = TurnAction.NO_ACTION;
   }, [gameState?.turn]);
 
@@ -50,6 +62,14 @@ export const Game = () => {
       setCardDetailModalOpen(false);
     }
   }, [selectedCard]);
+
+  useEffect(() => {
+    if (selectedNobleTile) {
+      setNobleTileDetailModalOpen(true);
+    } else {
+      setNobleTileDetailModalOpen(false);
+    }
+  }, [selectedNobleTile]);
 
   const handleStartGame = () => {
     gameRoom?.send(Transfer.START_GAME)
@@ -102,8 +122,7 @@ export const Game = () => {
   })
 
   if (!gameRoom || !gameState) {
-    navigate("/");
-    return;
+    return <div>방을 찾는 중...</div>;
   }
 
   return (
@@ -124,6 +143,7 @@ export const Game = () => {
           selectedTokens={selectedTokens}
           handleBringToken={handleBringToken}
           setSelectedCard={setSelectedCard}
+          setSelectedNobleTile={setSelectedNobleTile}
         />
 
         <div className="player-area right-area">
@@ -160,6 +180,17 @@ export const Game = () => {
           closeModal={() => {
             setCardDetailModalOpen(false)
             setSelectedCard(null)
+          }}
+        />
+      }
+
+      { selectedNobleTile && nobleTileDetailModalOpen &&
+        <NobleTileDetailModal
+          selectedNobleTile={selectedNobleTile}
+          nobleTileDetailModalOpen={nobleTileDetailModalOpen}
+          closeModal={() => {
+            setNobleTileDetailModalOpen(false)
+            setSelectedNobleTile(null)
           }}
         />
       }

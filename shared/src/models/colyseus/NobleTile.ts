@@ -1,5 +1,5 @@
 import {MapSchema, Schema, type} from "@colyseus/schema";
-import {genCostMap, Token} from "@shared/types";
+import {genCostMap, NobleTileImageUrl, Token} from "@shared/types";
 import {nanoid} from "nanoid";
 
 type NobleTileType = {
@@ -19,7 +19,7 @@ export class NobleTile extends Schema {
   constructor(
     name: string,
     cost: MapSchema<number>,
-    imageUrl: string = '@/assets/images/nobleTiles/A.png',
+    imageUrl: string = '/nobleTiles/A.webp',
   ) {
     super();
     this.id = nanoid()
@@ -39,16 +39,56 @@ const classify = (nobleTiles: NobleTileType[]): NobleTile[] => {
 }
 
 const nobleTiles: NobleTileType[] = [
-  { name: "A", cost: genCostMap([[Token.RUBY, 4], [Token.EMERALD, 4]]) },
-  { name: "B", cost: genCostMap([[Token.RUBY, 3], [Token.DIAMOND, 3], [Token.ONYX, 3]]) },
-  { name: "C", cost: genCostMap([[Token.SAPPHIRE, 4], [Token.DIAMOND, 4]]) },
-  { name: "D", cost: genCostMap([[Token.DIAMOND, 4], [Token.ONYX, 4]]) },
-  { name: "E", cost: genCostMap([[Token.SAPPHIRE, 4], [Token.EMERALD, 4]]) },
-  { name: "F", cost: genCostMap([[Token.RUBY, 3], [Token.SAPPHIRE, 3], [Token.EMERALD, 3]]) },
-  { name: "G", cost: genCostMap([[Token.SAPPHIRE, 3], [Token.EMERALD, 3], [Token.DIAMOND, 3]]) },
-  { name: "H", cost: genCostMap([[Token.RUBY, 4], [Token.ONYX, 4]]) },
-  { name: "I", cost: genCostMap([[Token.SAPPHIRE, 3], [Token.DIAMOND, 3], [Token.ONYX, 3]]) },
-  { name: "J", cost: genCostMap([[Token.RUBY, 3], [Token.EMERALD, 3], [Token.ONYX, 3]]) },
+  {
+    name: "A",
+    cost: genCostMap([[Token.RUBY, 4], [Token.EMERALD, 4]]),
+    imageUrl: NobleTileImageUrl.A
+  },
+  {
+    name: "B",
+    cost: genCostMap([[Token.RUBY, 3], [Token.DIAMOND, 3], [Token.ONYX, 3]]),
+    imageUrl: NobleTileImageUrl.B
+  },
+  {
+    name: "C",
+    cost: genCostMap([[Token.SAPPHIRE, 4], [Token.DIAMOND, 4]]),
+    imageUrl: NobleTileImageUrl.C
+  },
+  {
+    name: "D",
+    cost: genCostMap([[Token.DIAMOND, 4], [Token.ONYX, 4]]),
+    imageUrl: NobleTileImageUrl.D
+  },
+  {
+    name: "E",
+    cost: genCostMap([[Token.SAPPHIRE, 4], [Token.EMERALD, 4]]),
+    imageUrl: NobleTileImageUrl.E
+  },
+  {
+    name: "F",
+    cost: genCostMap([[Token.RUBY, 3], [Token.SAPPHIRE, 3], [Token.EMERALD, 3]]),
+    imageUrl: NobleTileImageUrl.F
+  },
+  {
+    name: "G",
+    cost: genCostMap([[Token.SAPPHIRE, 3], [Token.EMERALD, 3], [Token.DIAMOND, 3]]),
+    imageUrl: NobleTileImageUrl.G
+  },
+  {
+    name: "H",
+    cost: genCostMap([[Token.RUBY, 4], [Token.ONYX, 4]]),
+    imageUrl: NobleTileImageUrl.H
+  },
+  {
+    name: "I",
+    cost: genCostMap([[Token.SAPPHIRE, 3], [Token.DIAMOND, 3], [Token.ONYX, 3]]),
+    imageUrl: NobleTileImageUrl.I
+  },
+  {
+    name: "J",
+    cost: genCostMap([[Token.RUBY, 3], [Token.EMERALD, 3], [Token.ONYX, 3]]),
+    imageUrl: NobleTileImageUrl.J
+  },
 ]
 
 export const nobleTileClasses = (): NobleTile[] => classify(nobleTiles);

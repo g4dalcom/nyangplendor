@@ -1,0 +1,75 @@
+.noble-tile-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: #f5eeda;
+    border: 2px solid #4a4a4a;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.noble-tile-container:not(:active):hover {
+    transform: translateY(-1px) scale(1.02);
+}
+
+.noble-tile-header,
+.noble-tile-footer {
+    position: relative;
+    z-index: 1;
+}
+
+.noble-tile-header {
+    padding: 2px 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.noble-tile-point {
+    color: #ffffff;
+    font-weight: 700;
+    margin: 0;
+}
+
+.noble-tile-center {
+    position: absolute;
+    inset: 0;
+}
+
+.noble-tile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.noble-tile-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+    background-color: rgba(253, 251, 248, 0.4);
+    padding: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.token-list {
+    display: flex;
+    gap: 4px;
+}
+
+.token {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    background-color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

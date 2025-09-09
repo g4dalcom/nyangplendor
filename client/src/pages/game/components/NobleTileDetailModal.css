@@ -1,0 +1,95 @@
+.noble-tile-detail-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    /*background-color: transparent;*/
+    justify-content: space-between;
+    gap: 8px;
+    perspective: 300px;
+}
+
+.noble-tile-detail-container {
+    position: relative;
+    width: 100%;
+    flex-grow: 1;
+    flex-shrink: 0;
+    background-color: #f5eeda;
+    border: 2px solid #4a4a4a;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    transform-style: preserve-3d;
+    transition: transform 0.2s ease-out;
+}
+
+.noble-tile-detail-header,
+.noble-tile-detail-footer {
+    position: relative;
+    z-index: 1;
+}
+
+.noble-tile-detail-header {
+    padding: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* NobleTile's Point */
+.noble-tile-detail-point {
+    color: #ffffff;
+    font-size: 1.8em;
+    font-weight: 700;
+    margin-left: 8px;
+}
+
+.noble-tile-detail-center {
+    position: absolute;
+    inset: 0;
+}
+
+/* NobleTile's Image */
+.noble-tile-detail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+.noble-tile-detail-footer {
+    position: relative;
+    bottom: unset;
+    left: unset;
+    width: 100%;
+    z-index: 1;
+    background-color: rgba(253, 251, 248, 0.4);
+    padding: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
+}
+
+/* NobleTile's cost */
+.token-list {
+    display: flex;
+    gap: 4px;
+}
+
+.noble-tile-detail-token {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    background-color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #000000;
+    font-weight: bold;
+    font-size: 1.2em;
+}

@@ -1,23 +1,26 @@
 import "./GameBoard.css";
 import {CardLevel, Token} from "@shared/types/enums/GameObject";
-import {DevelopmentCardView, tokenImages} from "@/pages";
+import {DevelopmentCardView, NobleTileView, tokenImages} from "@/pages";
 import type {Dispatch, MouseEvent, SetStateAction} from "react";
 import type {GameState} from "@shared/states/GameState";
 import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 import {AllTokens} from "@shared/utils/tokens";
+import type {NobleTile} from "@shared/models/colyseus/NobleTile";
 
 interface Props {
   gameState: ReturnType<GameState['toJSON']>;
   selectedTokens: Map<Token, number>;
   handleBringToken: (event: MouseEvent<HTMLButtonElement>) => void;
   setSelectedCard: Dispatch<SetStateAction<DevelopmentCard | null>>;
+  setSelectedNobleTile: Dispatch<SetStateAction<NobleTile | null>>;
 }
 
 export const GameBoard = ({
                             gameState,
                             selectedTokens,
                             handleBringToken,
-                            setSelectedCard }: Props) => {
+                            setSelectedCard,
+                            setSelectedNobleTile }: Props) => {
   //
   const tokenRenderer = () => {
     //
@@ -63,9 +66,9 @@ export const GameBoard = ({
     const nobleTiles = gameState.nobleTiles;
     return (
       <div className="board-noble-row">
-        { nobleTiles.map(noble => (
-          <div className="board-noble-card" key={noble.id}>
-            <span className="card-content"> {noble.name}</span>
+        { nobleTiles.map(nobleTile => (
+          <div className="board-noble-card" key={nobleTile.id} onClick={() => setSelectedNobleTile(nobleTile)}>
+            <NobleTileView nobleTile={nobleTile} />
           </div>
         )) }
         { Array.from({ length: 5 - nobleTiles.length }, (_, i) => (

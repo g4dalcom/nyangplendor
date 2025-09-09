@@ -82,7 +82,8 @@ export class GameRoom extends Room<GameState> {
         this.initializeTokens(5)
         this.initializeNobleTiles(4)
         break;
-      case 4:
+      case 4: case 1:
+        // TODO: TEST 후 롤백
         this.initializeTokens(7)
         this.initializeNobleTiles(5)
         break;

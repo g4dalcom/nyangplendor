@@ -41,8 +41,8 @@ dialog::backdrop {
   aspect-ratio: 3 / 4.5
 }
 .modal-container.size-tile {
-  width: auto;
-  max-width: 90vw;
+  max-width: 480px;
+  aspect-ratio: 1
 }
 .modal-container.variant-card {
   box-shadow: none;
