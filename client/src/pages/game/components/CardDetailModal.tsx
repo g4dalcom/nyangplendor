@@ -2,6 +2,8 @@ import "./CardDetailModal.css";
 import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 import {Modal} from "@/ui/modal/modal.tsx";
 import {tokenImages} from "@/pages";
+import {motion, useMotionValue, useTransform} from "framer-motion";
+import {useState} from "react";
 
 interface Props {
   selectedCard: DevelopmentCard;
@@ -11,10 +13,32 @@ interface Props {
 
 export const CardDetailModal = ({ selectedCard, cardDetailModalOpen, closeModal }: Props) => {
   //
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const rotateX = useTransform(y, [-150, 150], [30, -30]);
+  const rotateY = useTransform(x, [-150, 150], [-30, 30]);
+
+  const handleClose = () => {
+    if (!isDragging) {
+      closeModal();
+    }
+  };
+
   return (
-    <Modal isOpen={cardDetailModalOpen} onClose={closeModal} size="card" variant="card">
+    <Modal isOpen={cardDetailModalOpen} onClose={handleClose} size="card" variant="card">
       <div className="card-detail-wrapper">
-        <section className="card-detail-container">
+        <motion.section
+          className="card-detail-container"
+          style={{ x, y, rotateX, rotateY, transformStyle: "preserve-3d" }}
+          drag
+          dragElastic={0.3}
+          dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+          onDragStart={() => setIsDragging(true)}
+          onDragEnd={() => setIsDragging(false)}
+        >
           <div className={`card-detail-header header-color-${selectedCard.level}`}>
             <div className="card-detail-point">{selectedCard.prestigePoint > 0 ? selectedCard.prestigePoint : ''}</div>
             <div className="bonus-token">
@@ -35,7 +59,7 @@ export const CardDetailModal = ({ selectedCard, cardDetailModalOpen, closeModal 
               )}
             </div>
           </footer>
-        </section>
+        </motion.section>
 
         <article className="card-actions-container">
           <button className="bubbly orange">Reserve</button>
