@@ -38,10 +38,10 @@ export class GameRoom extends Room<GameState> {
       this.broadcast(Transfer.START_GAME, { message: "게임이 시작되었습니다!" });
     })
 
-    this.onMessage(Transfer.BRING_TOKEN, (client, message) => {
+    this.onMessage(Transfer.ACTION_BRING_TOKEN, (client, message) => {
       console.log("===== Bring Token ===== ")
       console.log("message: ", message)
-      this.takeTokens(client.sessionId, message.tokenMap);
+      this.takeTokens(client.sessionId, message.selectedTokens);
     })
   }
 

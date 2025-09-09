@@ -27,7 +27,7 @@ export const DevelopmentCardView = ({ cardInfo }: Props) => {
         <div className="token-list">
           { Object.entries(cardInfo.cost).flatMap(([token, count], i) =>
             <span key={`token-${i}`} className={`token token-${token}`}>{count}</span>
-          )}
+          ) }
         </div>
       </footer>
     </div>

@@ -3,10 +3,10 @@ export enum Transfer {
   START_GAME = "startGame",
   END_TURN = "endTurn",
 
-  BRING_TOKEN = "bringToken",
-  RETURN_TOKEN = "returnToken",
-  PURCHASE_DEVELOPMENT_CARD = "purchaseDevelopmentCard",
-  RESERVE_DEVELOPMENT_CARD = "reserveDevelopmentCard",
+  ACTION_BRING_TOKEN = "bringToken",
+  ACTION_RETURN_TOKEN = "returnToken",
+  ACTION_PURCHASE_DEVELOPMENT_CARD = "purchaseDevelopmentCard",
+  ACTION_RESERVE_DEVELOPMENT_CARD = "reserveDevelopmentCard",
   NO_ACTION = "noAction",
 
   ERROR = "error",

@@ -1,6 +1,9 @@
 import {Token} from "@shared/types";
 import {MapSchema} from "@colyseus/schema";
 
+export const AllTokens = Object.values(Token);
+export const TokensWithoutGold = Object.values(Token).filter(token => token !== Token.GOLD);
+
 export const countAllTokens = (tokenMap: Map<Token, number> | MapSchema<number>): number => {
   let total = 0;
 

@@ -1,5 +1,5 @@
 import {createContext, useContext, useState, useCallback, type ReactNode} from 'react';
-import {DialogContainer} from "@/ui/dialog/DialogContainer.tsx";
+import {DialogContainer} from "@/ui";
 
 export type DialogType = 'alert' | 'error' | 'confirm';
 

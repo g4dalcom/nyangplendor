@@ -1,20 +1,18 @@
 import {useEffect, useRef, useState} from "react"
-import {GamePhase, Token, Transfer, TurnAction} from "@shared/types/index";
+import {useNavigate} from "react-router-dom";
 import {useGameRoom} from "@/contexts";
-import "./Game.css";
-import {PlayerInfo} from "@/pages/game/components/PlayerInfo.tsx";
+import {useTurnGuard} from "@/hooks";
+import {CardDetailModal, GameBoard, Inventory, PlayerInfo} from "@/pages";
+import {GamePhase, Token, Transfer, TurnAction} from "@shared/types/index";
+import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 
+import "./Game.css";
 import rubyToken from "@/assets/icons/churu.svg";
 import sapphireToken from "@/assets/icons/tuna.svg";
 import emeraldToken from "@/assets/icons/fishing-toy.svg";
 import diamondToken from "@/assets/icons/yarn-ball.svg";
 import onyxToken from "@/assets/icons/fish.svg";
 import goldToken from "@/assets/icons/gold.svg";
-import {Inventory} from "@/pages/game/components/Inventory.tsx";
-import {GameBoard} from "@/pages/game/components/GameBoard.tsx";
-import {useTurnGuard} from "@/hooks";
-import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
-import {CardDetailModal} from "@/pages/game/components/CardDetailModal.tsx";
 
 export const tokenImages = {
   [Token.RUBY]: rubyToken,
@@ -27,10 +25,11 @@ export const tokenImages = {
 
 export const Game = () => {
   //
+  const navigate = useNavigate();
   const { gameRoom, gameState, player } = useGameRoom();
   const turnGuard = useTurnGuard(player?.turn ?? false);
 
-  const [tokenMap, setTokenMap] = useState<Map<Token, number>>(new Map());
+  const [selectedTokens, setSelectedTokens] = useState<Map<Token, number>>(new Map());
   const [selectedCard, setSelectedCard] = useState<DevelopmentCard | null>(null);
   const [cardDetailModalOpen, setCardDetailModalOpen] = useState<boolean>(false);
   const turnAction = useRef<TurnAction>(TurnAction.NO_ACTION);
@@ -39,7 +38,8 @@ export const Game = () => {
   const disableTurnEndButton = !player?.turn;
 
   useEffect(() => {
-    setTokenMap(new Map());
+    setSelectedTokens(new Map());
+    setSelectedCard(null);
     turnAction.current = TurnAction.NO_ACTION;
   }, [gameState?.turn]);
 
@@ -61,10 +61,10 @@ export const Game = () => {
 
     switch (turnAction.current) {
       case TurnAction.BRING_TOKEN:
-        messageType = Transfer.BRING_TOKEN;
+        messageType = Transfer.ACTION_BRING_TOKEN;
         break;
     }
-    gameRoom?.send(messageType, { tokenMap })
+    gameRoom?.send(messageType, { selectedTokens })
     console.log("End Turn = ", gameRoom?.state)
   })
 
@@ -74,21 +74,21 @@ export const Game = () => {
     if (!validateBringToken(value as Token)) {
       return;
     }
-    const map = new Map(tokenMap);
-    map.set(value, (tokenMap.get(value) || 0) + 1);
-    setTokenMap(map);
+    const map = new Map(selectedTokens);
+    map.set(value, (selectedTokens.get(value) || 0) + 1);
+    setSelectedTokens(map);
   })
 
   const validateBringToken = (token: Token) => {
-    const tokenCount = Array.from(tokenMap.values()).reduce((acc, count) => acc + count, 0);
+    const tokenCount = Array.from(selectedTokens.values()).reduce((acc, count) => acc + count, 0);
     if (tokenCount >= 3) {
       return false;
     }
-    const existSameToken = Array.from(tokenMap.values()).some(count => count > 1);
+    const existSameToken = Array.from(selectedTokens.values()).some(count => count > 1);
     if (existSameToken){
       return false;
     }
-    if (tokenCount === 2 && !!tokenMap.get(token)) {
+    if (tokenCount === 2 && !!selectedTokens.get(token)) {
       return false;
     }
     return true;
@@ -96,13 +96,14 @@ export const Game = () => {
 
   const handleReturnToken = turnGuard((event: any) => {
     const value = event.currentTarget.value;
-    const map = new Map(tokenMap);
-    map.set(value, (tokenMap.get(value) || 0) - 1);
-    setTokenMap(map);
+    const map = new Map(selectedTokens);
+    map.set(value, (selectedTokens.get(value) || 0) - 1);
+    setSelectedTokens(map);
   })
 
   if (!gameRoom || !gameState) {
-    return <div>게임 방에 연결하는 중입니다...</div>;
+    navigate("/");
+    return;
   }
 
   return (
@@ -120,7 +121,7 @@ export const Game = () => {
         {/* Game Board */}
         <GameBoard
           gameState={gameState}
-          tokenMap={tokenMap}
+          selectedTokens={selectedTokens}
           handleBringToken={handleBringToken}
           setSelectedCard={setSelectedCard}
         />
@@ -147,7 +148,7 @@ export const Game = () => {
       {/* Bottom UI */}
       <Inventory
         player={player}
-        tokenMap={tokenMap}
+        selectedTokens={selectedTokens}
         handleReturnToken={handleReturnToken}
       />
 

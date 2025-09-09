@@ -17,7 +17,6 @@ export const CardDetailModal = ({ selectedCard, cardDetailModalOpen, closeModal 
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-
   const rotateX = useTransform(y, [-150, 150], [30, -30]);
   const rotateY = useTransform(x, [-150, 150], [-30, 30]);
 

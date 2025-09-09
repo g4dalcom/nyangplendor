@@ -1,33 +1,33 @@
 import "./GameBoard.css";
 import {CardLevel, Token} from "@shared/types/enums/GameObject";
-import {tokenImages} from "@/pages";
+import {DevelopmentCardView, tokenImages} from "@/pages";
 import type {Dispatch, MouseEvent, SetStateAction} from "react";
 import type {GameState} from "@shared/states/GameState";
-import {DevelopmentCardView} from "@/pages/game/components/DevelopmentCardView.tsx";
 import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
+import {AllTokens} from "@shared/utils/tokens";
 
 interface Props {
   gameState: ReturnType<GameState['toJSON']>;
-  tokenMap: Map<Token, number>;
+  selectedTokens: Map<Token, number>;
   handleBringToken: (event: MouseEvent<HTMLButtonElement>) => void;
   setSelectedCard: Dispatch<SetStateAction<DevelopmentCard | null>>;
 }
 
 export const GameBoard = ({
                             gameState,
-                            tokenMap,
+                            selectedTokens,
                             handleBringToken,
                             setSelectedCard }: Props) => {
   //
   const tokenRenderer = () => {
     //
     return (
-        [Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
+        AllTokens.map(token => (
         <div className="board-token-row" key={token}>
           <button value={token} className={`board-token-stack token-${token}`} onClick={handleBringToken}>
             <img src={tokenImages[token]} alt={`${token} 토큰`} className="token-image" />
           </button>
-          <span className="token-count">{(gameState.tokens[token] ?? 0) - (tokenMap.get(token) ?? 0)}</span>
+          <span className="token-count">{(gameState.tokens[token] ?? 0) - (selectedTokens.get(token) ?? 0)}</span>
         </div>
       ))
     )

@@ -3,16 +3,17 @@ import {Token} from "@shared/types/enums/GameObject";
 import {tokenImages} from "@/pages";
 import type {Player} from "@shared/models/colyseus/Player";
 import {type MouseEvent, useEffect, useState} from "react";
+import {AllTokens, TokensWithoutGold} from "@shared/utils/tokens";
 
 interface Props {
   player: Player | null | undefined;
-  tokenMap: Map<Token, number>;
+  selectedTokens: Map<Token, number>;
   handleReturnToken: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const Inventory = ({
                             player,
-                            tokenMap,
+                            selectedTokens,
                             handleReturnToken
 }: Props) => {
   //
@@ -45,7 +46,7 @@ export const Inventory = ({
       {/* Bring Token Area */}
       <article className="left-inventory-area">
         <div className="bring-token-area">
-        {[...tokenMap.entries()].map(([token, count]) =>
+        { [...selectedTokens.entries()].map(([token, count]) =>
           [...Array(count)].map((_, i) => (
             <button
               key={`${token}-${i}`}
@@ -56,7 +57,7 @@ export const Inventory = ({
               <img src={tokenImages[token]} alt={`${token} 토큰`} className="token-image" />
             </button>
           ))
-        )}
+        ) }
         </div>
       </article>
 
@@ -66,26 +67,26 @@ export const Inventory = ({
         <div className="my-object-container">
           <div className="my-info-left">
             <div className="my-card-area">
-              {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX].map(token => (
+              { TokensWithoutGold.map(token => (
                 <span key={token} className={`my-card-info token-${token}`}>{cardBonusMap.get(token) ?? 0}</span>
-              ))}
+              )) }
             </div>
             <div className="my-token-area">
-              {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
+              { AllTokens.map(token => (
                 <span key={token} className={`my-token-info token-${token}`}>{(player?.tokens as any)[token] ?? 0}</span>
-              ))}
+              )) }
             </div>
           </div>
           <div className="my-info-right">
             <div className="my-reserved-area">
-              {player?.reservedCards.map(card => (
+              { player?.reservedCards.map(card => (
                 <div className="my-reserved-card" key={card.id}>
                   <span className="card-content"> {card.name}</span>
                 </div>
-              ))}
-              {Array.from({ length: emptySlotCount }, (_, i) => (
+              )) }
+              { Array.from({ length: emptySlotCount }, (_, i) => (
                 <div key={`my-reserved-empty-${i}`} className="my-empty-reserved-card"></div>
-              ))}
+              )) }
             </div>
           </div>
         </div>

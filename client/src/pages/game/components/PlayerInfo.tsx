@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 
 import "./PlayerInfo.css";
 import emptyPlayer from "@/assets/images/empty-player.png";
+import {AllTokens, TokensWithoutGold} from "@shared/utils/tokens";
 
 interface Props {
   player: Player;
@@ -37,11 +38,11 @@ export const PlayerInfo = ({ player }: Props) => {
 
     return (
       <>
-        {reservedCards.map(card => (
+        { reservedCards.map(card => (
           <div className="player-reserved-card" key={card.id}>
             <span className="card-content">{card.name}</span>
           </div>
-        ))}
+        )) }
         {emptySlots}
       </>
     )
@@ -54,19 +55,19 @@ export const PlayerInfo = ({ player }: Props) => {
           <div className="player-name">{player.name}</div>
           <div className="player-object-container">
             <div className="player-card-area">
-              {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX].map(token => (
+              { TokensWithoutGold.map(token => (
                 <span key={token} className={`player-card-info token-${token}`}>{cardBonusMap.get(token) ?? 0}</span>
-              ))}
+              )) }
             </div>
 
             <div className="player-token-area">
-              {[Token.RUBY, Token.SAPPHIRE, Token.EMERALD, Token.DIAMOND, Token.ONYX, Token.GOLD].map(token => (
+              { AllTokens.map(token => (
                 <span key={token} className={`player-token-info token-${token}`}>{(player.tokens as any)[token] ?? 0}</span>
-              ))}
+              )) }
             </div>
 
             <div className="player-reserved-area">
-              {renderReservedCards(player)}
+              { renderReservedCards(player) }
             </div>
           </div>
         </>
