@@ -9,16 +9,16 @@ import type {NobleTile} from "@shared/models/colyseus/NobleTile";
 
 interface Props {
   gameState: ReturnType<GameState['toJSON']>;
-  selectedTokens: Map<Token, number>;
-  handleBringToken: (event: MouseEvent<HTMLButtonElement>) => void;
+  pendingTokens: Record<Token, number>;
+  bringToken: (event: MouseEvent<HTMLButtonElement>) => void;
   setSelectedCard: Dispatch<SetStateAction<DevelopmentCard | null>>;
   setSelectedNobleTile: Dispatch<SetStateAction<NobleTile | null>>;
 }
 
 export const GameBoard = ({
                             gameState,
-                            selectedTokens,
-                            handleBringToken,
+                            pendingTokens,
+                            bringToken,
                             setSelectedCard,
                             setSelectedNobleTile }: Props) => {
   //
@@ -27,10 +27,10 @@ export const GameBoard = ({
     return (
         AllTokens.map(token => (
         <div className="board-token-row" key={token}>
-          <button value={token} className={`board-token-stack token-${token}`} onClick={handleBringToken}>
+          <button value={token} className={`board-token-stack token-${token}`} onClick={bringToken}>
             <img src={tokenImages[token]} alt={`${token} 토큰`} className="token-image" />
           </button>
-          <span className="token-count">{(gameState.tokens[token] ?? 0) - (selectedTokens.get(token) ?? 0)}</span>
+          <span className="token-count">{(gameState.tokens[token] ?? 0) - pendingTokens[token as Token]}</span>
         </div>
       ))
     )

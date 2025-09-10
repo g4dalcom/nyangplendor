@@ -2,17 +2,17 @@ import {Token} from "@shared/types/enums/GameObject";
 import type {Player} from "@shared/models/colyseus/Player";
 import {useEffect, useState} from "react";
 
-import "./PlayerInfo.css";
+import "./GamePlayer.css";
 import emptyPlayer from "@/assets/images/empty-player.png";
-import {AllTokens, TokensWithoutGold} from "@shared/utils/tokens";
+import {AllTokens, initializeTokens, TokensWithoutGold} from "@shared/utils/tokens";
 
 interface Props {
   player: Player;
 }
 
-export const PlayerInfo = ({ player }: Props) => {
+export const GamePlayer = ({ player }: Props) => {
   //
-  const [cardBonusMap, setCardBonusMap] = useState<Map<Token, number>>(new Map());
+  const [cardBonusMap, setCardBonusMap] = useState<Record<Token, number>>(initializeTokens());
 
   useEffect(() => {
     if (player) {
@@ -21,10 +21,10 @@ export const PlayerInfo = ({ player }: Props) => {
   }, [player]);
 
   const calculateCardBonus = (player: Player) => {
-    const map = new Map<Token, number>();
+    const map = initializeTokens();
     player?.developmentCards?.forEach(card => {
       const bonus = card.token;
-      map.set(bonus, (map.get(bonus) ?? 0) + 1);
+      map[bonus] += 1;
     })
     return map;
   }
@@ -56,7 +56,7 @@ export const PlayerInfo = ({ player }: Props) => {
           <div className="player-object-container">
             <div className="player-card-area">
               { TokensWithoutGold.map(token => (
-                <span key={token} className={`player-card-info token-${token}`}>{cardBonusMap.get(token) ?? 0}</span>
+                <span key={token} className={`player-card-info token-${token}`}>{cardBonusMap[token]}</span>
               )) }
             </div>
 

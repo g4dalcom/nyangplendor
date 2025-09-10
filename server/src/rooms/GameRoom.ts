@@ -3,9 +3,8 @@ import {
   CardAction,
   CardLevel,
   GameMetaDataType,
-  GamePhase, getTotalTokenCount,
+  GamePhase,
   Token,
-  TokenCount,
   Transfer
 } from "@shared/types";
 import {GameState} from "@shared/states/GameState";
@@ -13,6 +12,7 @@ import {DevelopmentCard, developmentCardClasses} from "@shared/models/colyseus/D
 import {shuffleArray} from "@shared/utils/random";
 import {NobleTile, nobleTileClasses} from "@shared/models/colyseus/NobleTile";
 import {Player} from "@shared/models/colyseus/Player";
+import {getTotalTokens, initializeTokens} from "@shared/utils/tokens";
 
 export class GameRoom extends Room<GameState> {
 
@@ -41,7 +41,7 @@ export class GameRoom extends Room<GameState> {
     this.onMessage(Transfer.ACTION_BRING_TOKEN, (client, message) => {
       console.log("===== Bring Token ===== ")
       console.log("message: ", message)
-      this.takeTokens(client.sessionId, message.selectedTokens);
+      this.takeTokens(client.sessionId, message.params);
     })
   }
 
@@ -125,7 +125,7 @@ export class GameRoom extends Room<GameState> {
   }
 
   /* Player Turn Actions */
-  public takeTokens = (sessionId: string, tokens: TokenCount) => {
+  public takeTokens = (sessionId: string, tokens: Record<Token, number>) => {
     const player = this.state.findPlayerBySessionId(sessionId);
     if (!this.validatePlayerTokenCount(player, tokens)) return;
 
@@ -133,13 +133,13 @@ export class GameRoom extends Room<GameState> {
     this.endTurn();
   }
 
-  private validatePlayerTokenCount = (player: Player, tokens: TokenCount) => {
+  private validatePlayerTokenCount = (player: Player, tokens: Record<Token, number>) => {
     const playerTokens = player.totalTokenCount;
-    const bringOrReturnTokens = getTotalTokenCount(tokens);
+    const bringOrReturnTokens = getTotalTokens(tokens);
     return playerTokens + bringOrReturnTokens <= 10;
   }
 
-  private syncToken = (player: Player, tokens: TokenCount) => {
+  private syncToken = (player: Player, tokens: Record<Token, number>) => {
     for (const [token, count] of Object.entries(tokens)) {
       const targetTokens = this.state.tokens.get(token) || 0;
       const playerTokens = player.tokens.get(token) || 0;
@@ -159,7 +159,7 @@ export class GameRoom extends Room<GameState> {
 
     const goldToken = this.state.tokens.get(Token.GOLD) || 0;
     if (goldToken > 0) {
-      const tokens: TokenCount = {};
+      const tokens: Record<Token, number> = initializeTokens();
       tokens[Token.GOLD] = 1;
       this.syncToken(player, tokens)
     }
@@ -167,7 +167,7 @@ export class GameRoom extends Room<GameState> {
     this.endTurn();
   }
 
-  public purchaseCard = (sessionId: string, cardId: string, tokens: TokenCount) => {
+  public purchaseCard = (sessionId: string, cardId: string, tokens: Record<Token, number>) => {
     const player = this.state.findPlayerBySessionId(sessionId);
     const purchasedCard = this.state.findDevelopmentCardById(cardId);
     if (this.validatePurchase(player, purchasedCard, tokens)) {
@@ -179,17 +179,17 @@ export class GameRoom extends Room<GameState> {
   }
 
   /* '카드 보너스 + 보유 토큰'으로 구매 가능한지 */
-  private validatePurchase = (player: Player, card: DevelopmentCard, tokens: TokenCount) => {
-    const playerOwnedCardMap: TokenCount = {};
+  private validatePurchase = (player: Player, card: DevelopmentCard, tokens: Record<Token, number>) => {
+    const playerOwnedCardMap: Record<Token, number> = initializeTokens();
     player.developmentCards.forEach(ownedCard => {
       const token = ownedCard.token;
-      playerOwnedCardMap[token] = (playerOwnedCardMap[token] || 0) + 1;
+      playerOwnedCardMap[token] += 1;
     });
 
     const requiredTokens = card.cost;
 
     for (const [token, count] of requiredTokens.entries()) {
-      const payment = (tokens[token as Token] || 0) + (playerOwnedCardMap[token as Token] || 0);
+      const payment = tokens[token as Token] + playerOwnedCardMap[token as Token];
       if (payment < count) return false;
     }
     return true;
@@ -215,7 +215,7 @@ export class GameRoom extends Room<GameState> {
   private endTurn = () => {
     const playerIndex = this.state.turn % this.state.players.length;
     const activePlayer = this.state.players[playerIndex];
-    console.log("playerIndex = ", playerIndex)
+
     this.visitNoble(activePlayer);
 
     if (this.findEndGamePlayer()) {
@@ -237,18 +237,18 @@ export class GameRoom extends Room<GameState> {
   }
 
   private visitNoble = (player: Player) => {
-    const cardBonusMap: Map<string, number> = new Map();
+    const cardBonusMap: Record<Token, number> = initializeTokens();
     for (const card of player.developmentCards) {
       const token = card.token;
-      cardBonusMap.set(token, (cardBonusMap.get(token) || 0) + 1);
+      cardBonusMap[token] += 1;
     }
 
     for (const nobleTile of this.state.nobleTiles) {
       let visitable = true;
       const cost = nobleTile.cost;
       for (const [token, count] of cost) {
-        const bonusCount = cardBonusMap.get(token);
-        if (!bonusCount || bonusCount < count) {
+        const bonusCount = cardBonusMap[token as Token];
+        if (bonusCount < count) {
           visitable = false;
           break;
         }

@@ -55,7 +55,7 @@
     transform: translateZ(1px);
 }
 
-/* My Object Inventory */
+/* My Object PlayerHand */
 .center-inventory-area {
     flex: 5;
     gap: 15px;

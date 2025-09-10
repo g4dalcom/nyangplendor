@@ -1,11 +1,12 @@
-import {useEffect, useRef, useState} from "react"
+import {useEffect, useState} from "react"
 import {useNavigate} from "react-router-dom";
 import {useGameRoom} from "@/contexts";
-import {useTurnGuard} from "@/hooks";
-import {CardDetailModal, GameBoard, Inventory, NobleTileDetailModal, PlayerInfo} from "@/pages";
+import {useTurnAction, useTurnGuard} from "@/hooks";
+import {CardDetailModal, GameBoard, NobleTileDetailModal, PlayerHand, GamePlayer} from "@/pages";
 import {GamePhase, Token, Transfer, TurnAction} from "@shared/types/index";
 import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
-
+import type {NobleTile} from "@shared/models/colyseus/NobleTile";
+import {getTotalTokens} from "@shared/utils/tokens";
 import "./Game.css";
 import rubyToken from "@/assets/icons/churu.svg";
 import sapphireToken from "@/assets/icons/tuna.svg";
@@ -13,7 +14,6 @@ import emeraldToken from "@/assets/icons/fishing-toy.svg";
 import diamondToken from "@/assets/icons/yarn-ball.svg";
 import onyxToken from "@/assets/icons/fish.svg";
 import goldToken from "@/assets/icons/gold.svg";
-import type {NobleTile} from "@shared/models/colyseus/NobleTile";
 
 export const tokenImages = {
   [Token.RUBY]: rubyToken,
@@ -28,14 +28,11 @@ export const Game = () => {
   //
   const navigate = useNavigate();
   const { gameRoom, gameState, player } = useGameRoom();
+  const { turnActionInfo, resetActionInfo, updateWithTokens, updateWithCard } = useTurnAction();
   const turnGuard = useTurnGuard(player?.turn ?? false);
 
-  const [selectedTokens, setSelectedTokens] = useState<Map<Token, number>>(new Map());
   const [selectedCard, setSelectedCard] = useState<DevelopmentCard | null>(null);
   const [selectedNobleTile, setSelectedNobleTile] = useState<NobleTile | null>(null);
-  const [cardDetailModalOpen, setCardDetailModalOpen] = useState<boolean>(false);
-  const [nobleTileDetailModalOpen, setNobleTileDetailModalOpen] = useState<boolean>(false);
-  const turnAction = useRef<TurnAction>(TurnAction.NO_ACTION);
 
   // TODO: TEST 후 롤백
   // const disableStartButton = !player?.host || gameState!.players.length < 2;
@@ -49,27 +46,8 @@ export const Game = () => {
   }, [gameRoom, gameState, navigate]);
 
   useEffect(() => {
-    setSelectedTokens(new Map());
-    setSelectedCard(null);
-    setSelectedNobleTile(null);
-    turnAction.current = TurnAction.NO_ACTION;
+    resetActionInfo();
   }, [gameState?.turn]);
-
-  useEffect(() => {
-    if (selectedCard) {
-      setCardDetailModalOpen(true);
-    } else {
-      setCardDetailModalOpen(false);
-    }
-  }, [selectedCard]);
-
-  useEffect(() => {
-    if (selectedNobleTile) {
-      setNobleTileDetailModalOpen(true);
-    } else {
-      setNobleTileDetailModalOpen(false);
-    }
-  }, [selectedNobleTile]);
 
   const handleStartGame = () => {
     gameRoom?.send(Transfer.START_GAME)
@@ -78,48 +56,58 @@ export const Game = () => {
 
   const handleEndTurn = turnGuard(() => {
     let messageType = Transfer.NO_ACTION;
+    let params = undefined;
 
-    switch (turnAction.current) {
+    switch (turnActionInfo.action) {
       case TurnAction.BRING_TOKEN:
         messageType = Transfer.ACTION_BRING_TOKEN;
+        params = turnActionInfo.tokens;
+        break;
+      case TurnAction.PURCHASE_DEVELOPMENT_CARD:
+        messageType = Transfer.ACTION_PURCHASE_DEVELOPMENT_CARD;
+        params = turnActionInfo.card;
+        break;
+      case TurnAction.RESERVE_DEVELOPMENT_CARD:
+        messageType = Transfer.ACTION_RESERVE_DEVELOPMENT_CARD;
+        params = turnActionInfo.card;
         break;
     }
-    gameRoom?.send(messageType, { selectedTokens })
+    gameRoom?.send(messageType, { params })
     console.log("End Turn = ", gameRoom?.state)
   })
 
-  const handleBringToken = turnGuard((event: any) => {
-    turnAction.current = TurnAction.BRING_TOKEN;
+  const bringToken = turnGuard((event: any) => {
     const value = event.currentTarget.value;
     if (!validateBringToken(value as Token)) {
       return;
     }
-    const map = new Map(selectedTokens);
-    map.set(value, (selectedTokens.get(value) || 0) + 1);
-    setSelectedTokens(map);
+    const tokens = { ... turnActionInfo.tokens };
+    tokens[value as Token] += 1;
+    updateWithTokens(tokens);
+  })
+
+  const returnToken = turnGuard((event: any) => {
+    const value = event.currentTarget.value;
+    const tokens = { ... turnActionInfo.tokens };
+    tokens[value as Token] -= 1;
+    updateWithTokens(tokens);
   })
 
   const validateBringToken = (token: Token) => {
-    const tokenCount = Array.from(selectedTokens.values()).reduce((acc, count) => acc + count, 0);
+    const bringTokens = turnActionInfo.tokens;
+    const tokenCount = getTotalTokens(bringTokens);
     if (tokenCount >= 3) {
       return false;
     }
-    const existSameToken = Array.from(selectedTokens.values()).some(count => count > 1);
+    const existSameToken = Object.values(bringTokens).some(count => count > 1);
     if (existSameToken){
       return false;
     }
-    if (tokenCount === 2 && !!selectedTokens.get(token)) {
+    if (tokenCount === 2 && bringTokens[token] > 0) {
       return false;
     }
     return true;
   }
-
-  const handleReturnToken = turnGuard((event: any) => {
-    const value = event.currentTarget.value;
-    const map = new Map(selectedTokens);
-    map.set(value, (selectedTokens.get(value) || 0) - 1);
-    setSelectedTokens(map);
-  })
 
   if (!gameRoom || !gameState) {
     return <div>방을 찾는 중...</div>;
@@ -133,15 +121,15 @@ export const Game = () => {
             <h1 className="game-logo">Nyangplendor</h1>
           </div>
           <div className="player-slots">
-            <PlayerInfo player={gameState.players[0]} />
-            <PlayerInfo player={gameState.players[2]} />
+            <GamePlayer player={gameState.players[0]} />
+            <GamePlayer player={gameState.players[2]} />
           </div>
         </div>
         {/* Game Board */}
         <GameBoard
           gameState={gameState}
-          selectedTokens={selectedTokens}
-          handleBringToken={handleBringToken}
+          pendingTokens={turnActionInfo.tokens}
+          bringToken={bringToken}
           setSelectedCard={setSelectedCard}
           setSelectedNobleTile={setSelectedNobleTile}
         />
@@ -159,39 +147,31 @@ export const Game = () => {
             }
           </div>
           <div className="player-slots">
-            <PlayerInfo player={gameState.players[1]} />
-            <PlayerInfo player={gameState.players[3]} />
+            <GamePlayer player={gameState.players[1]} />
+            <GamePlayer player={gameState.players[3]} />
           </div>
         </div>
       </div>
 
       {/* Bottom UI */}
-      <Inventory
+      <PlayerHand
         player={player}
-        selectedTokens={selectedTokens}
-        handleReturnToken={handleReturnToken}
+        pendingTokens={turnActionInfo.tokens}
+        returnToken={returnToken}
       />
 
       {/* Modals */}
-      { selectedCard && cardDetailModalOpen &&
+      { selectedCard &&
         <CardDetailModal
           selectedCard={selectedCard}
-          cardDetailModalOpen={cardDetailModalOpen}
-          closeModal={() => {
-            setCardDetailModalOpen(false)
-            setSelectedCard(null)
-          }}
+          closeModal={() => setSelectedCard(null)}
         />
       }
 
-      { selectedNobleTile && nobleTileDetailModalOpen &&
+      { selectedNobleTile &&
         <NobleTileDetailModal
           selectedNobleTile={selectedNobleTile}
-          nobleTileDetailModalOpen={nobleTileDetailModalOpen}
-          closeModal={() => {
-            setNobleTileDetailModalOpen(false)
-            setSelectedNobleTile(null)
-          }}
+          closeModal={() => setSelectedNobleTile(null)}
         />
       }
     </div>

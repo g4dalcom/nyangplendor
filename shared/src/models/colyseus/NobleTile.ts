@@ -1,6 +1,7 @@
 import {MapSchema, Schema, type} from "@colyseus/schema";
-import {genCostMap, NobleTileImageUrl, Token} from "@shared/types";
+import {NobleTileImageUrl, Token} from "@shared/types";
 import {nanoid} from "nanoid";
+import {genCostMap} from "@shared/utils";
 
 type NobleTileType = {
   name: string

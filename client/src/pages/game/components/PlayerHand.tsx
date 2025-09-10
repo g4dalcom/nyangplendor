@@ -1,23 +1,23 @@
-import "./Inventory.css";
+import "./PlayerHand.css";
 import {Token} from "@shared/types/enums/GameObject";
 import {tokenImages} from "@/pages";
 import type {Player} from "@shared/models/colyseus/Player";
 import {type MouseEvent, useEffect, useState} from "react";
-import {AllTokens, TokensWithoutGold} from "@shared/utils/tokens";
+import {AllTokens, initializeTokens, TokensWithoutGold} from "@shared/utils/tokens";
 
 interface Props {
   player: Player | null | undefined;
-  selectedTokens: Map<Token, number>;
-  handleReturnToken: (event: MouseEvent<HTMLButtonElement>) => void;
+  pendingTokens: Record<Token, number>;
+  returnToken: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
-export const Inventory = ({
+export const PlayerHand = ({
                             player,
-                            selectedTokens,
-                            handleReturnToken
+                            pendingTokens,
+                            returnToken
 }: Props) => {
   //
-  const [cardBonusMap, setCardBonusMap] = useState<Map<Token, number>>(new Map());
+  const [cardBonusMap, setCardBonusMap] = useState<Record<Token, number>>(initializeTokens());
   const emptySlotCount = 3 - (player?.reservedCards.length ?? 0);
 
   useEffect(() => {
@@ -28,10 +28,10 @@ export const Inventory = ({
 
 
   const calculateCardBonus = (player: Player) => {
-    const map = new Map<Token, number>();
+    const map = initializeTokens();
     for (const card of player.developmentCards) {
       const bonus = card.token;
-      map.set(bonus, (map.get(bonus) ?? 0) + 1);
+      map[bonus] += 1;
     }
     setCardBonusMap(map)
   }
@@ -46,29 +46,29 @@ export const Inventory = ({
       {/* Bring Token Area */}
       <article className="left-inventory-area">
         <div className="bring-token-area">
-        { [...selectedTokens.entries()].map(([token, count]) =>
-          [...Array(count)].map((_, i) => (
-            <button
-              key={`${token}-${i}`}
-              value={token}
-              className={`bring-token token-${token}`}
-              onClick={handleReturnToken}
-            >
-              <img src={tokenImages[token]} alt={`${token} 토큰`} className="token-image" />
-            </button>
-          ))
-        ) }
+          { Object.entries(pendingTokens).map(([token, count]) =>
+            [...Array(count)].map((_, i) => (
+              <button
+                key={`${token}-${i}`}
+                value={token}
+                className={`bring-token token-${token}`}
+                onClick={returnToken}
+              >
+                <img src={tokenImages[token as Token]} alt={`${token} 토큰`} className="token-image" />
+              </button>
+            ))
+          ) }
         </div>
       </article>
 
-      {/* My Object Inventory */}
+      {/* My Object PlayerHand */}
       <article className="center-inventory-area">
         <span className="my-token-count">{calculatePlayerTokenCount()} / 10</span>
         <div className="my-object-container">
           <div className="my-info-left">
             <div className="my-card-area">
               { TokensWithoutGold.map(token => (
-                <span key={token} className={`my-card-info token-${token}`}>{cardBonusMap.get(token) ?? 0}</span>
+                <span key={token} className={`my-card-info token-${token}`}>{cardBonusMap[token]}</span>
               )) }
             </div>
             <div className="my-token-area">

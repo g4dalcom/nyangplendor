@@ -6,11 +6,10 @@ import {Modal} from "@/ui";
 
 interface Props {
   selectedNobleTile: NobleTile;
-  nobleTileDetailModalOpen: boolean;
   closeModal: () => void;
 }
 
-export const NobleTileDetailModal = ({ selectedNobleTile, nobleTileDetailModalOpen, closeModal }: Props) => {
+export const NobleTileDetailModal = ({ selectedNobleTile, closeModal }: Props) => {
   //
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
@@ -26,13 +25,13 @@ export const NobleTileDetailModal = ({ selectedNobleTile, nobleTileDetailModalOp
   };
 
   return (
-    <Modal isOpen={nobleTileDetailModalOpen} onClose={handleClose} size="tile" variant="tile">
+    <Modal isOpen={!!selectedNobleTile} onClose={handleClose} size="tile" variant="tile">
       <div className="noble-tile-detail-wrapper">
         <motion.section
           className="noble-tile-detail-container"
           style={{ x, y, rotateX, rotateY, transformStyle: "preserve-3d" }}
           drag
-          dragElastic={0.3}
+          dragElastic={0.5}
           dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
           onDragStart={() => setIsDragging(true)}
           onDragEnd={() => setIsDragging(false)}

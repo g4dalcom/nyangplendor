@@ -3,6 +3,7 @@ import {Client, type Room} from "colyseus.js";
 import {type PlayerInfo, Transfer} from "@shared/types";
 import type {GameState} from "@shared/states/GameState";
 import type {Player} from "@shared/models/colyseus/Player";
+import {useDialog} from "@/contexts/DialogContext.tsx";
 
 type GameRoomContextType = {
   gameRoom?: Room<GameState>;
@@ -16,6 +17,7 @@ const GameRoomContext = createContext<GameRoomContextType>({} as GameRoomContext
 
 export const GameRoomProvider = ({ children }: { children: ReactNode }) => {
   const client = new Client("ws://localhost:2567");
+  const { alert } = useDialog();
   const [gameRoom, setGameRoom] = useState<Room<GameState>>();
   const [gameState, setGameState] = useState<ReturnType<GameState['toJSON']>>();
 

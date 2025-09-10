@@ -7,11 +7,10 @@ import {useState} from "react";
 
 interface Props {
   selectedCard: DevelopmentCard;
-  cardDetailModalOpen: boolean;
   closeModal: () => void;
 }
 
-export const CardDetailModal = ({ selectedCard, cardDetailModalOpen, closeModal }: Props) => {
+export const CardDetailModal = ({ selectedCard, closeModal }: Props) => {
   //
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
@@ -27,13 +26,13 @@ export const CardDetailModal = ({ selectedCard, cardDetailModalOpen, closeModal 
   };
 
   return (
-    <Modal isOpen={cardDetailModalOpen} onClose={handleClose} size="card" variant="card">
+    <Modal isOpen={!!selectedCard} onClose={handleClose} size="card" variant="card">
       <div className="card-detail-wrapper">
         <motion.section
           className="card-detail-container"
           style={{ x, y, rotateX, rotateY, transformStyle: "preserve-3d" }}
           drag
-          dragElastic={0.3}
+          dragElastic={0.5}
           dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
           onDragStart={() => setIsDragging(true)}
           onDragEnd={() => setIsDragging(false)}
