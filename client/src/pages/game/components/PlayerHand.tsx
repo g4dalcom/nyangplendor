@@ -8,14 +8,10 @@ import {AllTokens, initializeTokens, TokensWithoutGold} from "@shared/utils/toke
 interface Props {
   player: Player | null | undefined;
   pendingTokens: Record<Token, number>;
-  returnToken: (event: MouseEvent<HTMLButtonElement>) => void;
+  undoBringToken: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
-export const PlayerHand = ({
-                            player,
-                            pendingTokens,
-                            returnToken
-}: Props) => {
+export const PlayerHand = ({ player, pendingTokens, undoBringToken }: Props) => {
   //
   const [cardBonusMap, setCardBonusMap] = useState<Record<Token, number>>(initializeTokens());
   const emptySlotCount = 3 - (player?.reservedCards.length ?? 0);
@@ -52,7 +48,7 @@ export const PlayerHand = ({
                 key={`${token}-${i}`}
                 value={token}
                 className={`bring-token token-${token}`}
-                onClick={returnToken}
+                onClick={undoBringToken}
               >
                 <img src={tokenImages[token as Token]} alt={`${token} 토큰`} className="token-image" />
               </button>

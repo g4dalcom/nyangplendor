@@ -12,7 +12,13 @@ import {DevelopmentCard, developmentCardClasses} from "@shared/models/colyseus/D
 import {shuffleArray} from "@shared/utils/random";
 import {NobleTile, nobleTileClasses} from "@shared/models/colyseus/NobleTile";
 import {Player} from "@shared/models/colyseus/Player";
-import {getTotalTokens, initializeTokens} from "@shared/utils/tokens";
+import {
+  convertMapSchemaToRecord,
+  getCardBonus,
+  getRequiredCardCost,
+  getTotalTokens,
+  initializeTokens
+} from "@shared/utils/tokens";
 
 export class GameRoom extends Room<GameState> {
 
@@ -28,20 +34,33 @@ export class GameRoom extends Room<GameState> {
 
     this.state = new GameState(this.roomId, options?.id);
 
-    this.onMessage(Transfer.METADATA, (client) => {
-      client.send(Transfer.METADATA, this.metadata);
-    });
-
     this.onMessage(Transfer.START_GAME, () => {
       console.log("===== Start Game ===== ")
       this.setupGameByPlayers();
       this.broadcast(Transfer.START_GAME, { message: "게임이 시작되었습니다!" });
     })
 
+    this.onMessage(Transfer.NO_ACTION, () => {
+      console.log("===== No Action ===== ")
+      this.endTurn();
+    })
+
     this.onMessage(Transfer.ACTION_BRING_TOKEN, (client, message) => {
       console.log("===== Bring Token ===== ")
       console.log("message: ", message)
       this.takeTokens(client.sessionId, message.params);
+    })
+
+    this.onMessage(Transfer.ACTION_PURCHASE_DEVELOPMENT_CARD, (client, message) => {
+      console.log("===== Purchase Development Card ===== ")
+      console.log("message: ", message)
+      this.purchaseCard(client.sessionId, message.params);
+    })
+
+    this.onMessage(Transfer.ACTION_RESERVE_DEVELOPMENT_CARD, (client, message) => {
+      console.log("===== Reserve Development Card ===== ")
+      console.log("message: ", message)
+      this.reservedCard(client.sessionId, message.params);
     })
   }
 
@@ -167,32 +186,30 @@ export class GameRoom extends Room<GameState> {
     this.endTurn();
   }
 
-  public purchaseCard = (sessionId: string, cardId: string, tokens: Record<Token, number>) => {
+  public purchaseCard = (sessionId: string, cardId: string) => {
     const player = this.state.findPlayerBySessionId(sessionId);
     const purchasedCard = this.state.findDevelopmentCardById(cardId);
-    if (this.validatePurchase(player, purchasedCard, tokens)) {
-      this.syncCard(player, purchasedCard, CardAction.PURCHASE);
-      this.syncToken(player, tokens);
+
+    const playerCardBonuses: Record<Token, number> = getCardBonus(player.developmentCards);
+    const playerTokens: Record<Token, number> = convertMapSchemaToRecord(player.tokens);
+    const actualCardCost: Record<Token, number> = getRequiredCardCost(purchasedCard.cost, playerCardBonuses);
+
+    /* 부족분은 Gold 토큰으로 대체 */
+    const tokens = initializeTokens();
+    for (const [token, count] of Object.entries(actualCardCost)) {
+      const playerToken = playerTokens[token as Token];
+      if (playerToken < count) {
+        const shortage = count - playerToken;
+        tokens[Token.GOLD] -= shortage;
+        tokens[token as Token] = -(playerToken);
+      } else {
+        tokens[token as Token] = -(count);
+      }
     }
 
+    this.syncCard(player, purchasedCard, CardAction.PURCHASE);
+    this.syncToken(player, tokens);
     this.endTurn();
-  }
-
-  /* '카드 보너스 + 보유 토큰'으로 구매 가능한지 */
-  private validatePurchase = (player: Player, card: DevelopmentCard, tokens: Record<Token, number>) => {
-    const playerOwnedCardMap: Record<Token, number> = initializeTokens();
-    player.developmentCards.forEach(ownedCard => {
-      const token = ownedCard.token;
-      playerOwnedCardMap[token] += 1;
-    });
-
-    const requiredTokens = card.cost;
-
-    for (const [token, count] of requiredTokens.entries()) {
-      const payment = tokens[token as Token] + playerOwnedCardMap[token as Token];
-      if (payment < count) return false;
-    }
-    return true;
   }
 
   private syncCard = (player: Player, card: DevelopmentCard, action: CardAction) => {
@@ -209,6 +226,19 @@ export class GameRoom extends Room<GameState> {
         player.developmentCards.push(card);
         player.score += card.prestigePoint;
         break;
+    }
+
+    this.drawCard(card);
+  }
+
+  private drawCard = (card: DevelopmentCard) => {
+    const cardLevel = card.level;
+    const changedCardDeck = this.state.developmentCards
+      .filter(card => card.level === cardLevel)
+      .filter(card => !card.visible);
+
+    if (changedCardDeck.length > 0) {
+      changedCardDeck[0].visible = true;
     }
   }
 

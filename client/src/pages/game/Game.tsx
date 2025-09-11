@@ -2,7 +2,7 @@ import {useEffect, useState} from "react"
 import {useNavigate} from "react-router-dom";
 import {useGameRoom} from "@/contexts";
 import {useTurnAction, useTurnGuard} from "@/hooks";
-import {CardDetailModal, GameBoard, NobleTileDetailModal, PlayerHand, GamePlayer} from "@/pages";
+import {CardDetailModal, GameBoard, GamePlayer, NobleTileDetailModal, PlayerHand} from "@/pages";
 import {GamePhase, Token, Transfer, TurnAction} from "@shared/types/index";
 import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 import type {NobleTile} from "@shared/models/colyseus/NobleTile";
@@ -65,11 +65,11 @@ export const Game = () => {
         break;
       case TurnAction.PURCHASE_DEVELOPMENT_CARD:
         messageType = Transfer.ACTION_PURCHASE_DEVELOPMENT_CARD;
-        params = turnActionInfo.card;
+        params = turnActionInfo.card?.id;
         break;
       case TurnAction.RESERVE_DEVELOPMENT_CARD:
         messageType = Transfer.ACTION_RESERVE_DEVELOPMENT_CARD;
-        params = turnActionInfo.card;
+        params = turnActionInfo.card?.id;
         break;
     }
     gameRoom?.send(messageType, { params })
@@ -86,11 +86,25 @@ export const Game = () => {
     updateWithTokens(tokens);
   })
 
-  const returnToken = turnGuard((event: any) => {
+  const undoBringToken = turnGuard((event: any) => {
     const value = event.currentTarget.value;
     const tokens = { ... turnActionInfo.tokens };
     tokens[value as Token] -= 1;
     updateWithTokens(tokens);
+  })
+
+  const purchaseCard = turnGuard(() => {
+    if (selectedCard) {
+      updateWithCard(TurnAction.PURCHASE_DEVELOPMENT_CARD, selectedCard)
+      setSelectedCard(null);
+    }
+  })
+
+  const reserveCard = turnGuard(() => {
+    if (selectedCard) {
+      updateWithCard(TurnAction.RESERVE_DEVELOPMENT_CARD, selectedCard)
+      setSelectedCard(null);
+    }
   })
 
   const validateBringToken = (token: Token) => {
@@ -157,7 +171,7 @@ export const Game = () => {
       <PlayerHand
         player={player}
         pendingTokens={turnActionInfo.tokens}
-        returnToken={returnToken}
+        undoBringToken={undoBringToken}
       />
 
       {/* Modals */}
@@ -165,6 +179,8 @@ export const Game = () => {
         <CardDetailModal
           selectedCard={selectedCard}
           closeModal={() => setSelectedCard(null)}
+          handleClickPurchase={purchaseCard}
+          handleClickReserve={reserveCard}
         />
       }
 

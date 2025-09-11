@@ -1,6 +1,6 @@
 import "./NobleTileDetailModal.css";
 import {motion, useMotionValue, useTransform } from "framer-motion";
-import {useState} from "react";
+import {useRef} from "react";
 import type {NobleTile} from "@shared/models/colyseus/NobleTile";
 import {Modal} from "@/ui";
 
@@ -11,7 +11,7 @@ interface Props {
 
 export const NobleTileDetailModal = ({ selectedNobleTile, closeModal }: Props) => {
   //
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const isDragging = useRef<boolean>(false);
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -19,7 +19,7 @@ export const NobleTileDetailModal = ({ selectedNobleTile, closeModal }: Props) =
   const rotateY = useTransform(x, [-150, 150], [-30, 30]);
 
   const handleClose = () => {
-    if (!isDragging) {
+    if (!isDragging.current) {
       closeModal();
     }
   };
@@ -33,8 +33,8 @@ export const NobleTileDetailModal = ({ selectedNobleTile, closeModal }: Props) =
           drag
           dragElastic={0.5}
           dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
-          onDragStart={() => setIsDragging(true)}
-          onDragEnd={() => setIsDragging(false)}
+          onDragStart={() => isDragging.current = true}
+          onDragEnd={() => isDragging.current = false}
         >
           <div className="noble-tile-detail-header">
             <div className="noble-tile-detail-point">{selectedNobleTile.point}</div>

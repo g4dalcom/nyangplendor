@@ -3,16 +3,18 @@ import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 import {Modal} from "@/ui/modal/modal.tsx";
 import {tokenImages} from "@/pages";
 import {motion, useMotionValue, useTransform} from "framer-motion";
-import {useState} from "react";
+import {useRef} from "react";
 
 interface Props {
   selectedCard: DevelopmentCard;
   closeModal: () => void;
+  handleClickPurchase: () => void;
+  handleClickReserve: () => void;
 }
 
-export const CardDetailModal = ({ selectedCard, closeModal }: Props) => {
+export const CardDetailModal = ({ selectedCard, closeModal, handleClickPurchase, handleClickReserve }: Props) => {
   //
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const isDragging = useRef<boolean>(false);
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -20,7 +22,7 @@ export const CardDetailModal = ({ selectedCard, closeModal }: Props) => {
   const rotateY = useTransform(x, [-150, 150], [-30, 30]);
 
   const handleClose = () => {
-    if (!isDragging) {
+    if (!isDragging.current) {
       closeModal();
     }
   };
@@ -34,8 +36,8 @@ export const CardDetailModal = ({ selectedCard, closeModal }: Props) => {
           drag
           dragElastic={0.5}
           dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
-          onDragStart={() => setIsDragging(true)}
-          onDragEnd={() => setIsDragging(false)}
+          onDragStart={() => isDragging.current = true}
+          onDragEnd={() => isDragging.current = false}
         >
           <div className={`card-detail-header header-color-${selectedCard.level}`}>
             <div className="card-detail-point">{selectedCard.prestigePoint > 0 ? selectedCard.prestigePoint : ''}</div>
@@ -60,8 +62,8 @@ export const CardDetailModal = ({ selectedCard, closeModal }: Props) => {
         </motion.section>
 
         <article className="card-actions-container">
-          <button className="bubbly orange">Reserve</button>
-          <button className="bubbly green">Purchase</button>
+          <button className="bubbly orange" onClick={handleClickReserve}>Reserve</button>
+          <button className="bubbly green" onClick={handleClickPurchase}>Purchase</button>
         </article>
       </div>
     </Modal>
