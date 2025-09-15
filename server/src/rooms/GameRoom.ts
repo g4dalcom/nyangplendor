@@ -228,7 +228,9 @@ export class GameRoom extends Room<GameState> {
         break;
     }
 
-    this.drawCard(card);
+    if (card.visible) {
+      this.drawCard(card);
+    }
   }
 
   private drawCard = (card: DevelopmentCard) => {

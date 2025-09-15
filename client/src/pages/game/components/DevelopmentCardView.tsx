@@ -1,17 +1,24 @@
 import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 
 import "./DevelopmentCardView.css";
+import {TurnAction} from "@shared/types/enums/Action";
+import type {TurnActionType} from "@/hooks";
 
 interface Props {
   cardInfo: DevelopmentCard;
+  turnActionInfo: TurnActionType
 }
 
-export const DevelopmentCardView = ({ cardInfo }: Props) => {
+export const DevelopmentCardView = ({ cardInfo, turnActionInfo }: Props) => {
   //
   if (!cardInfo) return;
 
+  const turnAction = turnActionInfo.action;
+  const isPending = cardInfo.id === turnActionInfo?.card?.id && [TurnAction.PURCHASE_DEVELOPMENT_CARD, TurnAction.RESERVE_DEVELOPMENT_CARD].includes(turnAction);
+  const ribbonText = turnAction === TurnAction.PURCHASE_DEVELOPMENT_CARD ? "PURCHASED" : "RESERVED";
+
   return (
-    <div className="card-container">
+    <div className={`card-container ${isPending ? "pending" : ""}`}>
       <div className={`card-header header-color-${cardInfo.level}`}>
         <div className="card-point">{cardInfo.prestigePoint > 0 ? cardInfo.prestigePoint : ''}</div>
         <div className="bonus-token">
@@ -30,6 +37,12 @@ export const DevelopmentCardView = ({ cardInfo }: Props) => {
           ) }
         </div>
       </footer>
+
+      { isPending &&
+        <div className={`diagonal-ribbon ${turnAction}`}>
+          { ribbonText }
+        </div>
+      }
     </div>
   );
 }

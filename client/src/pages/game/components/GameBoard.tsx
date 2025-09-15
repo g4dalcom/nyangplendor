@@ -6,9 +6,11 @@ import type {GameState} from "@shared/states/GameState";
 import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 import {AllTokens} from "@shared/utils/tokens";
 import type {NobleTile} from "@shared/models/colyseus/NobleTile";
+import type {TurnActionType} from "@/hooks";
 
 interface Props {
   gameState: ReturnType<GameState['toJSON']>;
+  turnActionInfo: TurnActionType;
   pendingTokens: Record<Token, number>;
   bringToken: (event: MouseEvent<HTMLButtonElement>) => void;
   setSelectedCard: Dispatch<SetStateAction<DevelopmentCard | null>>;
@@ -17,6 +19,7 @@ interface Props {
 
 export const GameBoard = ({
                             gameState,
+                            turnActionInfo,
                             pendingTokens,
                             bringToken,
                             setSelectedCard,
@@ -49,7 +52,7 @@ export const GameBoard = ({
             <div key={`deck-${cardLevel}`} className="deck-card"></div>
             { inBoardCards.map((card) => (
               <div key={card.id} className="board-card" onClick={() => setSelectedCard(card)}>
-                <DevelopmentCardView cardInfo={card} />
+                <DevelopmentCardView cardInfo={card} turnActionInfo={turnActionInfo} />
               </div>
             )) }
             { Array.from({ length: 4 - inBoardCards.length }, (_, i) => (

@@ -142,6 +142,7 @@ export const Game = () => {
         {/* Game Board */}
         <GameBoard
           gameState={gameState}
+          turnActionInfo={turnActionInfo}
           pendingTokens={turnActionInfo.tokens}
           bringToken={bringToken}
           setSelectedCard={setSelectedCard}

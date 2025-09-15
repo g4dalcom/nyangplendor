@@ -634,28 +634,32 @@ const level3Cards: CardType[] = [
     level: CardLevel.LEVEL3,
     token: Token.DIAMOND,
     prestigePoint: 3,
-    cost: genCostMap([[Token.RUBY, 5], [Token.SAPPHIRE, 3], [Token.EMERALD, 3], [Token.ONYX, 3]])
+    cost: genCostMap([[Token.RUBY, 5], [Token.SAPPHIRE, 3], [Token.EMERALD, 3], [Token.ONYX, 3]]),
+    imageUrl: DevelopmentCardImageUrl.DA3
   },
   {
     name: "DB3",
     level: CardLevel.LEVEL3,
     token: Token.DIAMOND,
     prestigePoint: 4,
-    cost: genCostMap([[Token.ONYX, 7]])
+    cost: genCostMap([[Token.ONYX, 7]]),
+    imageUrl: DevelopmentCardImageUrl.DB3
   },
   {
     name: "DC3",
     level: CardLevel.LEVEL3,
     token: Token.DIAMOND,
     prestigePoint: 4,
-    cost: genCostMap([[Token.ONYX, 6], [Token.RUBY, 3], [Token.DIAMOND, 3]])
+    cost: genCostMap([[Token.ONYX, 6], [Token.RUBY, 3], [Token.DIAMOND, 3]]),
+    imageUrl: DevelopmentCardImageUrl.DC3
   },
   {
     name: "DD3",
     level: CardLevel.LEVEL3,
     token: Token.DIAMOND,
     prestigePoint: 5,
-    cost: genCostMap([[Token.ONYX, 7], [Token.DIAMOND, 3]])
+    cost: genCostMap([[Token.ONYX, 7], [Token.DIAMOND, 3]]),
+    imageUrl: DevelopmentCardImageUrl.DD3
   },
 
   {
@@ -663,28 +667,32 @@ const level3Cards: CardType[] = [
     level: CardLevel.LEVEL3,
     token: Token.SAPPHIRE,
     prestigePoint: 3,
-    cost: genCostMap([[Token.ONYX, 5], [Token.RUBY, 3], [Token.EMERALD, 3], [Token.DIAMOND, 3]])
+    cost: genCostMap([[Token.ONYX, 5], [Token.RUBY, 3], [Token.EMERALD, 3], [Token.DIAMOND, 3]]),
+    imageUrl: DevelopmentCardImageUrl.SA3
   },
   {
     name: "SB3",
     level: CardLevel.LEVEL3,
     token: Token.SAPPHIRE,
     prestigePoint: 4,
-    cost: genCostMap([[Token.DIAMOND, 7]])
+    cost: genCostMap([[Token.DIAMOND, 7]]),
+    imageUrl: DevelopmentCardImageUrl.SB3
   },
   {
     name: "SC3",
     level: CardLevel.LEVEL3,
     token: Token.SAPPHIRE,
     prestigePoint: 4,
-    cost: genCostMap([[Token.DIAMOND, 6], [Token.SAPPHIRE, 3], [Token.ONYX, 3]])
+    cost: genCostMap([[Token.DIAMOND, 6], [Token.SAPPHIRE, 3], [Token.ONYX, 3]]),
+    imageUrl: DevelopmentCardImageUrl.SC3
   },
   {
     name: "SD3",
     level: CardLevel.LEVEL3,
     token: Token.SAPPHIRE,
     prestigePoint: 5,
-    cost: genCostMap([[Token.DIAMOND, 7], [Token.SAPPHIRE, 3]])
+    cost: genCostMap([[Token.DIAMOND, 7], [Token.SAPPHIRE, 3]]),
+    imageUrl: DevelopmentCardImageUrl.SD3
   },
 
   {
@@ -692,28 +700,32 @@ const level3Cards: CardType[] = [
     level: CardLevel.LEVEL3,
     token: Token.EMERALD,
     prestigePoint: 3,
-    cost: genCostMap([[Token.DIAMOND, 5], [Token.RUBY, 3], [Token.SAPPHIRE, 3], [Token.ONYX, 3]])
+    cost: genCostMap([[Token.DIAMOND, 5], [Token.RUBY, 3], [Token.SAPPHIRE, 3], [Token.ONYX, 3]]),
+    imageUrl: DevelopmentCardImageUrl.EA3
   },
   {
     name: "EB3",
     level: CardLevel.LEVEL3,
     token: Token.EMERALD,
     prestigePoint: 4,
-    cost: genCostMap([[Token.SAPPHIRE, 7]])
+    cost: genCostMap([[Token.SAPPHIRE, 7]]),
+    imageUrl: DevelopmentCardImageUrl.EB3
   },
   {
     name: "EC3",
     level: CardLevel.LEVEL3,
     token: Token.EMERALD,
     prestigePoint: 4,
-    cost: genCostMap([[Token.SAPPHIRE, 6], [Token.EMERALD, 3], [Token.DIAMOND, 3]])
+    cost: genCostMap([[Token.SAPPHIRE, 6], [Token.EMERALD, 3], [Token.DIAMOND, 3]]),
+    imageUrl: DevelopmentCardImageUrl.EC3
   },
   {
     name: "ED3",
     level: CardLevel.LEVEL3,
     token: Token.EMERALD,
     prestigePoint: 5,
-    cost: genCostMap([[Token.SAPPHIRE, 7], [Token.EMERALD, 3]])
+    cost: genCostMap([[Token.SAPPHIRE, 7], [Token.EMERALD, 3]]),
+    imageUrl: DevelopmentCardImageUrl.ED3
   },
 
   {
@@ -721,28 +733,32 @@ const level3Cards: CardType[] = [
     level: CardLevel.LEVEL3,
     token: Token.RUBY,
     prestigePoint: 3,
-    cost: genCostMap([[Token.SAPPHIRE, 5], [Token.EMERALD, 3], [Token.DIAMOND, 3], [Token.ONYX, 3]])
+    cost: genCostMap([[Token.SAPPHIRE, 5], [Token.EMERALD, 3], [Token.DIAMOND, 3], [Token.ONYX, 3]]),
+    imageUrl: DevelopmentCardImageUrl.RA3
   },
   {
     name: "RB3",
     level: CardLevel.LEVEL3,
     token: Token.RUBY,
     prestigePoint: 4,
-    cost: genCostMap([[Token.EMERALD, 7]])
+    cost: genCostMap([[Token.EMERALD, 7]]),
+    imageUrl: DevelopmentCardImageUrl.RB3
   },
   {
     name: "RC3",
     level: CardLevel.LEVEL3,
     token: Token.RUBY,
     prestigePoint: 4,
-    cost: genCostMap([[Token.EMERALD, 6], [Token.RUBY, 3], [Token.SAPPHIRE, 3]])
+    cost: genCostMap([[Token.EMERALD, 6], [Token.RUBY, 3], [Token.SAPPHIRE, 3]]),
+    imageUrl: DevelopmentCardImageUrl.RC3
   },
   {
     name: "RD3",
     level: CardLevel.LEVEL3,
     token: Token.RUBY,
     prestigePoint: 5,
-    cost: genCostMap([[Token.EMERALD, 7], [Token.RUBY, 3]])
+    cost: genCostMap([[Token.EMERALD, 7], [Token.RUBY, 3]]),
+    imageUrl: DevelopmentCardImageUrl.RD3
   },
 
   {
@@ -750,28 +766,32 @@ const level3Cards: CardType[] = [
     level: CardLevel.LEVEL3,
     token: Token.ONYX,
     prestigePoint: 3,
-    cost: genCostMap([[Token.EMERALD, 5], [Token.RUBY, 3], [Token.SAPPHIRE, 3], [Token.DIAMOND, 3]])
+    cost: genCostMap([[Token.EMERALD, 5], [Token.RUBY, 3], [Token.SAPPHIRE, 3], [Token.DIAMOND, 3]]),
+    imageUrl: DevelopmentCardImageUrl.OA3
   },
   {
     name: "OB3",
     level: CardLevel.LEVEL3,
     token: Token.ONYX,
     prestigePoint: 4,
-    cost: genCostMap([[Token.RUBY, 7]])
+    cost: genCostMap([[Token.RUBY, 7]]),
+    imageUrl: DevelopmentCardImageUrl.OB3
   },
   {
     name: "OC3",
     level: CardLevel.LEVEL3,
     token: Token.ONYX,
     prestigePoint: 4,
-    cost: genCostMap([[Token.RUBY, 6], [Token.EMERALD, 3], [Token.ONYX, 3]])
+    cost: genCostMap([[Token.RUBY, 6], [Token.EMERALD, 3], [Token.ONYX, 3]]),
+    imageUrl: DevelopmentCardImageUrl.OC3
   },
   {
     name: "OD3",
     level: CardLevel.LEVEL3,
     token: Token.ONYX,
     prestigePoint: 5,
-    cost: genCostMap([[Token.RUBY, 7], [Token.ONYX, 3]])
+    cost: genCostMap([[Token.RUBY, 7], [Token.ONYX, 3]]),
+    imageUrl: DevelopmentCardImageUrl.OD3
   },
 ]
 

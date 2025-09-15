@@ -4,7 +4,7 @@ import {Token} from "@shared/types/enums/GameObject";
 import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 import {useState} from "react";
 
-type TurnActionType = {
+export type TurnActionType = {
   action: TurnAction;
   tokens: Record<Token, number>;
   card?: DevelopmentCard;
