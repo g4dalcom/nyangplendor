@@ -4,7 +4,7 @@
   --color-bg-secondary: #FDD67C;
   --color-border-primary: #E4A94B;
   --color-text-primary: #8D5A2A;
-  --color-object-primary: #FFC2A0;
+  --color-object-primary: rgba(160, 255, 165, 0.34);
 
   --border-thin: 2px solid black;
   --border-thick: 4px solid black;

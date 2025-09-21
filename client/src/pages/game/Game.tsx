@@ -1,12 +1,12 @@
 import {useEffect, useState} from "react"
 import {useNavigate} from "react-router-dom";
-import {useGameRoom} from "@/contexts";
+import {useDialog, useGameRoom} from "@/contexts";
 import {useTurnAction, useTurnGuard} from "@/hooks";
 import {CardDetailModal, GameBoard, GamePlayer, NobleTileDetailModal, PlayerHand} from "@/pages";
 import {GamePhase, Token, Transfer, TurnAction} from "@shared/types/index";
 import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 import type {NobleTile} from "@shared/models/colyseus/NobleTile";
-import {getTotalTokens} from "@shared/utils/tokens";
+import {convertMapSchemaToRecord, getTotalTokens} from "@shared/utils/tokens";
 import "./Game.css";
 import rubyToken from "@/assets/icons/churu.svg";
 import sapphireToken from "@/assets/icons/tuna.svg";
@@ -14,6 +14,7 @@ import emeraldToken from "@/assets/icons/fishing-toy.svg";
 import diamondToken from "@/assets/icons/yarn-ball.svg";
 import onyxToken from "@/assets/icons/fish.svg";
 import goldToken from "@/assets/icons/gold.svg";
+import {Toast} from "@/ui";
 
 export const tokenImages = {
   [Token.RUBY]: rubyToken,
@@ -27,6 +28,7 @@ export const tokenImages = {
 export const Game = () => {
   //
   const navigate = useNavigate();
+  const { alert } = useDialog();
   const { gameRoom, gameState, player } = useGameRoom();
   const { turnActionInfo, resetActionInfo, updateWithTokens, updateWithCard } = useTurnAction();
   const turnGuard = useTurnGuard(player?.turn ?? false);
@@ -54,7 +56,12 @@ export const Game = () => {
     console.log("Game Start = ", gameRoom?.state)
   };
 
-  const handleEndTurn = turnGuard(() => {
+  const handleEndTurn = turnGuard(async () => {
+    if (!await validateEndTurn()) {
+      alert("You have to return tokens less than 10.");
+      return;
+    }
+
     let messageType = Transfer.NO_ACTION;
     let params = undefined;
 
@@ -76,9 +83,9 @@ export const Game = () => {
     console.log("End Turn = ", gameRoom?.state)
   })
 
-  const bringToken = turnGuard((event: any) => {
+  const bringToken = turnGuard(async (event: any) => {
     const value = event.currentTarget.value;
-    if (!validateBringToken(value as Token)) {
+    if (!await validateBringToken(value as Token)) {
       return;
     }
     const tokens = { ... turnActionInfo.tokens };
@@ -92,6 +99,7 @@ export const Game = () => {
     tokens[value as Token] -= 1;
     updateWithTokens(tokens);
   })
+  console.log("undoBringToken", turnActionInfo)
 
   const purchaseCard = turnGuard(() => {
     if (selectedCard) {
@@ -107,7 +115,7 @@ export const Game = () => {
     }
   })
 
-  const validateBringToken = (token: Token) => {
+  const validateBringToken = async (token: Token) => {
     const bringTokens = turnActionInfo.tokens;
     const tokenCount = getTotalTokens(bringTokens);
     if (tokenCount >= 3) {
@@ -125,6 +133,13 @@ export const Game = () => {
 
   if (!gameRoom || !gameState) {
     return <div>방을 찾는 중...</div>;
+  }
+
+  const validateEndTurn = async () => {
+    if (player?.tokens) {
+      return getTotalTokens(convertMapSchemaToRecord(player?.tokens)) <= 10;
+    }
+    return false;
   }
 
   return (
@@ -191,6 +206,8 @@ export const Game = () => {
           closeModal={() => setSelectedNobleTile(null)}
         />
       }
+
+      <Toast />
     </div>
   );
 }

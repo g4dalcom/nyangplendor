@@ -46,10 +46,13 @@ export const initializeTokens = (): Record<Token, number> => {
 };
 
 /* colyseus MapSchema를 Record 객체로 컨버팅. MapSchema 객체가 모든 Token을 갖고 있는 게 보장되어야 함. */
-export const convertMapSchemaToRecord = (mapSchema: MapSchema<number>) => {
-  return Object.keys(mapSchema).reduce((acc, key) => {
-    const token = key as Token;
-    acc[token] = mapSchema.get(token) as number;
-    return acc;
-  }, {} as Record<Token, number>);
+export const convertMapSchemaToRecord = (mapSchema: MapSchema<number> | Record<Token, number>) => {
+  if (mapSchema instanceof MapSchema) {
+    return Object.keys(mapSchema).reduce((acc, key) => {
+      const token = key as Token;
+      acc[token] = mapSchema.get(token) as number;
+      return acc;
+    }, {} as Record<Token, number>);
+  }
+  return mapSchema;
 }

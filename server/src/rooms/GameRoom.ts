@@ -216,8 +216,6 @@ export class GameRoom extends Room<GameState> {
     const cardIndex = this.state.developmentCards.findIndex(c => c.id === card.id);
     if (cardIndex === -1) return;
 
-    this.state.developmentCards.splice(cardIndex, 1);
-
     switch (action) {
       case CardAction.RESERVE:
         player.reservedCards.push(card);
@@ -229,18 +227,28 @@ export class GameRoom extends Room<GameState> {
     }
 
     if (card.visible) {
-      this.drawCard(card);
+      this.drawCard(card, cardIndex);
+    } else {
+      this.state.developmentCards.splice(cardIndex, 1);
     }
   }
 
-  private drawCard = (card: DevelopmentCard) => {
-    const cardLevel = card.level;
-    const changedCardDeck = this.state.developmentCards
+  private drawCard = (targetCard: DevelopmentCard, cardIndex: number) => {
+    const developmentCards = this.state.developmentCards;
+    const cardLevel = targetCard.level;
+    const cardDeck = developmentCards
       .filter(card => card.level === cardLevel)
       .filter(card => !card.visible);
 
-    if (changedCardDeck.length > 0) {
-      changedCardDeck[0].visible = true;
+    if (cardDeck.length > 0) {
+      const topOfDeck = cardDeck[0];
+      const topCardIndex = developmentCards.findIndex(d => d.id === topOfDeck.id);
+      [developmentCards[topCardIndex], developmentCards[cardIndex]] = [developmentCards[cardIndex], developmentCards[topCardIndex]];
+
+      developmentCards[cardIndex].visible = true;
+      this.state.developmentCards.splice(topCardIndex, 1);
+    } else {
+      this.state.developmentCards.splice(cardIndex, 1);
     }
   }
 
@@ -264,8 +272,18 @@ export class GameRoom extends Room<GameState> {
 
     this.state.turn += 1;
     const activePlayerIndex = this.state.turn % this.state.players.length;
+    const nextPlayer = this.state.players[activePlayerIndex];
     activePlayer.turn = false;
-    this.state.players[activePlayerIndex].turn = true;
+    nextPlayer.turn = true;
+    this.notifyCurrentTurn(nextPlayer);
+  }
+
+  private notifyCurrentTurn = (player: Player) => {
+    const sessionId = player.sessionId;
+    const client = this.clients.find(c => c.sessionId === sessionId);
+    if (client) {
+      client.send(Transfer.PLAYER_TURN, { message: "Your turn!" });
+    }
   }
 
   private visitNoble = (player: Player) => {

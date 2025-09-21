@@ -6,8 +6,8 @@ export const Toast = memo(() => {
   return (
     <ToastContainer
       className="toast"
-      containerId="toast"
-      position="bottom-center"
+      containerId="toast-message"
+      position="top-center"
       autoClose={500}
       hideProgressBar
       newestOnTop

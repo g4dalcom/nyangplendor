@@ -4,6 +4,7 @@ import {type PlayerInfo, Transfer} from "@shared/types";
 import type {GameState} from "@shared/states/GameState";
 import type {Player} from "@shared/models/colyseus/Player";
 import {useDialog} from "@/contexts/DialogContext.tsx";
+import {toast} from "react-toastify";
 
 type GameRoomContextType = {
   gameRoom?: Room<GameState>;
@@ -36,6 +37,12 @@ export const GameRoomProvider = ({ children }: { children: ReactNode }) => {
     room.onMessage(Transfer.START_GAME, (payload: any) => {
       alert(payload.message);
     });
+    room.onMessage(Transfer.PLAYER_TURN, (payload: any) => {
+      toast(payload.message, {
+        containerId: "toast-message",
+        className: "toast-body-center",
+      })
+    })
 
     room.onLeave(() => {
       setGameRoom(undefined);
