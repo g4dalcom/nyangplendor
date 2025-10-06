@@ -1,5 +1,5 @@
 import {CardLevel, Token} from "@shared/types/enums/GameObject";
-import {DevelopmentCardView, NobleTileView, tokenImages} from "@/pages";
+import {DevelopmentCardStack, DevelopmentCardView, NobleTileView, tokenImages} from "@/pages";
 import type {Dispatch, MouseEvent, SetStateAction} from "react";
 import type {GameState} from "@shared/states/GameState";
 import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
@@ -43,13 +43,20 @@ export const GameBoard = ({
   const cardRenderer = () => {
     //
     return [CardLevel.LEVEL3, CardLevel.LEVEL2, CardLevel.LEVEL1].map(cardLevel => {
-      const inBoardCards = gameState.developmentCards
-        .filter(card => card.visible)
-        .filter(card => card.level === cardLevel)
+      const levelCards = gameState.developmentCards.filter(card => card.level === cardLevel);
+      const inDeckCards = levelCards.filter(card => !card.visible);
+      const inBoardCards = levelCards.filter(card => card.visible);
+
+      const totalCards = levelCards.length;
+      const deckCards = inDeckCards.length;
+      const ratio = deckCards / totalCards;
+      const numberOfLayers = deckCards === 0 ? 0 : Math.max(1, Math.round(ratio * 5));
 
       return (
         <div key={cardLevel} className="flex gap-2 lg:gap-1">
-          <div key={`deck-${cardLevel}`} className="board-card-size rounded-lg bg-secondary border border-dashed border-[#999] shrink-0"></div>
+          <div key={`deck-${cardLevel}`} className="relative board-card-size rounded-lg bg-secondary border border-dashed border-[#999] shrink-0">
+            <DevelopmentCardStack numberOfLayers={numberOfLayers} />
+          </div>
           { inBoardCards.map((card) => (
             <div key={card.id} className="board-card-size rounded-lg bg-secondary shadow-sm shrink-0 cursor-pointer" onClick={() => setSelectedCard(card)}>
               <DevelopmentCardView cardInfo={card} turnActionInfo={turnActionInfo} />
