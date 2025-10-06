@@ -4,6 +4,7 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {DialogProvider, GameRoomProvider, PlayerProvider} from "@/contexts";
 import {Game, Lobby} from "@/pages";
 import "@/styles/index.css";
+import {Layout} from "@/ui";
 
 createRoot(document.getElementById("root")!).render(
   <DialogProvider>
@@ -13,7 +14,9 @@ createRoot(document.getElementById("root")!).render(
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Lobby />} />
-              <Route path="/game/:roomId" element={<Game />} />
+              <Route element={<Layout />}>
+                <Route path="/game/:roomId" element={<Game />} />
+              </Route>
             </Routes>
           </BrowserRouter>
         </Suspense>

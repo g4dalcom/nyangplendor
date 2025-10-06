@@ -1,4 +1,3 @@
-import "./GameBoard.css";
 import {CardLevel, Token} from "@shared/types/enums/GameObject";
 import {DevelopmentCardView, NobleTileView, tokenImages} from "@/pages";
 import type {Dispatch, MouseEvent, SetStateAction} from "react";
@@ -7,6 +6,8 @@ import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 import {AllTokens} from "@shared/utils/tokens";
 import type {NobleTile} from "@shared/models/colyseus/NobleTile";
 import type {TurnActionType} from "@/hooks";
+import {clsx} from "clsx";
+import {tokenColorClasses} from "@/styles/style.ts";
 
 interface Props {
   gameState: ReturnType<GameState['toJSON']>;
@@ -28,12 +29,12 @@ export const GameBoard = ({
   const tokenRenderer = () => {
     //
     return (
-        AllTokens.map(token => (
-        <div className="board-token-row" key={token}>
-          <button value={token} className={`board-token-stack token-${token}`} onClick={bringToken}>
-            <img src={tokenImages[token]} alt={`${token} 토큰`} className="token-image" />
+      AllTokens.map(token => (
+        <div className="center gap [perspective:500px] w-full" key={token}>
+          <button value={token} className={clsx("board-token-size rounded-full border-[3px] border-[#222] relative token-animation token-animation:active token-animation:hover", tokenColorClasses[token])} onClick={bringToken}>
+            <img src={tokenImages[token]} alt={token} className="w-full h-full rounded-full object-cover pointer-events-none relative z-10 [transform:translateZ(1px)]" />
           </button>
-          <span className="token-count">{(gameState.tokens[token] ?? 0) - pendingTokens[token as Token]}</span>
+          <span className="text-lg lg:text-xl font-bold text-coffee px-3 py-1 text-center">{(gameState.tokens[token] ?? 0) - pendingTokens[token as Token]}</span>
         </div>
       ))
     )
@@ -47,18 +48,16 @@ export const GameBoard = ({
         .filter(card => card.level === cardLevel)
 
       return (
-        <div key={cardLevel} className="card-level">
-          <div className="board-card-row">
-            <div key={`deck-${cardLevel}`} className="deck-card"></div>
-            { inBoardCards.map((card) => (
-              <div key={card.id} className="board-card" onClick={() => setSelectedCard(card)}>
-                <DevelopmentCardView cardInfo={card} turnActionInfo={turnActionInfo} />
-              </div>
-            )) }
-            { Array.from({ length: 4 - inBoardCards.length }, (_, i) => (
-              <div key={`empty-${cardLevel}-${i}`} className="empty-card"></div>
-            )) }
-          </div>
+        <div key={cardLevel} className="flex gap-2 lg:gap-1">
+          <div key={`deck-${cardLevel}`} className="board-card-size rounded-lg bg-secondary border border-dashed border-[#999] shrink-0"></div>
+          { inBoardCards.map((card) => (
+            <div key={card.id} className="board-card-size rounded-lg bg-secondary shadow-sm shrink-0 cursor-pointer" onClick={() => setSelectedCard(card)}>
+              <DevelopmentCardView cardInfo={card} turnActionInfo={turnActionInfo} />
+            </div>
+          )) }
+          { Array.from({ length: 4 - inBoardCards.length }, (_, i) => (
+            <div key={`empty-${cardLevel}-${i}`} className="board-card-size rounded-lg bg-primay border border-dashed border-[#999] shrink-0"></div>
+          )) }
         </div>
       )
     })
@@ -68,34 +67,34 @@ export const GameBoard = ({
     //
     const nobleTiles = gameState.nobleTiles;
     return (
-      <div className="board-noble-row">
+      <div className="flex flex-col items-center gap-2 [perspective:500px]">
         { nobleTiles.map(nobleTile => (
-          <div className="board-noble-card" key={nobleTile.id} onClick={() => setSelectedNobleTile(nobleTile)}>
+          <div className="board-tile-size center bg-secondary rounded-lg font-bold shadow-sm shrink-0" key={nobleTile.id} onClick={() => setSelectedNobleTile(nobleTile)}>
             <NobleTileView nobleTile={nobleTile} />
           </div>
         )) }
         { Array.from({ length: 5 - nobleTiles.length }, (_, i) => (
-          <div key={`noble-empty-${i}`} className="empty-noble-card"></div>
+          <div key={`noble-empty-${i}`} className="board-tile-size bg-primary rounded-lg border border-dashed border-[#999] shrink-0"></div>
         )) }
       </div>
     )
   }
 
   return (
-    <section className="game-board-container">
-      <div className="game-board">
-        <article className="board-token-area">
+    <>
+      <div className="container center gap padding">
+        <article className="flex flex-col gap-4 items-center flex-1 w-auto">
           { tokenRenderer() }
         </article>
 
-        <article className="board-card-area">
+        <article className="flex flex-col gap-2.5 items-center flex-[4]">
           { cardRenderer() }
         </article>
 
-        <article className="board-noble-area">
+        <article className="center flex-col gap-4 flex-1 w-auto">
           { nobleTileRenderer() }
         </article>
       </div>
-    </section>
+    </>
   )
 }

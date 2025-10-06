@@ -1,40 +1,117 @@
 import React, { useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
-import "./modal.css";
+import { cva, type VariantProps } from "class-variance-authority";
+import { clsx } from "clsx";
 
-interface ModalProps {
+const modalContainerVariants = cva(
+  "relative w-[90vw] m-auto border-none rounded-[12px] shadow-[0_10px_30px_rgba(0,0,0,0.2)] p-0 bg-transparent pointer-events-auto opacity-0 scale-95 transition-all duration-200 ease-in-out",
+  {
+    variants: {
+      isOpen: {
+        true: "opacity-100 scale-100",
+      },
+      size: {
+        sm: "max-w-[400px]",
+        md: "max-w-[600px]",
+        lg: "max-w-[800px]",
+        card: "max-w-80 aspect-[3/4.5]",
+        tile: "max-w-120 aspect-square",
+      },
+      variant: {
+        default: "",
+        card: "shadow-none",
+        tile: "",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+      variant: "default",
+    },
+  }
+);
+
+const modalContentVariants = cva("w-full h-full flex flex-col rounded-[12px] overflow-hidden", {
+  variants: {
+    variant: {
+      default: "bg-white text-[#333]",
+      card: "bg-transparent text-[#f0f0f0]",
+      tile: "bg-transparent text-[#f0f0f0]",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
+const headerVariants = cva("flex justify-between items-center px-6 py-4 flex-shrink-0", {
+  variants: {
+    variant: {
+      default: "border-b border-[#eee] text-[1.2rem] font-semibold",
+      card: "bg-black/20 border-b border-[#5a5a6a] text-[1.3rem]",
+      tile: "hidden",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
+const bodyVariants = cva("px-6 py-6 flex-grow overflow-y-auto", {
+  variants: {
+    size: {
+      default: "",
+      sm: "",
+      md: "",
+      lg: "",
+      card: "p-0",
+      tile: "p-0"
+    },
+  },
+  defaultVariants: {
+    size: "md",
+  },
+});
+
+const footerVariants = cva("flex justify-end gap-4 px-6 py-4 flex-shrink-0", {
+  variants: {
+    variant: {
+      default: "",
+      card: "bg-black/20 border-t border-[#5a5a6a]",
+      tile: "hidden",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
+
+interface ModalProps extends Omit<VariantProps<typeof modalContainerVariants>, 'isOpen'> {
   isOpen: boolean;
   onClose: () => void;
-  size?: 'sm' | 'md' | 'lg' | 'card' | 'tile';
-  variant?: 'default' | 'card' | 'tile';
   className?: string;
   children: React.ReactNode;
   header?: React.ReactNode;
   footer?: React.ReactNode;
 }
 
-export function Modal({ isOpen, onClose, size = 'md', variant = 'default', className = '', children, header, footer }: ModalProps) {
+export function Modal({ isOpen, onClose, size, variant, className, children, header, footer }: ModalProps) {
   const ref = useRef<HTMLDialogElement | null>(null);
-  const modalClassName = `modal-container size-${size} variant-${variant} ${className}`.trim();
-
-  const close = () => {
-    ref.current?.close()
-    onClose()
-  }
 
   useEffect(() => {
     if (isOpen) {
-      ref.current?.showModal()
+      ref.current?.showModal();
     } else {
-      close()
+      ref.current?.close();
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDialogElement>) => {
     if (event.key === "Escape") {
-      close()
+      event.preventDefault();
+      onClose();
     }
-  }
+  };
 
   const handleBackdropClick = (event: React.MouseEvent<HTMLDialogElement>) => {
     if (ref.current === event.target) {
@@ -43,23 +120,23 @@ export function Modal({ isOpen, onClose, size = 'md', variant = 'default', class
   };
 
   return ReactDOM.createPortal(
-      <dialog
-        ref={ref}
-        onCancel={onClose}
-        onKeyDown={handleKeyDown}
-        onClick={handleBackdropClick}
-        className={modalClassName}
-      >
-        <div className="modal-content">
-          {header && (
-            <header className="modal-header">
-              {header}
-            </header>
-          )}
-          <main className="modal-body">{children}</main>
-          {footer && <footer className="modal-footer">{footer}</footer>}
-        </div>
-      </dialog>,
-      document.getElementById('modal-root')!
-    );
+    <dialog
+      ref={ref}
+      onCancel={onClose}
+      onKeyDown={handleKeyDown}
+      onClick={handleBackdropClick}
+      className={clsx(modalContainerVariants({ isOpen, size, variant }), className)}
+    >
+      <div className={clsx(modalContentVariants({ variant }))}>
+        {header && (
+          <header className={headerVariants({ variant })}>
+            {header}
+          </header>
+        )}
+        <main className={bodyVariants({ size })}>{children}</main>
+        {footer && <footer className={footerVariants({ variant })}>{footer}</footer>}
+      </div>
+    </dialog>,
+    document.getElementById('modal-root')!
+  );
 }

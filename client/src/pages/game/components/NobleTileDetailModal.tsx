@@ -1,8 +1,10 @@
-import "./NobleTileDetailModal.css";
 import {motion, useMotionValue, useTransform } from "framer-motion";
 import {useRef} from "react";
 import type {NobleTile} from "@shared/models/colyseus/NobleTile";
 import {Modal} from "@/ui";
+import {clsx} from "clsx";
+import {tokenColorClasses} from "@/styles/style.ts";
+import type {Token} from "@shared/types/enums/GameObject";
 
 interface Props {
   selectedNobleTile: NobleTile;
@@ -26,9 +28,9 @@ export const NobleTileDetailModal = ({ selectedNobleTile, closeModal }: Props) =
 
   return (
     <Modal isOpen={!!selectedNobleTile} onClose={handleClose} size="tile" variant="tile">
-      <div className="noble-tile-detail-wrapper">
+      <div className="flex h-full w-full flex-col justify-between gap-2 [perspective:300px]">
         <motion.section
-          className="noble-tile-detail-container"
+          className="relative flex w-full flex-grow flex-col overflow-hidden rounded-lg border-2 border-[#4a4a4a] bg-[#f5eeda] shadow-lg [transform-style:preserve-3d]"
           style={{ x, y, rotateX, rotateY, transformStyle: "preserve-3d" }}
           drag
           dragElastic={0.5}
@@ -36,18 +38,26 @@ export const NobleTileDetailModal = ({ selectedNobleTile, closeModal }: Props) =
           onDragStart={() => isDragging.current = true}
           onDragEnd={() => isDragging.current = false}
         >
-          <div className="noble-tile-detail-header">
-            <div className="noble-tile-detail-point">{selectedNobleTile.point}</div>
+          <div className="relative z-[1] flex items-center justify-between p-1">
+            <div className="ml-2 text-3xl font-bold text-white">{selectedNobleTile.point}</div>
           </div>
 
-          <div className="noble-tile-detail-center">
-            <img className="noble-tile-detail-image" src={selectedNobleTile.imageUrl} alt={selectedNobleTile.name} />
+          <div className="absolute inset-0">
+            <img className="pointer-events-none h-full w-full object-cover" src={selectedNobleTile.imageUrl} alt={selectedNobleTile.name} />
           </div>
 
-          <footer className="noble-tile-detail-footer">
-            <div className="token-list">
+          <footer className="relative z-[1] mt-auto flex w-full items-center justify-center bg-white/40 p-2">
+            <div className="flex gap-1">
               { Object.entries(selectedNobleTile.cost).flatMap(([token, count], i) =>
-                <span key={`token-${i}`} className={`noble-tile-detail-token token-${token}`}>{count}</span>
+                <span
+                  key={`token-${i}`}
+                  className={clsx(
+                    'center h-9 w-9 rounded-full border-2 text-lg font-bold text-black',
+                    tokenColorClasses[token as Token]
+                  )}
+                >
+                  {count}
+                </span>
               )}
             </div>
           </footer>

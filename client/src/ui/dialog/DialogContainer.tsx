@@ -1,5 +1,5 @@
 import {type DialogType, useDialog} from "@/contexts";
-import "./Dialog.css";
+import {Button} from "@/ui";
 
 export const DialogContainer = () => {
   const { dialog, closeDialog } = useDialog();
@@ -27,23 +27,23 @@ export const DialogContainer = () => {
   };
 
   return (
-    <div className="dialog-overlay">
-      <div className="dialog-container">
-        <div className="dialog-content">
-          <h2 className="dialog-header">
+    <div className="fixed inset-0 z-[1000] center bg-black/50">
+      <div className="w-[90%] max-w-[400px] animate-fade-in rounded-2xl border-2 border-honey bg-base p-8 text-center shadow-[0_10px_30px_rgba(0,0,0,0.2)]">
+        <div className="mb-6">
+          <h2 className="mb-2.5 text-2xl text-coffee">
             {dialog.type === 'confirm' ? '확인' : '알림'}
           </h2>
-          <p className="dialog-body">{dialog.message}</p>
+          <p className="text-[#666] leading-normal">{dialog.message}</p>
         </div>
-        <div className="dialog-footer horizontal">
+        <div className="center gap">
           {dialog.type === 'confirm' && (
-            <button className="bubbly pink" onClick={handleCancel}>취소</button>
+            <Button color="pink" onClick={handleCancel}>
+              취소
+            </Button>
           )}
-          <button
-            className="bubbly green"
-            onClick={handleConfirm}>
+          <Button color="green" onClick={handleConfirm}>
             확인
-          </button>
+          </Button>
         </div>
       </div>
     </div>

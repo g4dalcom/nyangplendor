@@ -3,11 +3,10 @@ import {useNavigate} from "react-router-dom";
 import {useDialog, useGameRoom} from "@/contexts";
 import {useTurnAction, useTurnGuard} from "@/hooks";
 import {CardDetailModal, GameBoard, GamePlayer, NobleTileDetailModal, PlayerHand} from "@/pages";
-import {GamePhase, Token, Transfer, TurnAction} from "@shared/types/index";
+import {Token, Transfer, TurnAction} from "@shared/types/index";
 import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 import type {NobleTile} from "@shared/models/colyseus/NobleTile";
 import {convertMapSchemaToRecord, getTotalTokens} from "@shared/utils/tokens";
-import "./Game.css";
 import rubyToken from "@/assets/icons/churu.svg";
 import sapphireToken from "@/assets/icons/tuna.svg";
 import emeraldToken from "@/assets/icons/fishing-toy.svg";
@@ -15,6 +14,7 @@ import diamondToken from "@/assets/icons/yarn-ball.svg";
 import onyxToken from "@/assets/icons/fish.svg";
 import goldToken from "@/assets/icons/gold.svg";
 import {Toast} from "@/ui";
+import logo from "@/assets/images/logo.png";
 
 export const tokenImages = {
   [Token.RUBY]: rubyToken,
@@ -99,7 +99,6 @@ export const Game = () => {
     tokens[value as Token] -= 1;
     updateWithTokens(tokens);
   })
-  console.log("undoBringToken", turnActionInfo)
 
   const purchaseCard = turnGuard(() => {
     if (selectedCard) {
@@ -143,71 +142,69 @@ export const Game = () => {
   }
 
   return (
-    <div className="game-container">
-      <div className="game-top">
-        <div className="player-area left-area">
-          <div className="top-ui-container logo-container">
-            <h1 className="game-logo">Nyangplendor</h1>
-          </div>
-          <div className="player-slots">
-            <GamePlayer player={gameState.players[0]} />
-            <GamePlayer player={gameState.players[2]} />
-          </div>
-        </div>
-        {/* Game Board */}
-        <GameBoard
-          gameState={gameState}
-          turnActionInfo={turnActionInfo}
-          pendingTokens={turnActionInfo.tokens}
-          bringToken={bringToken}
-          setSelectedCard={setSelectedCard}
-          setSelectedNobleTile={setSelectedNobleTile}
-        />
+    <>
+      <section className="grid grid-rows-[4fr_1fr] h-full">
+        <section className="grid grid-cols-[1fr_4fr_1fr]">
+          {/* Left Players */}
+          <section className="grid grid-row-2 center">
+              <GamePlayer player={gameState.players[0]} />
+              <GamePlayer player={gameState.players[2]} />
+          </section>
 
-        <div className="player-area right-area">
-          <div className="top-ui-container button-container">
-            { gameState?.phase === GamePhase.WAITING_FOR_PLAYERS ?
-              <button onClick={handleStartGame} className="bubbly" disabled={disableStartButton}>
-                게임 시작
-              </button>
-              :
-              <button onClick={handleEndTurn} className="bubbly" disabled={disableTurnEndButton}>
-                턴 종료
-              </button>
-            }
-          </div>
-          <div className="player-slots">
+          <section className="center">
+            <GameBoard
+              gameState={gameState}
+              turnActionInfo={turnActionInfo}
+              pendingTokens={turnActionInfo.tokens}
+              bringToken={bringToken}
+              setSelectedCard={setSelectedCard}
+              setSelectedNobleTile={setSelectedNobleTile}
+            />
+          </section>
+
+          {/* Right Players */}
+          <section className="grid grid-row-[1fr_1fr] center">
             <GamePlayer player={gameState.players[1]} />
             <GamePlayer player={gameState.players[3]} />
-          </div>
-        </div>
-      </div>
+          </section>
+        </section>
 
-      {/* Bottom UI */}
-      <PlayerHand
-        player={player}
-        pendingTokens={turnActionInfo.tokens}
-        undoBringToken={undoBringToken}
-      />
+        <section className="grid grid-cols-[1fr_3fr_1fr] place-items-center gap">
+          <PlayerHand
+            player={player}
+            pendingTokens={turnActionInfo.tokens}
+            undoBringToken={undoBringToken}
+            gamePhase={gameState?.phase}
+            disableStartButton={disableStartButton}
+            disableTurnEndButton={disableTurnEndButton}
+            handleStartGame={handleStartGame}
+            handleEndTurn={handleEndTurn}
+          />
 
-      {/* Modals */}
-      { selectedCard &&
-        <CardDetailModal
-          selectedCard={selectedCard}
-          closeModal={() => setSelectedCard(null)}
-          handleClickPurchase={purchaseCard}
-          handleClickReserve={reserveCard}
-        />
-      }
+          <article className="center">
+            <img className="h-full object-contain max-w-[10rem] lg:max-w-[12rem]" src={logo} alt="Nyangplendor Logo" />
+          </article>
+        </section>
 
-      { selectedNobleTile &&
-        <NobleTileDetailModal
-          selectedNobleTile={selectedNobleTile}
-          closeModal={() => setSelectedNobleTile(null)}
-        />
-      }
+        { selectedCard &&
+          <CardDetailModal
+            selectedCard={selectedCard}
+            closeModal={() => setSelectedCard(null)}
+            handleClickPurchase={purchaseCard}
+            handleClickReserve={reserveCard}
+          />
+        }
 
-      <Toast />
-    </div>
+        { selectedNobleTile &&
+          <NobleTileDetailModal
+            selectedNobleTile={selectedNobleTile}
+            closeModal={() => setSelectedNobleTile(null)}
+          />
+        }
+
+        <Toast />
+
+      </section>
+    </>
   );
 }
