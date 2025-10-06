@@ -15,7 +15,7 @@ interface Props {
   handleClickReserve: () => void;
 }
 
-export const CardDetailModal = ({ selectedCard, closeModal, handleClickPurchase, handleClickReserve }: Props) => {
+export const DevelopmentCardDetailModal = ({ selectedCard, closeModal, handleClickPurchase, handleClickReserve }: Props) => {
   //
   const isDragging = useRef<boolean>(false);
 

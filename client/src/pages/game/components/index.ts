@@ -1,4 +1,4 @@
-export * from './CardDetailModal'
+export * from './DevelopmentCardDetailModal.tsx'
 export * from './DevelopmentCardView'
 export * from './GameBoard'
 export * from './PlayerHand.tsx'

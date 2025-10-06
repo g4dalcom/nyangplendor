@@ -1,12 +1,13 @@
 import {Token} from "@shared/types/enums/GameObject";
 import {tokenImages} from "@/pages";
 import type {Player} from "@shared/models/colyseus/Player";
-import {type MouseEvent, useEffect, useState} from "react";
+import {type Dispatch, type MouseEvent, type SetStateAction, useEffect, useState} from "react";
 import {AllTokens, initializeTokens, TokensWithoutGold} from "@shared/utils/tokens";
 import {clsx} from "clsx";
-import {tokenColorClasses} from "@/styles/style.ts";
+import {cardLevelColorClasses, tokenColorClasses} from "@/styles/style.ts";
 import {GamePhase} from "@shared/types/enums/States";
 import {Button} from "@/ui";
+import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 
 interface Props {
   player: Player | null | undefined;
@@ -17,10 +18,11 @@ interface Props {
   disableTurnEndButton: boolean;
   handleStartGame: () => void;
   handleEndTurn: () => void;
+  setSelectedCard: Dispatch<SetStateAction<DevelopmentCard | null>>;
 }
 
 export const PlayerHand = (props: Props) => {
-  const { player, pendingTokens, undoBringToken, gamePhase, disableStartButton, disableTurnEndButton, handleStartGame, handleEndTurn } = props;
+  const { player, pendingTokens, undoBringToken, gamePhase, disableStartButton, disableTurnEndButton, handleStartGame, handleEndTurn, setSelectedCard } = props;
 
   const [cardBonusMap, setCardBonusMap] = useState<Record<Token, number>>(initializeTokens());
   const emptySlotCount = 3 - (player?.reservedCards.length ?? 0);
@@ -86,17 +88,20 @@ export const PlayerHand = (props: Props) => {
         </div>
 
         {/* Reserved Cards */}
-        <div className="flex">
-          <div className="flex gap-2">
-            { player?.reservedCards.map(card => (
-              <div className="w-12 h-16 bg-secondary rounded-lg flex justify-center items-center font-bold shadow-sm shrink-0" key={card.id}>
-                <span className="text-xs">{card.name}</span>
+        <div className="flex gap-2">
+          { player?.reservedCards.map(card => (
+            <div className="w-10 h-14 lg:w-12 lg:h-16 rounded-lg border center shrink-0 overflow-hidden hover:animate-scale" key={card.id} onClick={() => setSelectedCard(card)}>
+              <div className={clsx('relative w-full h-full flex flex-col')}>
+                <div className={clsx("p-1 relative z-10", cardLevelColorClasses[card.level])}></div>
+                <div className="absolute inset-0">
+                  <img src={card.imageUrl} alt={card.name} className="w-full h-full object-cover" />
+                </div>
               </div>
-            )) }
-            { Array.from({ length: emptySlotCount }, (_, i) => (
-              <div key={`my-reserved-empty-${i}`} className="w-12 h-16 bg-primary rounded-lg border border-dashed border-[#999] shrink-0"></div>
-            )) }
-          </div>
+            </div>
+          )) }
+          { Array.from({ length: emptySlotCount }, (_, i) => (
+            <div key={`my-reserved-empty-${i}`} className="w-10 h-14 lg:w-12 lg:h-16 bg-primary rounded-lg border border-dashed border-[#999] shrink-0"></div>
+          )) }
         </div>
 
         <div className="flex">

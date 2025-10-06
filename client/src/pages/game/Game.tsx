@@ -2,7 +2,7 @@ import {useEffect, useState} from "react"
 import {useNavigate} from "react-router-dom";
 import {useDialog, useGameRoom} from "@/contexts";
 import {useTurnAction, useTurnGuard} from "@/hooks";
-import {CardDetailModal, GameBoard, GamePlayer, NobleTileDetailModal, PlayerHand} from "@/pages";
+import {DevelopmentCardDetailModal, GameBoard, GamePlayer, NobleTileDetailModal, PlayerHand} from "@/pages";
 import {Token, Transfer, TurnAction} from "@shared/types/index";
 import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 import type {NobleTile} from "@shared/models/colyseus/NobleTile";
@@ -147,8 +147,8 @@ export const Game = () => {
         <section className="grid grid-cols-[1fr_4fr_1fr]">
           {/* Left Players */}
           <section className="grid grid-row-2 center">
-              <GamePlayer player={gameState.players[0]} />
-              <GamePlayer player={gameState.players[2]} />
+              <GamePlayer player={gameState.players[0]} setSelectedCard={setSelectedCard} />
+              <GamePlayer player={gameState.players[2]} setSelectedCard={setSelectedCard} />
           </section>
 
           <section className="center">
@@ -164,8 +164,8 @@ export const Game = () => {
 
           {/* Right Players */}
           <section className="grid grid-row-[1fr_1fr] center">
-            <GamePlayer player={gameState.players[1]} />
-            <GamePlayer player={gameState.players[3]} />
+            <GamePlayer player={gameState.players[1]} setSelectedCard={setSelectedCard} />
+            <GamePlayer player={gameState.players[3]} setSelectedCard={setSelectedCard} />
           </section>
         </section>
 
@@ -179,6 +179,7 @@ export const Game = () => {
             disableTurnEndButton={disableTurnEndButton}
             handleStartGame={handleStartGame}
             handleEndTurn={handleEndTurn}
+            setSelectedCard={setSelectedCard}
           />
 
           <article className="center">
@@ -187,7 +188,7 @@ export const Game = () => {
         </section>
 
         { selectedCard &&
-          <CardDetailModal
+          <DevelopmentCardDetailModal
             selectedCard={selectedCard}
             closeModal={() => setSelectedCard(null)}
             handleClickPurchase={purchaseCard}

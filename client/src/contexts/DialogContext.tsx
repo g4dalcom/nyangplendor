@@ -14,7 +14,6 @@ type Dialog = {
 type DialogContextProps = {
   dialog: Dialog;
   alert: (message: string) => void;
-  error: (message: string) => void;
   confirm: (message: string, onConfirm: () => void, onCancel?: () => void) => void;
   closeDialog: () => void;
 }
@@ -57,14 +56,13 @@ export const DialogProvider = ({ children }: { children: ReactNode }) => {
 
 
   const alert = useCallback((message: string) => openDialog("alert", message), [openDialog]);
-  const error = useCallback((message: string) => openDialog("error", message), [openDialog]);
   const confirm = useCallback(
     (message: string, onConfirm: () => void, onCancel?: () => void) =>
       openDialog("confirm", message, onConfirm, onCancel),
     [openDialog]
   );
 
-  const value = { dialog, alert, error, confirm, closeDialog };
+  const value = { dialog, alert, confirm, closeDialog };
 
   return (
     <DialogContext.Provider value={value}>

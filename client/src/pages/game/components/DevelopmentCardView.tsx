@@ -18,7 +18,7 @@ export const DevelopmentCardView = ({ cardInfo, turnActionInfo }: Props) => {
   const ribbonText = turnAction === TurnAction.PURCHASE_DEVELOPMENT_CARD ? "Purchased" : "Reserved";
 
   return (
-    <div className="relative w-full h-full rounded-lg overflow-hidden transition-transform duration-150 hover:-translate-y-px hover:scale-105">
+    <div className="relative w-full h-full rounded-lg overflow-hidden hover:animate-scale">
       <div className={clsx(
         'relative w-full h-full bg-[#f5eeda] border border-gray-300 shadow-lg flex flex-col',
         { 'grayscale-[80%] brightness-70': isPending }
@@ -46,7 +46,7 @@ export const DevelopmentCardView = ({ cardInfo, turnActionInfo }: Props) => {
 
       { isPending &&
         <div className={clsx(
-          "absolute top-[65px] -left-[40px] w-[200px] py-1.5 text-center font-bold text-[0.9em] tracking-wider -rotate-35 origin-center shadow-md z-10",
+          "absolute top-10 -left-7 w-35 lg:top-16 lg:-left-10 lg:w-50 py-1 lg:py-1.5 text-center font-bold text-[0.8em] lg:text-[0.9em] tracking-wider -rotate-35 origin-center shadow-md z-10",
           {
             'bg-[#4CAF50] text-white': turnAction === TurnAction.PURCHASE_DEVELOPMENT_CARD,
             'bg-[#FFC107] text-gray-800': turnAction === TurnAction.RESERVE_DEVELOPMENT_CARD
