@@ -1,7 +1,3 @@
-import {MapSchema} from "@colyseus/schema";
-
-export type TokenCountMap = MapSchema<number>;
-
 export type GameMetaDataType = {
   playerId: string;
   nickname: string;

@@ -37,6 +37,9 @@ export const GameRoomProvider = ({ children }: { children: ReactNode }) => {
     room.onMessage(Transfer.START_GAME, (payload: any) => {
       alert(payload.message);
     });
+    room.onMessage(Transfer.GAME_OVER, (payload: any) => {
+      alert(payload.message);
+    });
     room.onMessage(Transfer.PLAYER_TURN, (payload: any) => {
       toast(payload.message, {
         containerId: "toast-message",

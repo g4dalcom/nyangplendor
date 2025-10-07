@@ -1,8 +1,8 @@
 export enum Transfer {
   METADATA = "metadata",
   START_GAME = "startGame",
+  GAME_OVER = "gameOver",
   PLAYER_TURN = "playerTurn",
-  END_TURN = "endTurn",
 
   ACTION_BRING_TOKEN = "bringToken",
   ACTION_PURCHASE_DEVELOPMENT_CARD = "purchaseDevelopmentCard",

@@ -24,6 +24,16 @@ export class GameState extends Schema {
     this.winnerPlayerId = null;
   }
 
+  public resetGameState = () => {
+    this.phase = GamePhase.WAITING_FOR_PLAYERS
+    this.turn = 0
+    this.winnerPlayerId = null;
+    // this.developmentCards = new ArraySchema<DevelopmentCard>();
+    // this.nobleTiles = new ArraySchema<NobleTile>();
+    // this.tokens = new MapSchema<number>();
+    // this.players.forEach(p => p.resetPlayerState());
+  }
+
   public existPlayerBySessionId = (sessionId: string) => {
     return this.players.some(p => p.sessionId === sessionId);
   }
@@ -32,6 +42,15 @@ export class GameState extends Schema {
     const player = this.players.find(p => p.sessionId === sessionId);
     if (!player) {
       throw new Error(`Player with sessionId '${sessionId}' not found.`);
+    }
+    return player;
+  }
+
+  public findPlayerById = (id: string | null) => {
+    if (!id) return;
+    const player = this.players.find(p => p.id === id);
+    if (!player) {
+      throw new Error(`Player with id '${id}' not found.`);
     }
     return player;
   }

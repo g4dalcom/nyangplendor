@@ -19,6 +19,7 @@ import {
   getTotalTokens,
   initializeTokens
 } from "@shared/utils/tokens";
+import {ArraySchema} from "@colyseus/schema";
 
 export class GameRoom extends Room<GameState> {
 
@@ -109,6 +110,7 @@ export class GameRoom extends Room<GameState> {
     }
     this.initializeCards()
     this.state.phase = GamePhase.GAME_START
+    this.state.players.forEach(p => p.resetPlayerState());
     this.state.players[0].turn = true;
   }
 
@@ -133,14 +135,14 @@ export class GameRoom extends Room<GameState> {
       cardClasses[CardLevel.LEVEL3][i].visible = true;
     }
 
-    this.state.developmentCards.push(...Object.values(cardClasses).flat());
+    this.state.developmentCards = new ArraySchema(...Object.values(cardClasses).flat());
   }
 
   private initializeNobleTiles = (tileCount: number) => {
     const allNobleTiles: NobleTile[] = nobleTileClasses();
     shuffleArray(allNobleTiles)
     const inGameNobleTiles = allNobleTiles.slice(0, tileCount);
-    this.state.nobleTiles.push(...inGameNobleTiles)
+    this.state.nobleTiles = new ArraySchema(...inGameNobleTiles);
   }
 
   /* Player Turn Actions */
@@ -200,6 +202,9 @@ export class GameRoom extends Room<GameState> {
       const playerToken = playerTokens[token as Token];
       if (playerToken < count) {
         const shortage = count - playerToken;
+        if (playerTokens[Token.GOLD] < shortage) {
+          return;
+        }
         tokens[Token.GOLD] -= shortage;
         tokens[token as Token] = -(playerToken);
       } else {
@@ -260,14 +265,17 @@ export class GameRoom extends Room<GameState> {
 
     if (this.findEndGamePlayer()) {
       activePlayer.endGame = true;
-
-      if (this.allPlayersEndGame()) {
-        this.determineWinner();
-        this.state.phase = GamePhase.GAME_END;
-        return;
-      }
     } else if (activePlayer.score >= 15) {
       activePlayer.endGame = true;
+    }
+
+    if (this.allPlayersEndGame()) {
+      this.state.phase = GamePhase.GAME_END;
+      const winnerId = this.determineWinner();
+      const winnerNickname = this.state.findPlayerById(winnerId)?.name;
+      this.broadcast(Transfer.GAME_OVER, { message: "Winner: " + winnerNickname });
+      this.state.resetGameState();
+      return;
     }
 
     this.state.turn += 1;
@@ -330,23 +338,20 @@ export class GameRoom extends Room<GameState> {
   private determineWinner = () => {
     const maxScorePlayers = this.findMaxScorePlayers();
     if (maxScorePlayers.length === 1) {
-      this.state.winnerPlayerId = maxScorePlayers[0].id;
-      return;
+      return maxScorePlayers[0].id;
     }
 
     const fewestCardPurchasedPlayers = this.findPlayersWithFewestCards(maxScorePlayers);
     if (fewestCardPurchasedPlayers.length === 1) {
-      this.state.winnerPlayerId = fewestCardPurchasedPlayers[0].id;
-      return;
+      return fewestCardPurchasedPlayers[0].id;
     }
 
     const fewestOwnedNobleTilePlayers = this.findPlayersWithFewestNobleTiles(fewestCardPurchasedPlayers);
     if (fewestOwnedNobleTilePlayers.length === 1) {
-      this.state.winnerPlayerId = fewestOwnedNobleTilePlayers[0].id;
-      return;
+      return fewestOwnedNobleTilePlayers[0].id;
     }
 
-    this.state.winnerPlayerId = fewestOwnedNobleTilePlayers.join('+');
+    return fewestOwnedNobleTilePlayers[fewestOwnedNobleTilePlayers.length - 1].id;
   }
 
   private findMaxScorePlayers = () => {

@@ -1,7 +1,6 @@
 import {Token} from "@shared/types";
 import {ArraySchema, MapSchema} from "@colyseus/schema";
 import {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
-import {Player} from "@shared/models/colyseus/Player";
 
 export const AllTokens = Object.values(Token);
 export const TokensWithoutGold = Object.values(Token).filter(token => token !== Token.GOLD);
@@ -48,16 +47,14 @@ export const initializeTokens = (): Record<Token, number> => {
 
 /* colyseus MapSchema를 Record 객체로 컨버팅. MapSchema 객체가 모든 Token을 갖고 있는 게 보장되어야 함. */
 export const convertMapSchemaToRecord = (mapSchema: MapSchema<number> | Record<Token, number>) => {
-  if (mapSchema instanceof MapSchema) {
-    if (mapSchema.size > 0) {
-      return Object.keys(mapSchema).reduce((acc, key) => {
-        const token = key as Token;
-        acc[token] = mapSchema.get(token) as number;
-        return acc;
-      }, {} as Record<Token, number>);
-    } else {
-      return initializeTokens();
+  if (!(mapSchema instanceof MapSchema)) {
+    return mapSchema;
+  }
+  const tokens = initializeTokens();
+  if (mapSchema.size > 0) {
+    for (const [token, count] of mapSchema.entries()) {
+      tokens[token as Token] = count;
     }
   }
-  return mapSchema;
+  return tokens;
 }
