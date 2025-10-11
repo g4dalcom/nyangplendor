@@ -114,6 +114,13 @@ export const Game = () => {
     }
   })
 
+  const cancelAction = turnGuard(() => {
+    if (selectedCard) {
+      resetActionInfo();
+      setSelectedCard(null)
+    }
+  })
+
   const validateBringToken = async (token: Token) => {
     const bringTokens = turnActionInfo.tokens;
     const tokenCount = getTotalTokens(bringTokens);
@@ -190,9 +197,11 @@ export const Game = () => {
         { selectedCard &&
           <DevelopmentCardDetailModal
             selectedCard={selectedCard}
+            turnActionInfo={turnActionInfo}
             closeModal={() => setSelectedCard(null)}
             handleClickPurchase={purchaseCard}
             handleClickReserve={reserveCard}
+            handleClickCancel={cancelAction}
           />
         }
 

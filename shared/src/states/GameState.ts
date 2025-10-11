@@ -62,4 +62,8 @@ export class GameState extends Schema {
     }
     return card
   }
+
+  // public existReservedByDevelopmentCardId = (id: string) => {
+  //   this.players.find(p => p.reservedCards?.find(c => c.id === id))
+  // }
 }

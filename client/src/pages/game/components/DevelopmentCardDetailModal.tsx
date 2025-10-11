@@ -7,22 +7,32 @@ import {Button} from "@/ui";
 import {clsx} from "clsx";
 import {cardLevelColorClasses, tokenColorClasses} from "@/styles/style.ts";
 import type {Token} from "@shared/types/enums/GameObject";
+import type {TurnActionType} from "@/hooks";
+import {TurnAction} from "@shared/types/enums/Action";
 
 interface Props {
   selectedCard: DevelopmentCard;
+  turnActionInfo: TurnActionType;
   closeModal: () => void;
   handleClickPurchase: () => void;
   handleClickReserve: () => void;
+  handleClickCancel: () => void;
 }
 
-export const DevelopmentCardDetailModal = ({ selectedCard, closeModal, handleClickPurchase, handleClickReserve }: Props) => {
+export const DevelopmentCardDetailModal = (props: Props) => {
   //
+  const { selectedCard, turnActionInfo, closeModal, handleClickPurchase, handleClickReserve, handleClickCancel } = props;
+
   const isDragging = useRef<boolean>(false);
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotateX = useTransform(y, [-150, 150], [30, -30]);
   const rotateY = useTransform(x, [-150, 150], [-30, 30]);
+
+  const turnAction = turnActionInfo.action;
+  const pendingReservedCard = turnAction === TurnAction.RESERVE_DEVELOPMENT_CARD && turnActionInfo.card?.id === selectedCard.id;
+  const pendingPurchasedCard = turnAction === TurnAction.PURCHASE_DEVELOPMENT_CARD && turnActionInfo.card?.id === selectedCard.id;
 
   const handleClose = () => {
     if (!isDragging.current) {
@@ -73,8 +83,14 @@ export const DevelopmentCardDetailModal = ({ selectedCard, closeModal, handleCli
         </motion.section>
 
         <article className="relative flex w-full justify-center gap-2">
-          <Button color="orange" onClick={handleClickReserve}>Reserve</Button>
-          <Button color="green" onClick={handleClickPurchase}>Purchase</Button>
+          { pendingReservedCard ?
+            <Button color="red" onClick={handleClickCancel}>Cancel</Button> :
+            <Button color="orange" onClick={handleClickReserve}>Reserve</Button>
+          }
+          { pendingPurchasedCard ?
+            <Button color="red" onClick={handleClickCancel}>Cancel</Button> :
+            <Button color="green" onClick={handleClickPurchase}>Purchase</Button>
+          }
         </article>
       </div>
     </Modal>
