@@ -35,7 +35,7 @@ export const GamePlayer = ({ player, setSelectedCard }: Props) => {
     const reservedCards = player.reservedCards;
     const emptySlotsCount = 3 - reservedCards.length;
     const emptySlots = Array.from({ length: emptySlotsCount }, (_, i) => (
-      <div key={`player-reserved-empty-${i}`} className="w-8 h-10 rounded-lg border border-dashed border-[#999] shrink-0"></div>
+      <div key={`player-reserved-empty-${i}`} className="w-8 h-10 border border-dashed border-ui-border shrink-0" style={{ borderRadius: 'var(--radius-sm)' }}></div>
     ));
 
     return (

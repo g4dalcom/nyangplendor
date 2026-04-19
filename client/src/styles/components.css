@@ -1,0 +1,127 @@
+@layer components {
+    /* Main Layout Containers */
+    .container {
+        @apply bg-primary border-2 lg:border-4 border-black;
+        border-radius: var(--radius-lg);
+        box-shadow: inset -6px -6px 0px 0px #c7b265, var(--shadow-primary);
+    }
+
+    .container-shadow {
+        box-shadow: inset -6px -6px 0px 0px #c7b265, var(--shadow-primary);
+    }
+
+    /* Scoreboard Shadow */
+    .score-shadow {
+        box-shadow: 0px 3px 0px #613E1C, 0px 5px 5px rgba(0,0,0,0.3);
+    }
+
+    /* Shimmer Effect */
+    .shimmer::after {
+        content: "";
+        background: linear-gradient(
+                135deg,
+                transparent 0%,
+                #ffffff20 25%,
+                #ffffe080 50%,
+                #ffffff20 75%,
+                transparent 100%
+        );
+        background-size: 400% 400%;
+        @apply pointer-events-none absolute inset-0 block animate-shimmer bg-no-repeat;
+    }
+
+    /* Token Animation (Board tokens) */
+    .token-animation {
+        @apply transition-transform transition-shadow duration-150 ease-out;
+        box-shadow: 0px 6px 0px #3a3a3a, 0px 8px 6px rgba(0,0,0,0.4);
+        transform-style: preserve-3d;
+    }
+
+    .token-animation:hover {
+        box-shadow: 0px 10px 0px #3a3a3a, 0px 14px 8px rgba(0,0,0,0.3);
+        transform: translateY(-2px) scale(1.05);
+    }
+
+    .token-animation:active {
+        box-shadow: 0px 4px 0px #3a3a3a, 0px 6px 4px rgba(0,0,0,0.4);
+        transform: translateY(2px);
+    }
+
+    /* Card-like containers (Lobby, etc.) */
+    .card-container {
+        @apply flex flex-col;
+        padding: var(--spacing-lg);
+        background-color: white;
+        border-radius: var(--radius-lg);
+        gap: var(--spacing-sm);
+        box-shadow: inset -6px -6px 0px 0px #cfcfcf, 2px 2px 0px var(--color-ui-shadow);
+    }
+    input[type="text"],
+    input[type="search"] {
+        @apply border-2 border-black min-h-[2em] px-4;
+        border-radius: var(--radius-md);
+        cursor: text;
+    }
+
+    /* Third Party Overrides */
+    .Toastify__toast-body {
+        @apply flex items-center justify-center text-center h-full w-full p-3;
+    }
+
+    #modal-root {
+        @apply fixed inset-0 grid place-items-center z-[1000] pointer-events-none;
+    }
+
+    dialog::backdrop {
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+}
+
+/* Neo-brutalism Button Base */
+@utility btn-neo {
+    @apply transition-all duration-150 active:translate-y-[2px] disabled:opacity-60 disabled:cursor-not-allowed;
+}
+
+/* Button Color Variants */
+@utility btn-default {
+    @apply bg-[#e7e7e7] text-black shadow-[inset_-6px_-6px_0px_0px_#cfcfcf,var(--shadow-primary)] 
+           hover:bg-[#ffffff] 
+           active:shadow-[inset_6px_6px_0px_0px_#cfcfcf,var(--shadow-primary)]
+           disabled:bg-[#d3d3d3] disabled:text-[#757575] disabled:shadow-[inset_-6px_-6px_0px_0px_#adafbc,var(--shadow-primary)];
+}
+
+@utility btn-green {
+    @apply bg-[#92cc41] text-white shadow-[inset_-6px_-6px_0px_0px_#65a013,var(--shadow-primary)] 
+           hover:bg-[#76c442] 
+           active:shadow-[inset_6px_6px_0px_0px_#65a013,var(--shadow-primary)];
+}
+
+@utility btn-orange {
+    @apply bg-[#f7d51d] text-black shadow-[inset_-6px_-6px_0px_0px_#c9ae17,var(--shadow-primary)] 
+           hover:bg-[#e7c819] 
+           active:shadow-[inset_6px_6px_0px_0px_#c9ae17,var(--shadow-primary)];
+}
+
+@utility btn-red {
+    @apply bg-[#e76e55] text-white shadow-[inset_-6px_-6px_0px_0px_#bf3d41,var(--shadow-primary)] 
+           hover:bg-[#c25c48] 
+           active:shadow-[inset_6px_6px_0px_0px_#bf3d41,var(--shadow-primary)];
+}
+
+@utility btn-blue {
+    @apply bg-[#109fff] text-white shadow-[inset_-6px_-6px_0px_0px_#006bb3,var(--shadow-primary)] 
+           hover:bg-[#1195ec] 
+           active:shadow-[inset_6px_6px_0px_0px_#108de0,var(--shadow-primary)];
+}
+
+@utility btn-pink {
+    @apply bg-[#ee2097] text-white shadow-[inset_-6px_-6px_0px_0px_#902c74,var(--shadow-primary)] 
+           hover:bg-[#eb55ac] 
+           active:shadow-[inset_6px_6px_0px_0px_#902c74,var(--shadow-primary)];
+}
+
+@utility btn-dark {
+    @apply bg-[#444444] text-white shadow-[inset_-6px_-6px_0px_0px_#333333,var(--shadow-primary)] 
+           hover:bg-[#555555] 
+           active:shadow-[inset_6px_6px_0px_0px_#333333,var(--shadow-primary)];
+}

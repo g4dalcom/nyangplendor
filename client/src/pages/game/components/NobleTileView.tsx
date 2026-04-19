@@ -11,7 +11,10 @@ export const NobleTileView = ({ nobleTile }: Props) => {
   if (!nobleTile) return null;
 
   return (
-    <div className="relative w-full h-full bg-[#f5eeda] border-2 border-gray-700 rounded-lg shadow-lg flex flex-col overflow-hidden transition-transform duration-150 hover:-translate-y-px hover:scale-105">
+    <div 
+      className="relative w-full h-full bg-ui-bg border-2 border-ui-border-dark shadow-lg flex flex-col overflow-hidden transition-transform duration-150 hover:-translate-y-px hover:scale-105"
+      style={{ borderRadius: 'var(--radius-sm)' }}
+    >
       <div className="px-1 py-0.5 flex justify-between items-center relative z-10">
         <div className="text-white font-bold m-0">{nobleTile.point}</div>
       </div>

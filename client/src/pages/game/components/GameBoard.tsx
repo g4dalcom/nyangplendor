@@ -31,7 +31,7 @@ export const GameBoard = ({
     return (
       AllTokens.map(token => (
         <div className="center gap [perspective:500px] w-full" key={token}>
-          <button value={token} className={clsx("board-token-size rounded-full border-[3px] border-[#222] relative token-animation token-animation:active token-animation:hover", tokenColorClasses[token])} onClick={bringToken}>
+          <button value={token} className={clsx("board-token-size rounded-full border-[3px] border-ui-border-black relative token-animation token-animation:active token-animation:hover", tokenColorClasses[token])} onClick={bringToken}>
             <img src={tokenImages[token]} alt={token} className="w-full h-full rounded-full object-cover pointer-events-none relative z-10 [transform:translateZ(1px)]" />
           </button>
           <span className="text-lg lg:text-xl font-bold text-coffee px-3 py-1 text-center">{(gameState.tokens[token] ?? 0) - pendingTokens[token as Token]}</span>
@@ -54,16 +54,16 @@ export const GameBoard = ({
 
       return (
         <div key={cardLevel} className="flex gap-2 lg:gap-1">
-          <div key={`deck-${cardLevel}`} className="relative board-card-size rounded-lg bg-secondary border border-dashed border-[#999] shrink-0">
+          <div key={`deck-${cardLevel}`} className="relative board-card-size bg-secondary border border-dashed border-ui-border shrink-0" style={{ borderRadius: 'var(--radius-sm)' }}>
             <DevelopmentCardStack numberOfLayers={numberOfLayers} />
           </div>
           { inBoardCards.map((card) => (
-            <div key={card.id} className="board-card-size rounded-lg bg-secondary shadow-sm shrink-0 cursor-pointer" onClick={() => setSelectedCard(card)}>
+            <div key={card.id} className="board-card-size bg-secondary shadow-sm shrink-0 cursor-pointer" style={{ borderRadius: 'var(--radius-sm)' }} onClick={() => setSelectedCard(card)}>
               <DevelopmentCardView cardInfo={card} turnActionInfo={turnActionInfo} />
             </div>
           )) }
           { Array.from({ length: 4 - inBoardCards.length }, (_, i) => (
-            <div key={`empty-${cardLevel}-${i}`} className="board-card-size rounded-lg bg-primay border border-dashed border-[#999] shrink-0"></div>
+            <div key={`empty-${cardLevel}-${i}`} className="board-card-size bg-primay border border-dashed border-ui-border shrink-0" style={{ borderRadius: 'var(--radius-sm)' }}></div>
           )) }
         </div>
       )
@@ -76,12 +76,12 @@ export const GameBoard = ({
     return (
       <div className="flex flex-col items-center gap-2 [perspective:500px]">
         { nobleTiles.map(nobleTile => (
-          <div className="board-tile-size center bg-secondary rounded-lg font-bold shadow-sm shrink-0" key={nobleTile.id} onClick={() => setSelectedNobleTile(nobleTile)}>
+          <div className="board-tile-size center bg-secondary font-bold shadow-sm shrink-0" style={{ borderRadius: 'var(--radius-sm)' }} key={nobleTile.id} onClick={() => setSelectedNobleTile(nobleTile)}>
             <NobleTileView nobleTile={nobleTile} />
           </div>
         )) }
         { Array.from({ length: 5 - nobleTiles.length }, (_, i) => (
-          <div key={`noble-empty-${i}`} className="board-tile-size bg-primary rounded-lg border border-dashed border-[#999] shrink-0"></div>
+          <div key={`noble-empty-${i}`} className="board-tile-size bg-primary border border-dashed border-ui-border shrink-0" style={{ borderRadius: 'var(--radius-sm)' }}></div>
         )) }
       </div>
     )

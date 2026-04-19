@@ -30,7 +30,7 @@ export const NobleTileDetailModal = ({ selectedNobleTile, closeModal }: Props) =
     <Modal isOpen={!!selectedNobleTile} onClose={handleClose} size="tile" variant="tile">
       <div className="flex h-full w-full flex-col justify-between gap-2 [perspective:300px]">
         <motion.section
-          className="relative flex w-full flex-grow flex-col overflow-hidden rounded-lg border-2 border-[#4a4a4a] bg-[#f5eeda] shadow-lg [transform-style:preserve-3d]"
+          className="relative flex w-full flex-grow flex-col overflow-hidden rounded-lg border-2 border-ui-border-dark bg-ui-bg shadow-lg [transform-style:preserve-3d]"
           style={{ x, y, rotateX, rotateY, transformStyle: "preserve-3d" }}
           drag
           dragElastic={0.5}

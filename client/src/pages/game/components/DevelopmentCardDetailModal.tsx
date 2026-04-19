@@ -67,7 +67,7 @@ export const DevelopmentCardDetailModal = (props: Props) => {
     <Modal isOpen={!!selectedCard} onClose={handleClose} size="card" variant="card">
       <div className="flex h-full w-full flex-col justify-between gap-2 [perspective:300px]">
         <motion.section
-          className="relative flex w-full flex-grow flex-col overflow-hidden rounded-lg border-2 border-stone-700 bg-[#f5eeda] shadow-lg [transform-style:preserve-3d]"
+          className="relative flex w-full flex-grow flex-col overflow-hidden rounded-lg border-2 border-ui-border-dark bg-ui-bg shadow-lg [transform-style:preserve-3d]"
           style={{ x, y, rotateX, rotateY, transformStyle: "preserve-3d" }}
           drag
           dragElastic={0.5}

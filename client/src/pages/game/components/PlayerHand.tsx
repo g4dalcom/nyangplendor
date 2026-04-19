@@ -50,13 +50,16 @@ export const PlayerHand = (props: Props) => {
   return (
     <>
       {/* Bring Token Area */}
-      <article className="center gap padding border-4 border-double border-coffee rounded-lg w-40 h-16 lg:w-60 lg:h-20">
+      <article 
+        className="center gap padding border-4 border-double border-coffee w-40 h-16 lg:w-60 lg:h-20"
+        style={{ borderRadius: 'var(--radius-sm)' }}
+      >
         { Object.entries(pendingTokens).map(([token, count]) =>
           [...Array(count)].map((_, i) => (
             <button
               key={`${token}-${i}`}
               value={token}
-              className={clsx("token-size rounded-full border-2 w-8 h-8 lg:w-12 lg:h-12", tokenColorClasses[token as Token])}
+              className={clsx("rounded-full border-2 w-8 h-8 lg:w-12 lg:h-12", tokenColorClasses[token as Token])}
               onClick={undoBringToken}
             >
               <img src={tokenImages[token as Token]} alt={token} className="w-full h-full rounded-full object-cover" />
@@ -68,19 +71,22 @@ export const PlayerHand = (props: Props) => {
       {/* My Object PlayerHand */}
       <article className="relative container center justify-evenly gap padding">
         {/* Score */}
-        <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-coffee border-2 border-white z-10 score-shadow">
+        <div 
+          className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-coffee border-2 border-white z-10 score-shadow"
+          style={{ boxShadow: 'var(--shadow-primary)' }}
+        >
           <span className="center h-full w-full text-white text-sm font-bold">{player?.score ?? 0}</span>
         </div>
 
         {/* My Info */}
         <span className="font-bold text-lg lg:text-xl padding">{calculatePlayerTokenCount()} / 10</span>
-        <div className="flex flex-col gap-2 items-center">
-          <div className="flex gap-3 items-center">
+        <div className="flex flex-col gap-[var(--spacing-xs)] items-center">
+          <div className="flex gap-[var(--spacing-sm)] items-center">
             { TokensWithoutGold.map(token => (
-              <span key={token} className={clsx("center w-7 h-9 lg:w-8 lg:h-10 rounded-[20%] border-2", tokenColorClasses[token])}>{cardBonusMap[token]}</span>
+              <span key={token} className={clsx("center w-7 h-9 lg:w-8 lg:h-10 border-2", tokenColorClasses[token])} style={{ borderRadius: '20%' }}>{cardBonusMap[token]}</span>
             )) }
           </div>
-          <div className="flex gap-3 items-center">
+          <div className="flex gap-[var(--spacing-sm)] items-center">
             { AllTokens.map(token => (
               <span key={token} className={clsx("w-5 h-5 lg:w-6 lg:h-6 rounded-full border-2 flex justify-center items-center", tokenColorClasses[token])}>{(player?.tokens as any)[token] ?? 0}</span>
             )) }
@@ -88,9 +94,14 @@ export const PlayerHand = (props: Props) => {
         </div>
 
         {/* Reserved Cards */}
-        <div className="flex gap-2">
+        <div className="flex gap-[var(--spacing-xs)]">
           { player?.reservedCards.map(card => (
-            <div className="w-10 h-14 lg:w-12 lg:h-16 rounded-lg border center shrink-0 overflow-hidden hover:animate-scale" key={card.id} onClick={() => setSelectedCard(card)}>
+            <div 
+              className="w-10 h-14 lg:w-12 lg:h-16 border center shrink-0 overflow-hidden hover:animate-scale" 
+              key={card.id} 
+              style={{ borderRadius: 'var(--radius-sm)' }}
+              onClick={() => setSelectedCard(card)}
+            >
               <div className={clsx('relative w-full h-full flex flex-col')}>
                 <div className={clsx("p-1 relative z-10", cardLevelColorClasses[card.level])}></div>
                 <div className="absolute inset-0">
@@ -100,7 +111,7 @@ export const PlayerHand = (props: Props) => {
             </div>
           )) }
           { Array.from({ length: emptySlotCount }, (_, i) => (
-            <div key={`my-reserved-empty-${i}`} className="w-10 h-14 lg:w-12 lg:h-16 bg-primary rounded-lg border border-dashed border-[#999] shrink-0"></div>
+            <div key={`my-reserved-empty-${i}`} className="w-10 h-14 lg:w-12 lg:h-16 bg-primary border border-dashed border-ui-border shrink-0" style={{ borderRadius: 'var(--radius-sm)' }}></div>
           )) }
         </div>
 

@@ -18,9 +18,9 @@ export const DevelopmentCardView = ({ cardInfo, turnActionInfo }: Props) => {
   const ribbonText = turnAction === TurnAction.PURCHASE_DEVELOPMENT_CARD ? "Purchased" : "Reserved";
 
   return (
-    <div className="relative w-full h-full rounded-lg overflow-hidden hover:animate-scale">
+    <div className="relative w-full h-full overflow-hidden hover:animate-scale" style={{ borderRadius: 'var(--radius-sm)' }}>
       <div className={clsx(
-        'relative w-full h-full bg-[#f5eeda] border border-gray-300 shadow-lg flex flex-col',
+        'relative w-full h-full bg-ui-bg border border-ui-border shadow-lg flex flex-col',
         { 'grayscale-[80%] brightness-70': isPending }
       )}>
         <div className={clsx("px-1 py-0.5 flex justify-between items-center relative z-10", cardLevelColorClasses[cardInfo.level])}>
@@ -48,8 +48,8 @@ export const DevelopmentCardView = ({ cardInfo, turnActionInfo }: Props) => {
         <div className={clsx(
           "absolute top-10 -left-7 w-35 lg:top-16 lg:-left-10 lg:w-50 py-1 lg:py-1.5 text-center font-bold text-[0.8em] lg:text-[0.9em] tracking-wider -rotate-35 origin-center shadow-md z-10",
           {
-            'bg-[#4CAF50] text-white': turnAction === TurnAction.PURCHASE_DEVELOPMENT_CARD,
-            'bg-[#FFC107] text-gray-800': turnAction === TurnAction.RESERVE_DEVELOPMENT_CARD
+            'bg-success text-white': turnAction === TurnAction.PURCHASE_DEVELOPMENT_CARD,
+            'bg-warning text-gray-800': turnAction === TurnAction.RESERVE_DEVELOPMENT_CARD
           }
         )}>
           { ribbonText }

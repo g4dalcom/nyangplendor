@@ -153,7 +153,7 @@ export const Game = () => {
       <section className="grid grid-rows-[4fr_1fr] h-full">
         <section className="grid grid-cols-[1fr_4fr_1fr]">
           {/* Left Players */}
-          <section className="grid grid-row-2 center">
+          <section className="flex flex-col center gap">
               <GamePlayer player={gameState.players[0]} setSelectedCard={setSelectedCard} />
               <GamePlayer player={gameState.players[2]} setSelectedCard={setSelectedCard} />
           </section>
@@ -170,7 +170,7 @@ export const Game = () => {
           </section>
 
           {/* Right Players */}
-          <section className="grid grid-row-[1fr_1fr] center">
+          <section className="flex flex-col center gap">
             <GamePlayer player={gameState.players[1]} setSelectedCard={setSelectedCard} />
             <GamePlayer player={gameState.players[3]} setSelectedCard={setSelectedCard} />
           </section>

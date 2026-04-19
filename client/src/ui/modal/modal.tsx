@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { clsx } from "clsx";
 
 const modalContainerVariants = cva(
-  "relative w-[90vw] m-auto border-none rounded-[12px] shadow-[0_10px_30px_rgba(0,0,0,0.2)] p-0 bg-transparent pointer-events-auto opacity-0 scale-95 transition-all duration-200 ease-in-out",
+  "relative w-[90vw] m-auto border-none shadow-[0_10px_30px_rgba(0,0,0,0.2)] p-0 bg-transparent pointer-events-auto opacity-0 scale-95 transition-all duration-200 ease-in-out",
   {
     variants: {
       isOpen: {
@@ -30,12 +30,12 @@ const modalContainerVariants = cva(
   }
 );
 
-const modalContentVariants = cva("w-full h-full flex flex-col rounded-[12px] overflow-hidden", {
+const modalContentVariants = cva("w-full h-full flex flex-col overflow-hidden", {
   variants: {
     variant: {
-      default: "bg-white text-[#333]",
-      card: "bg-transparent text-[#f0f0f0]",
-      tile: "bg-transparent text-[#f0f0f0]",
+      default: "bg-white text-ui-text-main",
+      card: "bg-transparent text-ui-text-light",
+      tile: "bg-transparent text-ui-text-light",
     },
   },
   defaultVariants: {
@@ -46,8 +46,8 @@ const modalContentVariants = cva("w-full h-full flex flex-col rounded-[12px] ove
 const headerVariants = cva("flex justify-between items-center px-6 py-4 flex-shrink-0", {
   variants: {
     variant: {
-      default: "border-b border-[#eee] text-[1.2rem] font-semibold",
-      card: "bg-black/20 border-b border-[#5a5a6a] text-[1.3rem]",
+      default: "border-b border-ui-border-light text-[1.2rem] font-semibold",
+      card: "bg-ui-bg-dark border-b border-ui-border-medium text-[1.3rem]",
       tile: "hidden",
     },
   },
@@ -76,7 +76,7 @@ const footerVariants = cva("flex justify-end gap-4 px-6 py-4 flex-shrink-0", {
   variants: {
     variant: {
       default: "",
-      card: "bg-black/20 border-t border-[#5a5a6a]",
+      card: "bg-ui-bg-dark border-t border-ui-border-medium",
       tile: "hidden",
     },
   },
@@ -127,7 +127,7 @@ export function Modal({ isOpen, onClose, size, variant, className, children, hea
       onClick={handleBackdropClick}
       className={clsx(modalContainerVariants({ isOpen, size, variant }), className)}
     >
-      <div className={clsx(modalContentVariants({ variant }))}>
+      <div className={clsx(modalContentVariants({ variant }))} style={{ borderRadius: 'var(--radius-md)' }}>
         {header && (
           <header className={headerVariants({ variant })}>
             {header}

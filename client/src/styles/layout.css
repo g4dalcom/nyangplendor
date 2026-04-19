@@ -1,0 +1,82 @@
+@layer base {
+    @font-face {
+        font-family: Nunito;
+        src: url("@/assets/fonts/Nunito-VF.ttf") format("truetype");
+    }
+
+    * {
+        cursor: url('@/assets/icons/cursor.png') 14 0, pointer;
+    }
+
+    html {
+        font-family: var(--font-sans), serif;
+        font-weight: 600;
+        font-size: clamp(12px, 1.25vw, 16px);
+    }
+
+    body {
+        background-color: var(--color-base);
+        background-image: url('@/assets/icons/cat-paw.svg');
+        background-repeat: repeat;
+        background-size: 120px 120px;
+        margin: 0;
+        width: 100dvw;
+        height: 100dvh;
+    }
+}
+
+@layer utilities {
+    .center {
+        @apply flex items-center justify-center;
+    }
+
+    .padding {
+        @apply p-[var(--spacing-sm)] lg:p-[var(--spacing-md)];
+    }
+
+    .gap {
+        @apply gap-[var(--spacing-sm)] lg:gap-[var(--spacing-md)];
+    }
+
+    /* Board Object Sizes - Responsive */
+    .board-token-size {
+        width: var(--size-board-token);
+        height: var(--size-board-token);
+
+        @media (min-width: 1024px) {
+            width: var(--size-board-token-lg);
+            height: var(--size-board-token-lg);
+        }
+    }
+
+    .board-card-size {
+        width: var(--size-board-card-w);
+        height: var(--size-board-card-h);
+
+        @media (min-width: 1024px) {
+            width: var(--size-board-card-w-lg);
+            height: var(--size-board-card-h-lg);
+        }
+    }
+
+    .board-tile-size {
+        width: var(--size-board-tile);
+        height: var(--size-board-tile);
+
+        @media (min-width: 1024px) {
+            width: var(--size-board-tile-lg);
+            height: var(--size-board-tile-lg);
+        }
+    }
+
+    /* Card / Tile Info Sizes */
+    .info-size {
+        width: var(--size-info);
+        height: var(--size-info);
+
+        @media (min-width: 1024px) {
+            width: var(--size-info-lg);
+            height: var(--size-info-lg);
+        }
+    }
+}

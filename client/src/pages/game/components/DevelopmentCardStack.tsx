@@ -9,17 +9,18 @@ export const DevelopmentCardStack: React.FC<CardStackProps> = ({ numberOfLayers 
   //
   if (numberOfLayers < 1) {
     return (
-      <div key={`empty`} className="board-card-size rounded-lg bg-primay border border-dashed border-[#999] shrink-0"></div>
+      <div key={`empty`} className="board-card-size bg-primay border border-dashed border-ui-border shrink-0" style={{ borderRadius: 'var(--radius-sm)' }}></div>
     )
   }
 
   if (numberOfLayers === 1) {
     return (
-      <div className="absolute w-full h-full rounded-lg overflow-hidden shadow-lg">
+      <div className="absolute w-full h-full overflow-hidden shadow-lg" style={{ borderRadius: 'var(--radius-sm)' }}>
         <img
           src={cardBack}
           alt="card back"
-          className="w-full h-full object-cover rounded-lg border border-[#999]"
+          className="w-full h-full object-cover border border-ui-border"
+          style={{ borderRadius: 'var(--radius-sm)' }}
         />
       </div>
     );
@@ -32,35 +33,39 @@ export const DevelopmentCardStack: React.FC<CardStackProps> = ({ numberOfLayers 
       {[...Array(lastLayerIndex)].map((_, i) => (
         <div
           key={`bg-card-${i}`}
-          className="absolute w-full h-full rounded-lg overflow-hidden shadow-md"
+          className="absolute w-full h-full overflow-hidden shadow-md"
           style={{
             top: `${i * -3}px`,
             left: `${i * -3}px`,
             transform: `rotate(${(i - 1) * 1.2}deg)`,
             zIndex: i,
+            borderRadius: 'var(--radius-sm)',
           }}
         >
           <img
             src={cardBack}
             alt="card back"
-            className="w-full h-full object-cover rounded-lg border border-[#999]"
+            className="w-full h-full object-cover border border-ui-border"
+            style={{ borderRadius: 'var(--radius-sm)' }}
           />
         </div>
       ))}
 
       <div
-        className="absolute w-full h-full rounded-lg overflow-hidden shadow-lg"
+        className="absolute w-full h-full overflow-hidden shadow-lg"
         style={{
           top: `${lastLayerIndex * -3}px`,
           left: `${lastLayerIndex * -3}px`,
           transform: `rotate(${(lastLayerIndex - 1) * 1.2}deg)`,
           zIndex: lastLayerIndex,
+          borderRadius: 'var(--radius-sm)',
         }}
       >
         <img
           src={cardBack}
           alt="card back"
-          className="w-full h-full object-cover rounded-lg border border-[#999]"
+          className="w-full h-full object-cover border border-ui-border"
+          style={{ borderRadius: 'var(--radius-sm)' }}
         />
       </div>
     </>

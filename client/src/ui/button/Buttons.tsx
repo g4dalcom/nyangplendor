@@ -4,13 +4,13 @@ import type { ButtonHTMLAttributes, FC, ReactNode } from "react";
 type ButtonColor = 'default' | 'green' | 'orange' | 'red' | 'blue' | 'pink' | 'dark';
 
 const colorClassMap: Record<ButtonColor, string> = {
-  default: 'bg-[#e7e7e7] text-black shadow-[inset_-6px_-6px_0px_0px_#cfcfcf,var(--shadow-primary)] hover:bg-[#ffffff] active:bg-[#e7e7e7] active:shadow-[inset_6px_6px_0px_0px_#cfcfcf,var(--shadow-primary)]',
-  green: 'bg-[#92cc41] text-white shadow-[inset_-6px_-6px_0px_0px_#65a013,var(--shadow-primary)] hover:bg-[#76c442] active:bg-[#92cc41] active:shadow-[inset_6px_6px_0px_0px_#65a013,var(--shadow-primary)]',
-  orange: 'bg-[#f7d51d] text-black shadow-[inset_-6px_-6px_0px_0px_#c9ae17,var(--shadow-primary)] hover:bg-[#e7c819] active:bg-[#f7d51d] active:shadow-[inset_6px_6px_0px_0px_#c9ae17,var(--shadow-primary)]',
-  red: 'bg-[#e76e55] text-white shadow-[inset_-6px_-6px_0px_0px_#bf3d41,var(--shadow-primary)] hover:bg-[#c25c48] active:bg-[#761c1e] active:shadow-[inset_6px_6px_0px_0px_#bf3d41,var(--shadow-primary)]',
-  blue: 'bg-[#109fff] text-white shadow-[inset_-6px_-6px_0px_0px_#006bb3,var(--shadow-primary)] hover:bg-[#1195ec] active:bg-[#109fff] active:shadow-[inset_6px_6px_0px_0px_#108de0,var(--shadow-primary)]',
-  pink: 'bg-[#ee2097] text-white shadow-[inset_-6px_-6px_0px_0px_#902c74,var(--shadow-primary)] hover:bg-[#eb55ac] active:bg-[#ee2097] active:shadow-[inset_6px_6px_0px_0px_#902c74,var(--shadow-primary)]',
-  dark: 'bg-[#444444] text-white shadow-[inset_-6px_-6px_0px_0px_#333333,var(--shadow-primary)] hover:bg-[#555555] active:bg-[#444444] active:shadow-[inset_6px_6px_0px_0px_#333333,var(--shadow-primary)]',
+  default: 'btn-default',
+  green: 'btn-green',
+  orange: 'btn-orange',
+  red: 'btn-red',
+  blue: 'btn-blue',
+  pink: 'btn-pink',
+  dark: 'btn-dark',
 };
 
 interface Props extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'color'> {
@@ -38,12 +38,12 @@ export const Button: FC<Props> = ({
   return (
     <button
       className={clsx(
-        'relative inline-block text-center rounded-xl font-semibold no-underline border-2 border-black transition-all [text-shadow:2px_2px_2px_#00000040] whitespace-nowrap',
+        'btn-neo relative inline-block text-center font-semibold no-underline border-2 border-black [text-shadow:2px_2px_2px_#00000040] whitespace-nowrap',
         sizeClasses[size],
         colorClassMap[color],
-        'disabled:bg-[#d3d3d3] disabled:text-[#757575] disabled:opacity-60 disabled:cursor-not-allowed disabled:shadow-[inset_-6px_-6px_0px_0px_#adafbc,var(--shadow-primary)]',
         className
       )}
+      style={{ borderRadius: 'var(--radius-md)' }}
       disabled={disabled || loading}
       {...props}
     >
