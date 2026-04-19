@@ -19,8 +19,9 @@ export const getTotalTokens = (tokens: Record<Token, number>): number => {
 }
 
 /* 보유한 카드의 보너스 토큰 정보 */
-export const getCardBonus = (cards: ArraySchema<DevelopmentCard>): Record<Token, number> => {
-  return cards.reduce((acc, card) => {
+export const getCardBonus = (cards: DevelopmentCard[] | ArraySchema<DevelopmentCard>): Record<Token, number> => {
+  const cardList = Array.isArray(cards) ? cards : (cards as any).toArray ? (cards as any).toArray() : cards;
+  return (cardList as DevelopmentCard[]).reduce((acc, card) => {
     const bonusToken = card.token;
     acc[bonusToken] += 1;
     return acc;
@@ -28,11 +29,12 @@ export const getCardBonus = (cards: ArraySchema<DevelopmentCard>): Record<Token,
 }
 
 /* (구매하려는 카드의 토큰 가격 - 보유한 카드 보너스), 실제 토큰으로 지불해야 하는 토큰 코스트 */
-export const getRequiredCardCost = (cost: MapSchema<number>, cardBonuses: Record<Token, number>) => {
+export const getRequiredCardCost = (cost: MapSchema<number> | Record<Token, number>, cardBonuses: Record<Token, number>) => {
   const actualCost = initializeTokens();
-  for (const [token, count] of cost.entries()) {
+  const costRecord = convertMapSchemaToRecord(cost);
+  for (const [token, count] of Object.entries(costRecord)) {
     const key = token as Token;
-    actualCost[key] = Math.max(0, count - cardBonuses[key]);
+    actualCost[key] = Math.max(0, count - (cardBonuses[key] || 0));
   }
   return actualCost;
 }
@@ -57,4 +59,26 @@ export const convertMapSchemaToRecord = (mapSchema: MapSchema<number> | Record<T
     }
   }
   return tokens;
+}
+
+/* 카드를 구매할 때 부족한 토큰 정보를 반환. Gold 토큰을 고려하여 계산함. */
+export const getPurchaseShortage = (
+  cost: MapSchema<number> | Record<Token, number>,
+  playerTokens: Record<Token, number>,
+  playerCardBonuses: Record<Token, number>
+): { isAffordable: boolean } => {
+  const actualCost = getRequiredCardCost(convertMapSchemaToRecord(cost), playerCardBonuses);
+  let totalShortage = 0;
+  const goldAvailable = playerTokens[Token.GOLD] || 0;
+
+  for (const [token, count] of Object.entries(actualCost)) {
+    const t = token as Token;
+    if (t === Token.GOLD) continue;
+    const playerTokenCount = playerTokens[t] || 0;
+    if (playerTokenCount < count) {
+      totalShortage += count - playerTokenCount;
+    }
+  }
+
+  return { isAffordable: totalShortage <= goldAvailable };
 }

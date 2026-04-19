@@ -2,13 +2,16 @@ import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
 import {Modal} from "@/ui/modal/modal.tsx";
 import {tokenImages} from "@/pages";
 import {motion, useMotionValue, useTransform} from "framer-motion";
-import {useRef} from "react";
+import {useMemo, useRef} from "react";
 import {Button} from "@/ui";
 import {clsx} from "clsx";
 import {cardLevelColorClasses, tokenColorClasses} from "@/styles/style.ts";
 import type {Token} from "@shared/types/enums/GameObject";
 import type {TurnActionType} from "@/hooks";
 import {TurnAction} from "@shared/types/enums/Action";
+import {useGameRoom} from "@/contexts/GameRoomContext.tsx";
+import {convertMapSchemaToRecord, getCardBonus, getPurchaseShortage} from "@shared/utils";
+import {toast} from "react-toastify";
 
 interface Props {
   selectedCard: DevelopmentCard;
@@ -22,6 +25,7 @@ interface Props {
 export const DevelopmentCardDetailModal = (props: Props) => {
   //
   const { selectedCard, turnActionInfo, closeModal, handleClickPurchase, handleClickReserve, handleClickCancel } = props;
+  const { player } = useGameRoom();
 
   const isDragging = useRef<boolean>(false);
 
@@ -34,10 +38,29 @@ export const DevelopmentCardDetailModal = (props: Props) => {
   const pendingReservedCard = turnAction === TurnAction.RESERVE_DEVELOPMENT_CARD && turnActionInfo.card?.id === selectedCard.id;
   const pendingPurchasedCard = turnAction === TurnAction.PURCHASE_DEVELOPMENT_CARD && turnActionInfo.card?.id === selectedCard.id;
 
+  const affordability = useMemo(() => {
+    if (!player || !selectedCard) return { isAffordable: true };
+    const playerTokens = convertMapSchemaToRecord(player.tokens);
+    const playerCardBonuses = getCardBonus(player.developmentCards);
+    return getPurchaseShortage(selectedCard.cost, playerTokens, playerCardBonuses);
+  }, [player, selectedCard]);
+
   const handleClose = () => {
     if (!isDragging.current) {
       closeModal();
     }
+  };
+
+  /* 구매 버튼 클릭 시 부족한 토큰 확인 후 토스트 출력 또는 구매 수행 */
+  const onPurchaseClick = () => {
+    if (!affordability.isAffordable) {
+      toast("토큰이 부족합니다.", {
+        containerId: "toast-message",
+        className: "toast-body-center", // 중앙 정렬 클래스 적용
+      });
+      return;
+    }
+    handleClickPurchase();
   };
 
   return (
@@ -89,7 +112,7 @@ export const DevelopmentCardDetailModal = (props: Props) => {
           }
           { pendingPurchasedCard ?
             <Button color="red" onClick={handleClickCancel}>Cancel</Button> :
-            <Button color="green" onClick={handleClickPurchase}>Purchase</Button>
+            <Button color="green" onClick={onPurchaseClick}>Purchase</Button>
           }
         </article>
       </div>

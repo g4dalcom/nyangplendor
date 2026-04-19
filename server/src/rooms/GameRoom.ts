@@ -15,6 +15,7 @@ import {Player} from "@shared/models/colyseus/Player";
 import {
   convertMapSchemaToRecord,
   getCardBonus,
+  getPurchaseShortage,
   getRequiredCardCost,
   getTotalTokens,
   initializeTokens
@@ -196,24 +197,30 @@ export class GameRoom extends Room<GameState> {
     const playerTokens: Record<Token, number> = convertMapSchemaToRecord(player.tokens);
     const actualCardCost: Record<Token, number> = getRequiredCardCost(purchasedCard.cost, playerCardBonuses);
 
-    /* 부족분은 Gold 토큰으로 대체 */
-    const tokens = initializeTokens();
-    for (const [token, count] of Object.entries(actualCardCost)) {
-      const playerToken = playerTokens[token as Token];
-      if (playerToken < count) {
-        const shortage = count - playerToken;
-        if (playerTokens[Token.GOLD] < shortage) {
-          return;
-        }
-        tokens[Token.GOLD] -= shortage;
-        tokens[token as Token] = -(playerToken);
-      } else {
-        tokens[token as Token] = -(count);
-      }
+    /* 부족한 토큰 확인 (Gold 포함) */
+    const shortageResult = getPurchaseShortage(purchasedCard.cost, playerTokens, playerCardBonuses);
+    if (!shortageResult.isAffordable) {
+      return;
     }
 
+    /* 토큰 지불 정보 생성 */
+    const tokensToPay = initializeTokens();
+    let goldToUse = 0;
+    for (const [token, count] of Object.entries(actualCardCost)) {
+      const t = token as Token;
+      if (t === Token.GOLD) continue;
+      const playerTokenCount = playerTokens[t] || 0;
+      if (playerTokenCount < count) {
+        tokensToPay[t] = -playerTokenCount;
+        goldToUse += (count - playerTokenCount);
+      } else {
+        tokensToPay[t] = -count;
+      }
+    }
+    tokensToPay[Token.GOLD] = -goldToUse;
+
     this.syncCard(player, purchasedCard, CardAction.PURCHASE);
-    this.syncToken(player, tokens);
+    this.syncToken(player, tokensToPay);
     this.endTurn();
   }
 
