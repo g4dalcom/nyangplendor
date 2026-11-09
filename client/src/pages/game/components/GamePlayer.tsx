@@ -68,13 +68,13 @@ export const GamePlayer = ({ player, setSelectedCard }: Props) => {
           <div className="flex flex-col gap center">
             <div className="flex gap-1">
               { TokensWithoutGold.map(token => (
-                <span key={token} className={clsx("center w-5 h-7 lg:w-6 lg:h-8 rounded-[20%] border-2", tokenColorClasses[token])}>{cardBonusMap[token]}</span>
+                <span key={token} className={clsx("center w-5 h-7 lg:w-6 lg:h-8 rounded-[20%] border-2 font-extrabold text-xs token-badge", tokenColorClasses[token])}>{cardBonusMap[token]}</span>
               )) }
             </div>
 
             <div className="flex gap-1">
               { AllTokens.map(token => (
-                <span key={token} className={clsx("center w-5 h-5 rounded-full border-2", tokenColorClasses[token])}>{(player.tokens as any)[token] ?? 0}</span>
+                <span key={token} className={clsx("center w-5 h-5 lg:w-6 lg:h-6 rounded-full border-2 font-extrabold text-xs token-badge", tokenColorClasses[token])}>{(player.tokens as any)[token] ?? 0}</span>
               )) }
             </div>
 

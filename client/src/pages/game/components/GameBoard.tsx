@@ -30,14 +30,39 @@ export const GameBoard = ({
   const tokenRenderer = () => {
     //
     return (
-      AllTokens.map(token => (
-        <div className="center gap [perspective:500px] w-full" key={token}>
-          <button value={token} className={clsx("board-token-size rounded-full border-[3px] border-ui-border-black relative token-animation token-animation:active token-animation:hover", tokenColorClasses[token])} onClick={bringToken}>
-            <img src={tokenImages[token]} alt={token} className="w-full h-full rounded-full object-cover pointer-events-none relative z-10 [transform:translateZ(1px)]" />
-          </button>
-          <span className="text-lg lg:text-xl font-bold text-coffee px-3 py-1 text-center">{(gameState.tokens[token] ?? 0) - pendingTokens[token as Token]}</span>
-        </div>
-      ))
+      AllTokens.map(token => {
+        const remainingCount = (gameState.tokens[token] ?? 0) - pendingTokens[token as Token];
+        const isEmpty = remainingCount <= 0;
+
+        return (
+          <div className="center [perspective:500px] w-full" key={token}>
+            <button
+              value={token}
+              className={clsx(
+                "board-token-size rounded-full border-3 relative center token-animation token-animation:active token-animation:hover cursor-pointer",
+                tokenColorClasses[token],
+                isEmpty && "opacity-40 grayscale cursor-not-allowed"
+              )}
+              onClick={bringToken}
+            >
+              <span className="absolute inset-1 rounded-full border border-dashed border-white/70 pointer-events-none" />
+              <img
+                src={tokenImages[token]}
+                alt={token}
+                className="w-[68%] h-[68%] rounded-full object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)] pointer-events-none relative z-10 [transform:translateZ(1px)]"
+              />
+              <span
+                className={clsx(
+                  "absolute -bottom-1 -right-1 min-w-6 h-6 px-1 rounded-full border-2 border-white center text-xs lg:text-sm font-extrabold shadow-md z-20 pointer-events-none",
+                  isEmpty ? "bg-gray-600 text-gray-200" : "bg-coffee text-white"
+                )}
+              >
+                {remainingCount}
+              </span>
+            </button>
+          </div>
+        );
+      })
     )
   }
 

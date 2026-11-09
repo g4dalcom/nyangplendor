@@ -62,10 +62,10 @@ export const PlayerHand = (props: Props) => {
             <button
               key={`${token}-${i}`}
               value={token}
-              className={clsx("rounded-full border-2 w-8 h-8 lg:w-12 lg:h-12", tokenColorClasses[token as Token])}
+              className={clsx("rounded-full border-2 w-9 h-9 lg:w-12 lg:h-12 center relative token-animation cursor-pointer", tokenColorClasses[token as Token])}
               onClick={undoBringToken}
             >
-              <img src={tokenImages[token as Token]} alt={token} className="w-full h-full rounded-full object-cover" />
+              <img src={tokenImages[token as Token]} alt={token} className="w-[70%] h-[70%] rounded-full object-contain drop-shadow-[0_1px_1px_rgba(0,0,0,0.4)]" />
             </button>
           ))
         ) }
@@ -86,12 +86,12 @@ export const PlayerHand = (props: Props) => {
         <div className="flex flex-col gap-[var(--spacing-xs)] items-center">
           <div className="flex gap-[var(--spacing-sm)] items-center">
             { TokensWithoutGold.map(token => (
-              <span key={token} className={clsx("center w-7 h-9 lg:w-8 lg:h-10 border-2", tokenColorClasses[token])} style={{ borderRadius: '20%' }}>{cardBonusMap[token]}</span>
+              <span key={token} className={clsx("center w-7 h-9 lg:w-8 lg:h-10 border-2 font-extrabold token-badge", tokenColorClasses[token])} style={{ borderRadius: '20%' }}>{cardBonusMap[token]}</span>
             )) }
           </div>
           <div className="flex gap-[var(--spacing-sm)] items-center">
             { AllTokens.map(token => (
-              <span key={token} className={clsx("w-5 h-5 lg:w-6 lg:h-6 rounded-full border-2 flex justify-center items-center", tokenColorClasses[token])}>{(player?.tokens as any)[token] ?? 0}</span>
+              <span key={token} className={clsx("w-6 h-6 lg:w-7 lg:h-7 rounded-full border-2 flex justify-center items-center font-extrabold text-xs lg:text-sm token-badge", tokenColorClasses[token])}>{(player?.tokens as any)[token] ?? 0}</span>
             )) }
           </div>
         </div>

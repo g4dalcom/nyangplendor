@@ -23,10 +23,10 @@ export const NobleTileView = ({ nobleTile }: Props) => {
         <img src={nobleTile.imageUrl} alt={nobleTile.name} className="w-full h-full object-cover" />
       </div>
 
-      <footer className="absolute bottom-0 left-0 w-full z-10 bg-white/40 p-1 center mt-auto">
+      <footer className="absolute bottom-0 left-0 w-full z-10 bg-black/60 backdrop-blur-[1px] p-1 center mt-auto">
         <div className="flex gap-1">
           { Object.entries(nobleTile.cost).flatMap(([token, count]) => (
-            <span key={`${token}`} className={clsx("info-size rounded-full border-2 flex justify-center items-center text-xs font-bold", tokenColorClasses[token as Token])}>
+            <span key={`${token}`} className={clsx("info-size rounded-full border-2 flex justify-center items-center text-xs font-extrabold text-black token-badge", tokenColorClasses[token as Token])}>
               {count}
             </span>
           )) }

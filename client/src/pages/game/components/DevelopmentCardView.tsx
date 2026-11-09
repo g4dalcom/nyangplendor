@@ -23,9 +23,9 @@ export const DevelopmentCardView = ({ cardInfo, turnActionInfo }: Props) => {
         'relative w-full h-full bg-ui-bg border border-ui-border shadow-lg flex flex-col',
         { 'grayscale-[80%] brightness-70': isPending }
       )}>
-        <div className={clsx("px-1 py-0.5 flex justify-between items-center relative z-10", cardLevelColorClasses[cardInfo.level])}>
-          <div className="w-2 h-2 lg:w-3 lg:h-3 flex items-center justify-center text-sm text-white font-bold m-0">{cardInfo.prestigePoint > 0 ? cardInfo.prestigePoint : ''}</div>
-          <div className={clsx("info-size rounded-full border-2", tokenColorClasses[cardInfo.token])}>
+        <div className={clsx("px-1.5 py-0.5 flex justify-between items-center relative z-10", cardLevelColorClasses[cardInfo.level])}>
+          <div className="w-2 h-2 lg:w-3 lg:h-3 flex items-center justify-center text-sm text-white font-extrabold drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] m-0">{cardInfo.prestigePoint > 0 ? cardInfo.prestigePoint : ''}</div>
+          <div className={clsx("info-size rounded-full border-2 token-badge", tokenColorClasses[cardInfo.token])}>
           </div>
         </div>
 
@@ -33,10 +33,10 @@ export const DevelopmentCardView = ({ cardInfo, turnActionInfo }: Props) => {
           <img src={cardInfo.imageUrl} alt={cardInfo.name} className="w-full h-full object-cover" />
         </div>
 
-        <footer className="absolute bottom-0 left-0 w-full z-10 bg-white/40 p-1 center mt-auto">
+        <footer className="absolute bottom-0 left-0 w-full z-10 bg-black/60 backdrop-blur-[1px] p-1 center mt-auto">
           <div className="flex gap-1">
             { Object.entries(cardInfo.cost).flatMap(([token, count]) => (
-              <span key={`${token}`} className={clsx("info-size rounded-full border-2 center text-xs font-bold", tokenColorClasses[token as Token])}>
+              <span key={`${token}`} className={clsx("info-size rounded-full border-2 center text-xs font-extrabold text-black token-badge", tokenColorClasses[token as Token])}>
                 {count}
               </span>
             )) }

@@ -106,11 +106,11 @@ export const DevelopmentCardDetailModal = (props: Props) => {
             </div>
           ) : (
             <>
-              <div className={clsx('relative z-10 flex items-center justify-between p-1', cardLevelColorClasses[selectedCard.level])}>
-                <div className="ml-2 text-3xl font-bold text-white">{selectedCard.prestigePoint > 0 ? selectedCard.prestigePoint : ''}</div>
+              <div className={clsx('relative z-10 flex items-center justify-between p-1.5', cardLevelColorClasses[selectedCard.level])}>
+                <div className="ml-2 text-3xl font-extrabold text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">{selectedCard.prestigePoint > 0 ? selectedCard.prestigePoint : ''}</div>
                 <div className="bonus-token">
-                  <span className={clsx("flex h-9 w-9 items-center justify-center rounded-full border-2", tokenColorClasses[selectedCard.token])}>
-                    <img className="pointer-events-none relative z-10 h-[120%] w-[120%] rounded-full object-cover" src={tokenImages[selectedCard.token]} alt={`${selectedCard.token} 토큰`} />
+                  <span className={clsx("flex h-10 w-10 items-center justify-center rounded-full border-2 token-badge", tokenColorClasses[selectedCard.token])}>
+                    <img className="pointer-events-none relative z-10 h-[72%] w-[72%] rounded-full object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" src={tokenImages[selectedCard.token]} alt={`${selectedCard.token} 토큰`} />
                   </span>
                 </div>
               </div>
@@ -119,13 +119,13 @@ export const DevelopmentCardDetailModal = (props: Props) => {
                 <img className="pointer-events-none h-full w-full object-cover" src={selectedCard.imageUrl} alt={selectedCard.name} />
               </div>
 
-              <footer className="relative z-10 mt-auto flex w-full items-center justify-center bg-white/40 p-2">
-                <div className="flex gap-1">
+              <footer className="relative z-10 mt-auto flex w-full items-center justify-center bg-black/60 backdrop-blur-[2px] p-2">
+                <div className="flex gap-1.5">
                   { Object.entries(selectedCard.cost).flatMap(([token, count], i) =>
                     <span
                       key={`token-${i}`}
                       className={clsx(
-                        "flex h-9 w-9 items-center justify-center rounded-full border-2 text-lg font-bold text-black",
+                        "flex h-9 w-9 items-center justify-center rounded-full border-2 text-lg font-extrabold text-black token-badge",
                         tokenColorClasses[token as Token]
                       )}
                     >

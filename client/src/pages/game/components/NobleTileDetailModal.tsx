@@ -46,13 +46,13 @@ export const NobleTileDetailModal = ({ selectedNobleTile, closeModal }: Props) =
             <img className="pointer-events-none h-full w-full object-cover" src={selectedNobleTile.imageUrl} alt={selectedNobleTile.name} />
           </div>
 
-          <footer className="relative z-[1] mt-auto flex w-full items-center justify-center bg-white/40 p-2">
-            <div className="flex gap-1">
+          <footer className="relative z-[1] mt-auto flex w-full items-center justify-center bg-black/60 backdrop-blur-[2px] p-2">
+            <div className="flex gap-1.5">
               { Object.entries(selectedNobleTile.cost).flatMap(([token, count], i) =>
                 <span
                   key={`token-${i}`}
                   className={clsx(
-                    'center h-9 w-9 rounded-full border-2 text-lg font-bold text-black',
+                    'center h-9 w-9 rounded-full border-2 text-lg font-extrabold text-black token-badge',
                     tokenColorClasses[token as Token]
                   )}
                 >
