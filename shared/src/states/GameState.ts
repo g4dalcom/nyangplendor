@@ -28,10 +28,10 @@ export class GameState extends Schema {
     this.phase = GamePhase.WAITING_FOR_PLAYERS
     this.turn = 0
     this.winnerPlayerId = null;
-    // this.developmentCards = new ArraySchema<DevelopmentCard>();
-    // this.nobleTiles = new ArraySchema<NobleTile>();
-    // this.tokens = new MapSchema<number>();
-    // this.players.forEach(p => p.resetPlayerState());
+    this.developmentCards = new ArraySchema<DevelopmentCard>();
+    this.nobleTiles = new ArraySchema<NobleTile>();
+    this.tokens = new MapSchema<number>();
+    this.players.forEach(p => p.resetPlayerState());
   }
 
   public existPlayerBySessionId = (sessionId: string) => {
@@ -56,14 +56,18 @@ export class GameState extends Schema {
   }
 
   public findDevelopmentCardById = (id: string) => {
-    const card = this.developmentCards.find(card => card.id === id);
-    if (!card) {
-      throw new Error(`DevelopmentCard '${card}' not found.`);
+    const boardCard = this.developmentCards.find(card => card.id === id);
+    if (boardCard) return boardCard;
+
+    for (const player of this.players) {
+      const reservedCard = player.reservedCards?.find(card => card.id === id);
+      if (reservedCard) return reservedCard;
     }
-    return card
+
+    throw new Error(`DevelopmentCard '${id}' not found.`);
   }
 
-  // public existReservedByDevelopmentCardId = (id: string) => {
-  //   this.players.find(p => p.reservedCards?.find(c => c.id === id))
-  // }
+  public existReservedByDevelopmentCardId = (id: string) => {
+    return this.players.some(p => p.reservedCards?.some(c => c.id === id));
+  }
 }

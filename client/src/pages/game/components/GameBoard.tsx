@@ -1,4 +1,5 @@
 import {CardLevel, Token} from "@shared/types/enums/GameObject";
+import {TurnAction} from "@shared/types/enums/Action";
 import {DevelopmentCardStack, DevelopmentCardView, NobleTileView, tokenImages} from "@/pages";
 import type {Dispatch, MouseEvent, SetStateAction} from "react";
 import type {GameState} from "@shared/states/GameState";
@@ -52,10 +53,32 @@ export const GameBoard = ({
       const ratio = deckCards / totalCards;
       const numberOfLayers = deckCards === 0 ? 0 : Math.max(1, Math.round(ratio * 5));
 
+      const topDeckCard = inDeckCards[0];
+      const isDeckPendingReserve =
+        !!topDeckCard &&
+        turnActionInfo.action === TurnAction.RESERVE_DEVELOPMENT_CARD &&
+        turnActionInfo.card?.id === topDeckCard.id;
+
       return (
         <div key={cardLevel} className="flex gap-2 lg:gap-1">
-          <div key={`deck-${cardLevel}`} className="relative board-card-size bg-secondary border border-dashed border-ui-border shrink-0" style={{ borderRadius: 'var(--radius-sm)' }}>
+          <div
+            key={`deck-${cardLevel}`}
+            className={clsx(
+              "relative board-card-size bg-secondary border border-dashed border-ui-border shrink-0",
+              topDeckCard && "cursor-pointer",
+              isDeckPendingReserve && "grayscale-[80%] brightness-70"
+            )}
+            style={{ borderRadius: 'var(--radius-sm)' }}
+            onClick={() => topDeckCard && setSelectedCard(topDeckCard)}
+          >
             <DevelopmentCardStack numberOfLayers={numberOfLayers} />
+            {isDeckPendingReserve && (
+              <div className="absolute inset-0 overflow-hidden pointer-events-none z-20" style={{ borderRadius: 'var(--radius-sm)' }}>
+                <div className="absolute top-10 -left-7 w-35 lg:top-16 lg:-left-10 lg:w-50 py-1 lg:py-1.5 text-center font-bold text-[0.8em] lg:text-[0.9em] tracking-wider -rotate-35 origin-center shadow-md bg-warning text-gray-800">
+                  Reserved
+                </div>
+              </div>
+            )}
           </div>
           { inBoardCards.map((card) => (
             <div key={card.id} className="board-card-size bg-secondary shadow-sm shrink-0 cursor-pointer" style={{ borderRadius: 'var(--radius-sm)' }} onClick={() => setSelectedCard(card)}>

@@ -150,6 +150,7 @@ export class GameRoom extends Room<GameState> {
   public takeTokens = (sessionId: string, tokens: Record<Token, number>) => {
     const player = this.state.findPlayerBySessionId(sessionId);
     if (!this.validatePlayerTokenCount(player, tokens)) return;
+    if (!this.validateTakeTokensRule(tokens)) return;
 
     this.syncToken(player, tokens);
     this.endTurn();
@@ -159,6 +160,23 @@ export class GameRoom extends Room<GameState> {
     const playerTokens = player.totalTokenCount;
     const bringOrReturnTokens = getTotalTokens(tokens);
     return playerTokens + bringOrReturnTokens <= 10;
+  }
+
+  private validateTakeTokensRule = (tokens: Record<Token, number>) => {
+    if ((tokens[Token.GOLD] || 0) > 0) return false;
+
+    const totalPicked = getTotalTokens(tokens);
+    if (totalPicked <= 0 || totalPicked > 3) return false;
+
+    for (const [token, count] of Object.entries(tokens)) {
+      if (count <= 0) continue;
+      const boardCount = this.state.tokens.get(token as Token) || 0;
+      if (boardCount < count) return false;
+      if (count === 2 && (totalPicked !== 2 || boardCount < 4)) return false;
+      if (count > 2) return false;
+    }
+
+    return true;
   }
 
   private syncToken = (player: Player, tokens: Record<Token, number>) => {
@@ -174,13 +192,14 @@ export class GameRoom extends Room<GameState> {
     const player = this.state.findPlayerBySessionId(sessionId)
     const reservedCards = player.reservedCards || [];
 
-    if (reservedCards.length === 3) return;
+    if (reservedCards.length >= 3) return;
+    if (this.state.existReservedByDevelopmentCardId(cardId)) return;
 
     const reservedCard = this.state.findDevelopmentCardById(cardId);
     this.syncCard(player, reservedCard, CardAction.RESERVE);
 
     const goldToken = this.state.tokens.get(Token.GOLD) || 0;
-    if (goldToken > 0) {
+    if (goldToken > 0 && player.totalTokenCount < 10) {
       const tokens: Record<Token, number> = initializeTokens();
       tokens[Token.GOLD] = 1;
       this.syncToken(player, tokens)
@@ -191,7 +210,11 @@ export class GameRoom extends Room<GameState> {
 
   public purchaseCard = (sessionId: string, cardId: string) => {
     const player = this.state.findPlayerBySessionId(sessionId);
-    const purchasedCard = this.state.findDevelopmentCardById(cardId);
+    const boardCard = this.state.developmentCards.find(c => c.id === cardId && c.visible);
+    const myReservedCard = player.reservedCards.find(c => c.id === cardId);
+    const purchasedCard = boardCard ?? myReservedCard;
+
+    if (!purchasedCard) return;
 
     const playerCardBonuses: Record<Token, number> = getCardBonus(player.developmentCards);
     const playerTokens: Record<Token, number> = convertMapSchemaToRecord(player.tokens);
@@ -225,11 +248,24 @@ export class GameRoom extends Room<GameState> {
   }
 
   private syncCard = (player: Player, card: DevelopmentCard, action: CardAction) => {
+    if (action === CardAction.PURCHASE) {
+      const reservedIndex = player.reservedCards.findIndex(c => c.id === card.id);
+      if (reservedIndex !== -1) {
+        player.reservedCards.splice(reservedIndex, 1);
+        player.developmentCards.push(card);
+        player.score += card.prestigePoint;
+        return;
+      }
+    }
+
     const cardIndex = this.state.developmentCards.findIndex(c => c.id === card.id);
     if (cardIndex === -1) return;
 
+    const wasVisible = card.visible;
+
     switch (action) {
       case CardAction.RESERVE:
+        card.visible = true;
         player.reservedCards.push(card);
         break;
       case CardAction.PURCHASE:
@@ -238,7 +274,7 @@ export class GameRoom extends Room<GameState> {
         break;
     }
 
-    if (card.visible) {
+    if (wasVisible) {
       this.drawCard(card, cardIndex);
     } else {
       this.state.developmentCards.splice(cardIndex, 1);

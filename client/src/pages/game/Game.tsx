@@ -14,6 +14,7 @@ import diamondToken from "@/assets/icons/yarn-ball.svg";
 import onyxToken from "@/assets/icons/fish.svg";
 import goldToken from "@/assets/icons/gold.svg";
 import {Toast} from "@/ui";
+import {toast} from "react-toastify";
 import logo from "@/assets/images/logo.png";
 
 export const tokenImages = {
@@ -122,17 +123,48 @@ export const Game = () => {
   })
 
   const validateBringToken = async (token: Token) => {
+    if (token === Token.GOLD) {
+      toast("황금 토큰은 카드 예약 시에만 획득할 수 있습니다.", {
+        containerId: "toast-message",
+        className: "toast-body-center",
+      });
+      return false;
+    }
+
+    const boardTokenCount = gameState?.tokens[token] ?? 0;
     const bringTokens = turnActionInfo.tokens;
+    if (boardTokenCount - bringTokens[token] <= 0) {
+      return false;
+    }
+
+    const currentPlayerTokenCount = player?.tokens ? getTotalTokens(convertMapSchemaToRecord(player.tokens)) : 0;
     const tokenCount = getTotalTokens(bringTokens);
+    if (currentPlayerTokenCount + tokenCount >= 10) {
+      toast("토큰은 최대 10개까지 보유할 수 있습니다.", {
+        containerId: "toast-message",
+        className: "toast-body-center",
+      });
+      return false;
+    }
+
     if (tokenCount >= 3) {
       return false;
     }
     const existSameToken = Object.values(bringTokens).some(count => count > 1);
-    if (existSameToken){
+    if (existSameToken) {
       return false;
     }
-    if (tokenCount === 2 && bringTokens[token] > 0) {
-      return false;
+    if (bringTokens[token] === 1) {
+      if (tokenCount > 1) {
+        return false;
+      }
+      if (boardTokenCount < 4) {
+        toast("같은 색의 토큰은 4개 이상 남아있을 때만 2개를 가져올 수 있습니다.", {
+          containerId: "toast-message",
+          className: "toast-body-center",
+        });
+        return false;
+      }
     }
     return true;
   }
@@ -143,7 +175,12 @@ export const Game = () => {
 
   const validateEndTurn = async () => {
     if (player?.tokens) {
-      return getTotalTokens(convertMapSchemaToRecord(player?.tokens)) <= 10;
+      const currentTokens = getTotalTokens(convertMapSchemaToRecord(player?.tokens));
+      const pendingTokenCount =
+        turnActionInfo.action === TurnAction.BRING_TOKEN
+          ? getTotalTokens(turnActionInfo.tokens)
+          : 0;
+      return currentTokens + pendingTokenCount <= 10;
     }
     return false;
   }
@@ -179,6 +216,7 @@ export const Game = () => {
         <section className="grid grid-cols-[1fr_3fr_1fr] place-items-center gap">
           <PlayerHand
             player={player}
+            turnActionInfo={turnActionInfo}
             pendingTokens={turnActionInfo.tokens}
             undoBringToken={undoBringToken}
             gamePhase={gameState?.phase}

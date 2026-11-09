@@ -12,6 +12,7 @@ import {TurnAction} from "@shared/types/enums/Action";
 import {useGameRoom} from "@/contexts/GameRoomContext.tsx";
 import {convertMapSchemaToRecord, getCardBonus, getPurchaseShortage} from "@shared/utils";
 import {toast} from "react-toastify";
+import cardBack from "@/assets/images/card-back.png";
 
 interface Props {
   selectedCard: DevelopmentCard;
@@ -25,7 +26,7 @@ interface Props {
 export const DevelopmentCardDetailModal = (props: Props) => {
   //
   const { selectedCard, turnActionInfo, closeModal, handleClickPurchase, handleClickReserve, handleClickCancel } = props;
-  const { player } = useGameRoom();
+  const { player, gameState } = useGameRoom();
 
   const isDragging = useRef<boolean>(false);
 
@@ -38,6 +39,18 @@ export const DevelopmentCardDetailModal = (props: Props) => {
   const pendingReservedCard = turnAction === TurnAction.RESERVE_DEVELOPMENT_CARD && turnActionInfo.card?.id === selectedCard.id;
   const pendingPurchasedCard = turnAction === TurnAction.PURCHASE_DEVELOPMENT_CARD && turnActionInfo.card?.id === selectedCard.id;
 
+  const isDeckCard = !selectedCard.visible;
+  const isMyReservedCard = useMemo(() => {
+    return player?.reservedCards?.some(c => c.id === selectedCard.id) ?? false;
+  }, [player, selectedCard]);
+
+  const isOtherPlayerReservedCard = useMemo(() => {
+    if (!gameState) return false;
+    return gameState.players.some(
+      p => p.sessionId !== player?.sessionId && p.reservedCards?.some(c => c.id === selectedCard.id)
+    );
+  }, [gameState, player, selectedCard]);
+
   const affordability = useMemo(() => {
     if (!player || !selectedCard) return { isAffordable: true };
     const playerTokens = convertMapSchemaToRecord(player.tokens);
@@ -49,6 +62,18 @@ export const DevelopmentCardDetailModal = (props: Props) => {
     if (!isDragging.current) {
       closeModal();
     }
+  };
+
+  /* 예약 버튼 클릭 시 최대 3장 제한 확인 */
+  const onReserveClick = () => {
+    if ((player?.reservedCards?.length ?? 0) >= 3) {
+      toast("카드는 최대 3장까지만 예약할 수 있습니다.", {
+        containerId: "toast-message",
+        className: "toast-body-center",
+      });
+      return;
+    }
+    handleClickReserve();
   };
 
   /* 구매 버튼 클릭 시 부족한 토큰 확인 후 토스트 출력 또는 구매 수행 */
@@ -75,46 +100,62 @@ export const DevelopmentCardDetailModal = (props: Props) => {
           onDragStart={() => isDragging.current = true}
           onDragEnd={() => isDragging.current = false}
         >
-          <div className={clsx('relative z-10 flex items-center justify-between p-1', cardLevelColorClasses[selectedCard.level])}>
-            <div className="ml-2 text-3xl font-bold text-white">{selectedCard.prestigePoint > 0 ? selectedCard.prestigePoint : ''}</div>
-            <div className="bonus-token">
-              <span className={clsx("flex h-9 w-9 items-center justify-center rounded-full border-2", tokenColorClasses[selectedCard.token])}>
-                <img className="pointer-events-none relative z-10 h-[120%] w-[120%] rounded-full object-cover" src={tokenImages[selectedCard.token]} alt={`${selectedCard.token} 토큰`} />
-              </span>
+          {isDeckCard ? (
+            <div className="absolute inset-0">
+              <img className="pointer-events-none h-full w-full object-cover" src={cardBack} alt="Deck Card Back" />
             </div>
-          </div>
+          ) : (
+            <>
+              <div className={clsx('relative z-10 flex items-center justify-between p-1', cardLevelColorClasses[selectedCard.level])}>
+                <div className="ml-2 text-3xl font-bold text-white">{selectedCard.prestigePoint > 0 ? selectedCard.prestigePoint : ''}</div>
+                <div className="bonus-token">
+                  <span className={clsx("flex h-9 w-9 items-center justify-center rounded-full border-2", tokenColorClasses[selectedCard.token])}>
+                    <img className="pointer-events-none relative z-10 h-[120%] w-[120%] rounded-full object-cover" src={tokenImages[selectedCard.token]} alt={`${selectedCard.token} 토큰`} />
+                  </span>
+                </div>
+              </div>
 
-          <div className="absolute inset-0">
-            <img className="pointer-events-none h-full w-full object-cover" src={selectedCard.imageUrl} alt={selectedCard.name} />
-          </div>
+              <div className="absolute inset-0">
+                <img className="pointer-events-none h-full w-full object-cover" src={selectedCard.imageUrl} alt={selectedCard.name} />
+              </div>
 
-          <footer className="relative z-10 mt-auto flex w-full items-center justify-center bg-white/40 p-2">
-            <div className="flex gap-1">
-              { Object.entries(selectedCard.cost).flatMap(([token, count], i) =>
-                <span
-                  key={`token-${i}`}
-                  className={clsx(
-                    "flex h-9 w-9 items-center justify-center rounded-full border-2 text-lg font-bold text-black",
-                    tokenColorClasses[token as Token]
+              <footer className="relative z-10 mt-auto flex w-full items-center justify-center bg-white/40 p-2">
+                <div className="flex gap-1">
+                  { Object.entries(selectedCard.cost).flatMap(([token, count], i) =>
+                    <span
+                      key={`token-${i}`}
+                      className={clsx(
+                        "flex h-9 w-9 items-center justify-center rounded-full border-2 text-lg font-bold text-black",
+                        tokenColorClasses[token as Token]
+                      )}
+                    >
+                      {count}
+                    </span>
                   )}
-                >
-                  {count}
-                </span>
-              )}
-            </div>
-          </footer>
+                </div>
+              </footer>
+            </>
+          )}
         </motion.section>
 
-        <article className="relative flex w-full justify-center gap-2">
-          { pendingReservedCard ?
-            <Button color="red" onClick={handleClickCancel}>Cancel</Button> :
-            <Button color="orange" onClick={handleClickReserve}>Reserve</Button>
-          }
-          { pendingPurchasedCard ?
-            <Button color="red" onClick={handleClickCancel}>Cancel</Button> :
-            <Button color="green" onClick={onPurchaseClick}>Purchase</Button>
-          }
-        </article>
+        {!isOtherPlayerReservedCard && (
+          <article className="relative flex w-full justify-center gap-2">
+            {!isMyReservedCard && (
+              pendingReservedCard ? (
+                <Button color="red" onClick={handleClickCancel}>Cancel</Button>
+              ) : (
+                <Button color="orange" onClick={onReserveClick}>Reserve</Button>
+              )
+            )}
+            {!isDeckCard && (
+              pendingPurchasedCard ? (
+                <Button color="red" onClick={handleClickCancel}>Cancel</Button>
+              ) : (
+                <Button color="green" onClick={onPurchaseClick}>Purchase</Button>
+              )
+            )}
+          </article>
+        )}
       </div>
     </Modal>
   );

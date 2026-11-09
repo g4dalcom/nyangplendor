@@ -1,4 +1,5 @@
 import {Token} from "@shared/types/enums/GameObject";
+import {TurnAction} from "@shared/types/enums/Action";
 import {tokenImages} from "@/pages";
 import type {Player} from "@shared/models/colyseus/Player";
 import {type Dispatch, type MouseEvent, type SetStateAction, useEffect, useState} from "react";
@@ -8,9 +9,11 @@ import {cardLevelColorClasses, tokenColorClasses} from "@/styles/style.ts";
 import {GamePhase} from "@shared/types/enums/States";
 import {Button} from "@/ui";
 import type {DevelopmentCard} from "@shared/models/colyseus/DevelopmentCard";
+import type {TurnActionType} from "@/hooks";
 
 interface Props {
   player: Player | null | undefined;
+  turnActionInfo: TurnActionType;
   pendingTokens: Record<Token, number>;
   undoBringToken: (event: MouseEvent<HTMLButtonElement>) => void;
   gamePhase: GamePhase | undefined;
@@ -22,7 +25,7 @@ interface Props {
 }
 
 export const PlayerHand = (props: Props) => {
-  const { player, pendingTokens, undoBringToken, gamePhase, disableStartButton, disableTurnEndButton, handleStartGame, handleEndTurn, setSelectedCard } = props;
+  const { player, turnActionInfo, pendingTokens, undoBringToken, gamePhase, disableStartButton, disableTurnEndButton, handleStartGame, handleEndTurn, setSelectedCard } = props;
 
   const [cardBonusMap, setCardBonusMap] = useState<Record<Token, number>>(initializeTokens());
   const emptySlotCount = 3 - (player?.reservedCards.length ?? 0);
@@ -95,21 +98,29 @@ export const PlayerHand = (props: Props) => {
 
         {/* Reserved Cards */}
         <div className="flex gap-[var(--spacing-xs)]">
-          { player?.reservedCards.map(card => (
-            <div 
-              className="w-10 h-14 lg:w-12 lg:h-16 border center shrink-0 overflow-hidden hover:animate-scale" 
-              key={card.id} 
-              style={{ borderRadius: 'var(--radius-sm)' }}
-              onClick={() => setSelectedCard(card)}
-            >
-              <div className={clsx('relative w-full h-full flex flex-col')}>
-                <div className={clsx("p-1 relative z-10", cardLevelColorClasses[card.level])}></div>
-                <div className="absolute inset-0">
-                  <img src={card.imageUrl} alt={card.name} className="w-full h-full object-cover" />
+          { player?.reservedCards.map(card => {
+            const isPendingPurchase =
+              turnActionInfo.action === TurnAction.PURCHASE_DEVELOPMENT_CARD &&
+              turnActionInfo.card?.id === card.id;
+            return (
+              <div 
+                className={clsx(
+                  "w-10 h-14 lg:w-12 lg:h-16 border center shrink-0 overflow-hidden cursor-pointer hover:animate-scale",
+                  isPendingPurchase && "grayscale-[80%] brightness-70 ring-2 ring-success"
+                )}
+                key={card.id} 
+                style={{ borderRadius: 'var(--radius-sm)' }}
+                onClick={() => setSelectedCard(card)}
+              >
+                <div className={clsx('relative w-full h-full flex flex-col')}>
+                  <div className={clsx("p-1 relative z-10", cardLevelColorClasses[card.level])}></div>
+                  <div className="absolute inset-0">
+                    <img src={card.imageUrl} alt={card.name} className="w-full h-full object-cover" />
+                  </div>
                 </div>
               </div>
-            </div>
-          )) }
+            );
+          }) }
           { Array.from({ length: emptySlotCount }, (_, i) => (
             <div key={`my-reserved-empty-${i}`} className="w-10 h-14 lg:w-12 lg:h-16 bg-primary border border-dashed border-ui-border shrink-0" style={{ borderRadius: 'var(--radius-sm)' }}></div>
           )) }
